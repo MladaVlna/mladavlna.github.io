@@ -1,0 +1,45 @@
+{
+  "home": "Home",
+  "about": "About Us",
+  "blog": "Blog",
+  "projects": "Projects",
+  "contact": "Contact",
+  "documents": "Documents",
+
+  "index_title": "About Us",
+  "index_subtitle": "Mladá vlna - Civic Association",
+  "index_about_lead": "We are a civic association focused on supporting educational opportunities and personal development through the Erasmus+ program. Our main mission is to create opportunities for young people, students, youth workers, and the general public to participate in international projects, exchanges, and training.",
+  "learn_more": "Learn More",
+
+  "projects_title": "Projects",
+  "projects_subtitle": "Current Projects",
+  "projects_lead": "Interested in our projects? Click Learn More.",
+
+  "faq_title": "Frequently Asked Questions",
+
+  "faq_q1": "Who can participate? Can I join even if I'm not a student?",
+  "faq_a1": "You don’t need to be a student to participate! Just meet these conditions:",
+  "faq_a1_list1": "For youth exchanges: age 13–30 (team leader can be older than 30)",
+  "faq_a1_list2": "For training courses: age 18+",
+  "faq_a1_end": "And that’s it! No proof of study or employment is required.",
+
+  "faq_q2": "How much does it cost?",
+  "faq_a2_1": "Participation in projects is completely free! Accommodation and meals are covered by EU grants.",
+  "faq_a2_2": "Travel costs are reimbursed up to a certain amount (depending on distance) usually within one month after the project.",
+
+  "faq_q3": "I don't speak English well. Is that a problem?",
+  "faq_a3": "Not at all! On the contrary, traveling gives you the chance to practice your English. You always go as part of a national team, so if your English isn't perfect, your Slovak teammates will help you with translation and communication.",
+
+  "faq_q4": "How do I apply?",
+  "faq_a4_1": "Just fill out the application form for the project you're interested in. You can find the currently available projects on the ",
+  "faq_a4_2": " page. After reviewing candidates, we’ll contact you—and if you're still interested, you're in!",
+
+  "faq_q5": "Where can I find project information?",
+  "faq_a5": "All essential information is included in the project’s info pack. You can find current projects on the page ",
+
+  "faq_q6": "Is this a scam?",
+  "faq_a6": "All projects are funded through Erasmus+ under the supervision of the European Commission. You can find a list of approved projects directly on the ",
+  "european_commision": "European Commission’s website",
+
+  "footer_rights": "All rights reserved 2025 | MLADÁ VLNA |"
+}

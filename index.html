@@ -89,12 +89,14 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="index.html" class="active">Domov</a></li>
-                        <li><a href="about-us.html">O nás</a></li>
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="projects.html">Projekty</a></li>
-						<li><a href="contact.html">Kontakt</a></li>
-                        <li><a href="documents.html">Dokumenty</a></li>
+                        <li><a href="index.html" class="active" data-i18n="home">Domov</a></li>
+                        <li><a href="about-us.html" data-i18n="about">O nás</a></li>
+                        <li><a href="blog.html" data-i18n="blog">Blog</a></li>
+                        <li><a href="projects.html" data-i18n="projects">Projekty</a></li>
+						<li><a href="contact.html" data-i18n="contact">Kontakt</a></li>
+                        <li><a href="documents.html" data-i18n="documents">Dokumenty</a></li>
+                        <li><a href="#" id="flag-sk"><img src="images/flags/sk.png" alt="Slovensky" style="height:20px;"></a></li>
+                        <li><a href="#" id="flag-en"><img src="images/flags/en.png" alt="English" style="height:20px;"></a></li>
                     </ul>
                 </div>
             </div>
@@ -106,11 +108,11 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="message-box">
-                        <h4>O nás</h4>
-                        <h2>Mladá vlna - občianské združenie</h2>
-                        <p class="lead">Sme občianske združenie zamerané na podporu vzdelávacích príležitostí a osobnostného rozvoja prostredníctvom programu Erasmus+. Našou hlavnou úlohou je vytvárať možnosti pre mladých ľudí, študentov, pracovníkov s mládežou i širokú verejnosť, aby sa zapojili do medzinárodných projektov, výmenných pobytov a školení.</p>
+                        <h4 data-i18n="index_title">O nás</h4>
+                        <h2 data-i18n="index_subtitle">Mladá vlna - občianské združenie</h2>
+                        <p class="lead" data-i18n="index_about_lead">Sme občianske združenie zamerané na podporu vzdelávacích príležitostí a osobnostného rozvoja prostredníctvom programu Erasmus+. Našou hlavnou úlohou je vytvárať možnosti pre mladých ľudí, študentov, pracovníkov s mládežou i širokú verejnosť, aby sa zapojili do medzinárodných projektov, výmenných pobytov a školení.</p>
 
-                        <a href="about-us.html" class="btn btn-light btn-radius btn-brd grd1">Dozvedieť sa viac</a>
+                        <a href="about-us.html" class="btn btn-light btn-radius btn-brd grd1" data-i18n="learn_more">Dozvedieť sa viac</a>
                     </div><!-- end messagebox -->
                 </div><!-- end col -->
 
@@ -132,11 +134,11 @@
 				
                 <div class="col-md-6">
                     <div class="message-box">
-                        <h4>Projekty</h4>
-                        <h2>Aktuálne projekty</h2>
-                        <p class="lead">Lákajú ťa projekty? Klikni Dozvedieť sa viac.</p>
+                        <h4 data-i18n="projects_title">Projekty</h4>
+                        <h2 data-i18n="projects_subtitle">Aktuálne projekty</h2>
+                        <p class="lead" data-i18n="projects_lead">Lákajú ťa projekty? Klikni Dozvedieť sa viac.</p>
 
-                        <a href="projects.html" class="btn btn-light btn-radius btn-brd grd1">Dozvedieť sa viac</a>
+                        <a href="projects.html" class="btn btn-light btn-radius btn-brd grd1" data-i18n="learn_more">Dozvedieť sa viac</a>
                     </div><!-- end messagebox -->
                 </div><!-- end col -->
             </div><!-- end row -->
@@ -146,48 +148,48 @@
     <div id="services" class="parallax section lb">
         <div class="container">
             <div class="section-title">
-                <h3 style="text-align: center;" >Časté otázky</h3>
+                <h3 style="text-align: center;" data-i18n="faq_title">Časté otázky</h3>
                 <ul>
                     <li>
-                        <button class="accordion">Kto sa môže zučastniť? Môžem sa zúčastníť aj keď nie som študent?</button>
+                        <button class="accordion" data-i18n="faq_q1">Kto sa môže zučastniť? Môžem sa zúčastníť aj keď nie som študent?</button>
                         <div class="panel">
-                            <p>Nepotrebuješ byť študent, aby si sa mohol zúčastníť! Stačí ak spĺňaš tieto podmienky:</p>
+                            <p data-i18n="faq_a1">Nepotrebuješ byť študent, aby si sa mohol zúčastníť! Stačí ak spĺňaš tieto podmienky:</p>
                                 <ul>
-                                    <li>Pre mládežnícku výmenu: vek 13-30 rokov (teamleader môže mať 30+)</li>
-                                    <li>Pre tréningový kurz: vek 18+</li>
+                                    <li data-i18n="faq_a1_list1">Pre mládežnícku výmenu: vek 13-30 rokov (teamleader môže mať 30+)</li>
+                                    <li data-i18n="faq_a1_list2">Pre tréningový kurz: vek 18+</li>
                                 </ul>
-                            <p>A to je všetko! Žiadne potvrdenia o štúdiu alebo zamestnaní Ti netreba.</p>
+                            <p data-i18n="faq_a1_end">A to je všetko! Žiadne potvrdenia o štúdiu alebo zamestnaní Ti netreba.</p>
                         </div>
                     </li>
                     <li>
-                        <button class="accordion">Koľko budem platiť?</button>
+                        <button class="accordion" data-i18n="faq_q2">Koľko budem platiť?</button>
                         <div class="panel">
-                            <p>Účasť na projektoch je úplne zadarmo! Ubytovanie a strava v mieste konania projektu sú hradené z grantov Európskej Únie.</p>
-                            <p>Cestovné do určitej výšky (závislej od vzdialenosti miesta konania projektu) je preplatené po skončení projektu zvyčajne do jedného mesiaca.</p>
+                            <p data-i18n="faq_a2_1">Účasť na projektoch je úplne zadarmo! Ubytovanie a strava v mieste konania projektu sú hradené z grantov Európskej Únie.</p>
+                            <p data-i18n="faq_a2_2">Cestovné do určitej výšky (závislej od vzdialenosti miesta konania projektu) je preplatené po skončení projektu zvyčajne do jedného mesiaca.</p>
                         </div>
                     </li>
                     <li>
-                        <button class="accordion">Neviem po anglicky, bude to problém?</button>
+                        <button class="accordion" data-i18n="faq_q3">Neviem po anglicky, bude to problém?</button>
                         <div class="panel">
-                            <p>Vôbec nie! Práve naopak, cestovanie Ti dá možnosť si svoju angličtinu precvičiť. Na projekt vždy ideš v národnom tíme, teda ak máš nedostatky z angličtiny, budeš mať skupinku Slovákov, ktorí Ti radi pomôžu prekladať a vyjadriť sa.</p>
+                            <p data-i18n="faq_a3">Vôbec nie! Práve naopak, cestovanie Ti dá možnosť si svoju angličtinu precvičiť. Na projekt vždy ideš v národnom tíme, teda ak máš nedostatky z angličtiny, budeš mať skupinku Slovákov, ktorí Ti radi pomôžu prekladať a vyjadriť sa.</p>
                         </div>
                     </li>
                     <li>
-                        <button class="accordion">Ako sa prihlásim?</button>
+                        <button class="accordion" data-i18n="faq_q4">Ako sa prihlásim?</button>
                         <div class="panel">
-                            <p>Stačí vyplniť prihlasovací formulár pre projekt, o ktorý máš záujem. Aktuálne ponúkané projekty nájdeš na stránke <a href="projects.html"><u>Projekty</u></a>. Po zvážení všetkých kandidátov Ťa oslovíme a ak budš mať záujem, si prijatý!</p>
+                            <p><span data-i18n="faq_a4_1">Stačí vyplniť prihlasovací formulár pre projekt, o ktorý máš záujem. Aktuálne ponúkané projekty nájdeš na stránke </span><a href="projects.html"><u data-i18n="projects">Projekty</u></a><span data-i18n="faq_a4_2">Po zvážení všetkých kandidátov Ťa oslovíme a ak budš mať záujem, si prijatý!</span></p>
                         </div>
                     </li>
                     <li>
-                        <button class="accordion">Kde nájdem informácie o danom projekte?</button>
+                        <button class="accordion" data-i18n="faq_q5">Kde nájdem informácie o danom projekte?</button>
                         <div class="panel">
-                            <p>Všetky potrebné informácie sa nachádzajú v tzv. infopacku daného projektu. Aktuálne projekty nájdeš na stránke <a href="projects.html"><u>Projekty</u></a>.</p>
+                            <p><span data-i18n="faq_a5">Všetky potrebné informácie sa nachádzajú v tzv. infopacku daného projektu. Aktuálne projekty nájdeš na stránke </span><a href="projects.html"><u data-i18n="projects">Projekty</u></a>.</p>
                         </div>
                     </li>
                     <li>
-                        <button class="accordion">Nie je to náhodou scam?</button>
+                        <button class="accordion" data-i18n="faq_a6">Nie je to náhodou scam?</button>
                         <div class="panel">
-                            <p>Všetky projekty sú financované z programu Erasmus+ pod dozorom Európskej Komisie. Zoznam schválených projektov nájdeš priamo nan stránke <a target="_blank" href="https://erasmus-plus.ec.europa.eu/projects/"><u>Európskej Komisie</u></a>.</p>
+                            <p><span data-i18n="faq_a6">Všetky projekty sú financované z programu Erasmus+ pod dozorom Európskej Komisie. Zoznam schválených projektov nájdeš priamo na stránke </span><a target="_blank" href="https://erasmus-plus.ec.europa.eu/projects/"><u data-i18n="european_commision">Európskej Komisie</u></a>.</p>
                         </div>
                     </li>
                 </ul>
@@ -199,7 +201,7 @@
         <div class="container">
             <div class="footer-distributed">
                 <div class="footer-left">                   
-                    <p class="footer-company-name"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
+                    <p class="footer-company-name" data-i18n="footer_rights"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
                 </div>
             </div>
         </div><!-- end container -->
@@ -213,6 +215,35 @@
     <script src="js/custom.js"></script>
     <script src="js/portfolio.js"></script>
     <script src="js/hoverdir.js"></script>    
+    <script>
 
+        function loadLanguage(lang) {
+          fetch(`language/${lang}.json`)
+            .then(res => res.json())
+            .then(translations => {
+              document.querySelectorAll('[data-i18n]').forEach(elem => {
+                const key = elem.getAttribute('data-i18n');
+                elem.textContent = translations[key] || key;
+              });
+              localStorage.setItem('lang', lang);
+            });
+        }
+
+        // Load saved language or default to Slovak
+        const savedLang = localStorage.getItem('lang') || 'sk';
+        loadLanguage(savedLang);
+      
+        // Language switcher event listeners
+        document.getElementById('flag-sk').addEventListener('click', (e) => {
+          e.preventDefault();
+          loadLanguage('sk');
+        });
+      
+        document.getElementById('flag-en').addEventListener('click', (e) => {
+          e.preventDefault();
+          loadLanguage('en');
+        });
+      </script>
+      
 </body>
 </html>
