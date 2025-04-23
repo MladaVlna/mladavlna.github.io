@@ -89,12 +89,14 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="index.html">Domov</a></li>
-                        <li><a href="about-us.html">O nás</a></li>
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="projects.html">Projekty</a></li>
-						<li><a href="contact.html" class="active">Kontakt</a></li>
-                        <li><a href="documents.html">Dokumenty</a></li>
+                        <li><a href="index.html" class="active" data-i18n="home">Domov</a></li>
+                        <li><a href="about-us.html" data-i18n="about">O nás</a></li>
+                        <li><a href="blog.html" data-i18n="blog">Blog</a></li>
+                        <li><a href="projects.html" data-i18n="projects">Projekty</a></li>
+						<li><a href="contact.html" data-i18n="contact">Kontakt</a></li>
+                        <li><a href="documents.html" data-i18n="documents">Dokumenty</a></li>
+                        <li><a href="#" id="flag-sk"><img src="images/flags/sk.png" alt="Slovensky" style="height:20px;"></a></li>
+                        <li><a href="#" id="flag-en"><img src="images/flags/en.png" alt="English" style="height:20px;"></a></li>
                     </ul>
                 </div>
             </div>
@@ -106,7 +108,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="banner">
-						<h2>Kontakt</h2>
+						<h2 data-i18n="contact">Kontakt</h2>
 					</div>
 				</div>
 			</div>
@@ -116,8 +118,8 @@
     <div id="contact" class="section wb">
         <div class="container">
             <div class="section-title text-center">
-                <h3>Napíšte nám</h3>
-                <p style="color: black;">V prípade akýchkoľvek otázok nás neváhajte kontaktovať. </p>
+                <h3 data-i18n="contact_title">Napíšte nám</h3>
+                <p style="color: black;" data-i18n="contact_text">V prípade akýchkoľvek otázok nás neváhajte kontaktovať. </p>
             </div><!-- end title -->
 
             <!-- <div class="row">
@@ -157,21 +159,21 @@
 						<div class="address-icon">
 							<i class="icon icon-location2"></i>
 						</div>
-						<h3>Adresa</h3>
+						<h3 data-i18n="address">Adresa</h3>
 						<p>Tomášikova 22 Prešov 080 01 Slovenská Republika</p>
 					</div>
 					<div class="address-item">
 						<div class="address-icon">
 							<i class="fa fa-envelope" aria-hidden="true"></i>
 						</div>
-						<h3>Napíšte nám</h3>
+						<h3 data-i18n="email">Napíšte nám</h3>
 						<p>contact@mladavlna.org</p><br>
 					</div>
 					<div class="address-item">
 						<div class="address-icon">
 							<i class="icon icon-headphones"></i>
 						</div>
-						<h3>Zavolajte nám</h3>
+						<h3 data-i18n="call_us">Zavolajte nám</h3>
 						<p>+421 918 208 346</p><br>
 					</div>
 				</div>
@@ -184,7 +186,7 @@
         <div class="container">
             <div class="footer-distributed">
                 <div class="footer-left">                   
-                    <p class="footer-company-name"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
+                    <p class="footer-company-name" data-i18n="footer_rights"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
                 </div>
             </div>
         </div><!-- end container -->
@@ -198,6 +200,7 @@
     <script src="js/custom.js"></script>
     <script src="js/portfolio.js"></script>
     <script src="js/hoverdir.js"></script>    
+    <script src="js/language.js"></script> 
 
 </body>
 </html>

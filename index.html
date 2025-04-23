@@ -10,7 +10,7 @@
     <!-- <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
  
      <!-- Site Metas -->
-    <title>Mladá vlna - občianské združenie</title>  
+    <title data-i18n="header_title_index">Mladá vlna - občianské združenie</title>  
     <meta name="keywords" content="mlada, vlna, mlada vlna, erasmus, erasmus plus, projekty, mládežnícke výmeny, európska únia">
     <meta name="description" content="Mladá vlna o. z. pomáha mladým aktívne sa zapojiť do občianského života v EÚ.">
     <meta name="author" content="">
@@ -214,36 +214,8 @@
     <!-- ALL PLUGINS -->
     <script src="js/custom.js"></script>
     <script src="js/portfolio.js"></script>
-    <script src="js/hoverdir.js"></script>    
-    <script>
-
-        function loadLanguage(lang) {
-          fetch(`language/${lang}.json`)
-            .then(res => res.json())
-            .then(translations => {
-              document.querySelectorAll('[data-i18n]').forEach(elem => {
-                const key = elem.getAttribute('data-i18n');
-                elem.textContent = translations[key] || key;
-              });
-              localStorage.setItem('lang', lang);
-            });
-        }
-
-        // Load saved language or default to Slovak
-        const savedLang = localStorage.getItem('lang') || 'sk';
-        loadLanguage(savedLang);
-      
-        // Language switcher event listeners
-        document.getElementById('flag-sk').addEventListener('click', (e) => {
-          e.preventDefault();
-          loadLanguage('sk');
-        });
-      
-        document.getElementById('flag-en').addEventListener('click', (e) => {
-          e.preventDefault();
-          loadLanguage('en');
-        });
-      </script>
+    <script src="js/hoverdir.js"></script>
+    <script src="js/language.js"></script> 
       
 </body>
 </html>

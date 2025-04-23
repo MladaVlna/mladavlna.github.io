@@ -89,12 +89,14 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="index.html">Domov</a></li>
-                        <li><a href="about-us.html">O nás</a></li>
-                        <li><a href="blog.html" class="active">Blog</a></li>
-                        <li><a href="projects.html">Projekty</a></li>
-						<li><a href="contact.html">Kontakt</a></li>
-                        <li><a href="documents.html">Dokumenty</a></li>
+                        <li><a href="index.html" class="active" data-i18n="home">Domov</a></li>
+                        <li><a href="about-us.html" data-i18n="about">O nás</a></li>
+                        <li><a href="blog.html" data-i18n="blog">Blog</a></li>
+                        <li><a href="projects.html" data-i18n="projects">Projekty</a></li>
+						<li><a href="contact.html" data-i18n="contact">Kontakt</a></li>
+                        <li><a href="documents.html" data-i18n="documents">Dokumenty</a></li>
+                        <li><a href="#" id="flag-sk"><img src="images/flags/sk.png" alt="Slovensky" style="height:20px;"></a></li>
+                        <li><a href="#" id="flag-en"><img src="images/flags/en.png" alt="English" style="height:20px;"></a></li>
                     </ul>
                 </div>
             </div>
@@ -106,7 +108,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="banner">
-						<h2>Blog</h2>
+						<h2 data-i18n="blog">Blog</h2>
 					</div>
 				</div>
 			</div>
@@ -142,14 +144,15 @@
         </div><!-- end container -->
     </div><!-- end copyrights -->
 
-    <a href="#" id="scroll-to-top" class="dmtop global-radius"><i class="fa fa-angle-up"></i></a>
+    <a href="#" id="scroll-to-top" class="dmtop global-radius" data-i18n="footer_rights"><i class="fa fa-angle-up"></i></a>
 
     <!-- ALL JS FILES -->
     <script src="js/all.js"></script>
     <!-- ALL PLUGINS -->
     <script src="js/custom.js"></script>
     <script src="js/portfolio.js"></script>
-    <script src="js/hoverdir.js"></script>    
+    <script src="js/hoverdir.js"></script> 
+    <script src="js/language.js"></script>   
 
 </body>
 </html>

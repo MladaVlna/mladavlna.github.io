@@ -1,4 +1,7 @@
 {
+  "header_title_index": "Mladá vlna - civic association",
+  "header_title_projects": "Mladá vlna - projects",
+
   "home": "Home",
   "about": "About Us",
   "blog": "Blog",
@@ -40,6 +43,32 @@
   "faq_q6": "Is this a scam?",
   "faq_a6": "All projects are funded through Erasmus+ under the supervision of the European Commission. You can find a list of approved projects directly on the ",
   "european_commision": "European Commission’s website",
+
+  "about_text": "is a civic association focused on supporting educational opportunities and personal development through the Erasmus+ program. Our main task is to create opportunities for young people, students, youth workers and the general public to participate in international projects, exchanges and trainings.",
+  "about_mission": "Our mission",
+  "about_mission_text": "We believe in the power of education and intercultural cooperation. Through Erasmus+, we aim to develop key competences of participants, support their creative thinking, improve language skills and contribute to establishing new friendships and professional contacts across Europe.",
+  "about_offer": "What we offer",
+  "about_offer_text_a1": "International exchange stays",
+  "about_offer_text_a2": " for young people looking for experience beyond the borders of Slovakia.",
+  "about_offer_text_b1": "Trainings and workshops",
+  "about_offer_text_b2": " for educators, youth workers or volunteers who improve professional and personal skills.",
+  "about_why": "Why join?",
+  "about_why_text_1": "Participation in our activities brings new opportunities, relationships and experiences that can positively influence not only your professional but also your personal life. Together with us, you will have the opportunity to contribute to improving the quality of education, strengthening solidarity and promoting European values.",
+  "about_why_text_2": "If you are interested in learning more about our activities or would like to participate in one of our upcoming projects, please do not hesitate to contact us. We look forward to working with you!",
+  "our_team": "Our team",
+  "nika_text": "She graduated from the Technical University of Košice in computer science. She also studied pedagogy and completed additional pedagogical studies. She is currently a doctoral student at the aforementioned university, where she is engaged in research in the field of mathematics, specifically extreme algebras. In our organization, she fulfills the role of digitization manager and is responsible for the website and other matters related to digitization. She has participated in many youth exchanges and training courses. Her favorite activities include cycling and skiing, and she also excels in table tennis.",
+  "lukas_text": "He graduated from the Technical University of Košice in computer science. He also studied pedagogy and completed additional pedagogical studies. He is currently a doctoral student at the aforementioned university, where he is engaged in research in the field of algorithm optimization using AI. In our organization, he serves as the chairman. He is a passionate and active participant in Erasmus+ projects, has participated in many youth exchanges and educational courses, where he has gained many foreign contacts and broadened his horizons.", 
+  "adam_text": "He studied forestry and ecological conservation, gaining a strong background in environmental science, biodiversity conservation and sustainable resource management. His expertise lies in environmental education, environmental policy and sustainability practices, making him a valuable asset to projects focused on green initiatives and environmental awareness.",
+
+  "contact_title": "Reach out to us",
+  "contact_text": "If you have any questions do not hesistate to contact us.",
+  "address": "Address",
+  "email": "Write an email",
+  "call_us": "Call us",
+
+  "documents_text": "Documents for download:",
+  "document_1": "Legal statute of Mladá vlna (sk)",
+  "document_2": "Invitation for members 04/2025 (sk)",
 
   "footer_rights": "All rights reserved 2025 | MLADÁ VLNA |"
 }
