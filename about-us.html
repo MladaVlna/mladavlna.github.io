@@ -89,12 +89,14 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="index.html">Domov</a></li>
-                        <li><a href="about-us.html" class="active">O nás</a></li>
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="projects.html">Projekty</a></li>
-						<li><a href="contact.html">Kontakt</a></li>
-                        <li><a href="documents.html">Dokumenty</a></li>
+                        <li><a href="index.html" class="active" data-i18n="home">Domov</a></li>
+                        <li><a href="about-us.html" data-i18n="about">O nás</a></li>
+                        <li><a href="blog.html" data-i18n="blog">Blog</a></li>
+                        <li><a href="projects.html" data-i18n="projects">Projekty</a></li>
+						<li><a href="contact.html" data-i18n="contact">Kontakt</a></li>
+                        <li><a href="documents.html" data-i18n="documents">Dokumenty</a></li>
+                        <li><a href="#" id="flag-sk"><img src="images/flags/sk.png" alt="Slovensky" style="height:20px;"></a></li>
+                        <li><a href="#" id="flag-en"><img src="images/flags/en.png" alt="English" style="height:20px;"></a></li>
                     </ul>
                 </div>
             </div>
@@ -106,7 +108,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="banner">
-						<h2>O nás</h2>
+						<h2 data-i18n="about">O nás</h2>
 						<ul class="page-title-link">
 						</ul>
 					</div>
@@ -118,32 +120,32 @@
     <div id="about" class="section wb">
         <div class="container">
             <div class="text">
-                <p> <b>Mladá vlna</b> je občianske združenie zamerané na podporu vzdelávacích príležitostí a osobnostného rozvoja prostredníctvom programu Erasmus+. Našou hlavnou úlohou je vytvárať možnosti pre mladých ľudí, študentov, pracovníkov s mládežou i širokú verejnosť, aby sa zapojili do medzinárodných projektov, výmenných pobytov a školení.</p>
+                <p> <b>Mladá vlna</b> <span data-i18n="about_text">je občianske združenie zamerané na podporu vzdelávacích príležitostí a osobnostného rozvoja prostredníctvom programu Erasmus+. Našou hlavnou úlohou je vytvárať možnosti pre mladých ľudí, študentov, pracovníkov s mládežou i širokú verejnosť, aby sa zapojili do medzinárodných projektov, výmenných pobytov a školení.</span></p>
                 <br>
-                <h3>Naša misia</h3><p>
+                <h3 data-i18n="about_mission">Naša misia</h3><p data-i18n="about_mission_text">
 
                     Veríme v silu vzdelávania a medzikultúrnej spolupráce. Prostredníctvom Erasmus+ sa snažíme rozvíjať kľúčové kompetencie účastníkov, podporovať ich kreatívne myslenie, zlepšovať jazykové schopnosti a prispievať k nadväzovaniu nových priateľstiev a profesionálnych kontaktov naprieč Európou.</p>
                 <br>
-                <h3>Čo ponúkame</h3>
+                <h3 data-i18n="about_offer">Čo ponúkame</h3>
                     <ul class="clean-list">
-                        <li><b>Medzinárodné výmenné pobyty</b> pre mladých ľudí, ktorí hľadajú skúsenosti za hranicami Slovenska.</li>
-                        <li><b>Školenia a workshopy</b> pre pedagógov, pracovníkov s mládežou či dobrovoľníkov, ktoré zlepšujú odborné a osobnostné zručnosti.</li>
+                        <li><b data-i18n="about_offer_text_a1">Medzinárodné výmenné pobyty</b> <span data-i18n="about_offer_text_a2">pre mladých ľudí, ktorí hľadajú skúsenosti za hranicami Slovenska.</span></li>
+                        <li><b data-i18n="about_offer_text_b1">Školenia a workshopy</b> <span data-i18n="about_offer_text_b2">pre pedagógov, pracovníkov s mládežou či dobrovoľníkov, ktoré zlepšujú odborné a osobnostné zručnosti.</span></li>
                     </ul>  
                 <br>
-                <h3>Prečo sa zapojiť</h3><p>
+                <h3 data-i18n="about_why">Prečo sa zapojiť</h3><p data-i18n="about_why_text_1">
                     Účasť v našich aktivitách prináša nové možnosti, vzťahy a skúsenosti, ktoré môžu pozitívne ovplyvniť nielen profesionálnu, ale aj osobnú sféru života. Spoločne s nami budete mať príležitosť prispieť k zlepšovaniu kvality vzdelávania, posilňovaniu solidarity a podpore európskych hodnôt.</p> 
                 <br>
-                <p>Ak máte záujem dozvedieť sa viac o našej činnosti alebo sa chcete zapojiť do niektorého z pripravovaných projektov, neváhajte nás kontaktovať. Tešíme sa na spoluprácu! </p>
+                <p data-i18n="about_why_text_2">Ak máte záujem dozvedieť sa viac o našej činnosti alebo sa chcete zapojiť do niektorého z pripravovaných projektov, neváhajte nás kontaktovať. Tešíme sa na spoluprácu! </p>
             </div>
         </div><!-- end container -->
         
         <div class="container" style="padding-top: 100px;">
-            <h1><strong>Náš tím</strong></h1>
+            <h1><strong data-i18n="our_team">Náš tím</strong></h1>
             <div class="row">
                 <div class="col-md-6">
                     <div class="message-box">
                         <h2>Nika</h2>
-                        <p class="lead" style="color: black;">Vyštudovala Technickú univerzitu v Košiciach v odbore informatika. Vzdelala sa aj v pedagogickom odbore a absolvovala doplnkové pedagogické štúdium. V súčasnosti pôsobí ako doktorandka na spomínanej univerzite, kde sa venuje výskumu v oblasti matematiky, konkrétne extrémnych algebier.
+                        <p class="lead" style="color: black;" data-i18n="nika_text">Vyštudovala Technickú univerzitu v Košiciach v odbore informatika. Vzdelala sa aj v pedagogickom odbore a absolvovala doplnkové pedagogické štúdium. V súčasnosti pôsobí ako doktorandka na spomínanej univerzite, kde sa venuje výskumu v oblasti matematiky, konkrétne extrémnych algebier.
                         V našej organizácii plní úlohu manažérky digitalizácie a zodpovedá za stránku a ďalšie veci súvisiace s digitalizáciou. Zúčastnila sa mnohých mládežníckych výmen a školiacich kurzov. Medzi jej obľúbené aktivity patrí cyklistika a lyžovanie, vyniká aj v stolnom tenise.</p>
                     </div><!-- end messagebox -->
                 </div><!-- end col -->
@@ -161,7 +163,7 @@
 				<div class="col-md-6">
                     <div class="message-box">
                         <h2>Lukáš</h2>
-                        <p class="lead" style="color: black;">Vyštudoval Technickú univerzitu v Košiciach v odbore informatika. Vzdelával sa aj v pedagogickom odbore a absolvoval doplnkové pedagogické štúdium. V súčasnosti pôsobí ako doktorand na spomínanej univerzite, kde sa venuje výskumu v oblasti optimalizácie algoritmov pomocou AI.
+                        <p class="lead" style="color: black;" data-i18n="lukas_text">Vyštudoval Technickú univerzitu v Košiciach v odbore informatika. Vzdelával sa aj v pedagogickom odbore a absolvoval doplnkové pedagogické štúdium. V súčasnosti pôsobí ako doktorand na spomínanej univerzite, kde sa venuje výskumu v oblasti optimalizácie algoritmov pomocou AI.
                         V našej organizácii plní úlohu predsedu. Je vášnivým a aktívnym účastníkom projektov Erasmus+, zúčastnil sa mnohých mládežníckych výmen a vzdelávacích kurzov, kde získal mnoho zahraničných kontaktov a rozšíril si obzory.</p>
                     </div><!-- end messagebox -->
                 </div><!-- end col -->
@@ -177,7 +179,7 @@
                 <div class="col-md-6">
                     <div class="message-box">
                         <h2>Adam</h2>
-                        <p class="lead" style="color: black;">Vyštudoval lesníctvo a ekologickú ochranu, čím získal silné zázemie v oblasti environmentálnej vedy, ochrany biodiverzity a trvalo udržateľného riadenia zdrojov. Jeho odborné znalosti spočívajú v ekologickom vzdelávaní, environmentálnej politike a postupoch udržateľnosti, vďaka čomu je cenným prínosom pre projekty zamerané na zelené iniciatívy a ekologické povedomie.</p>
+                        <p class="lead" style="color: black;" data-i18n="adam_text">Vyštudoval lesníctvo a ekologickú ochranu, čím získal silné zázemie v oblasti environmentálnej vedy, ochrany biodiverzity a trvalo udržateľného riadenia zdrojov. Jeho odborné znalosti spočívajú v ekologickom vzdelávaní, environmentálnej politike a postupoch udržateľnosti, vďaka čomu je cenným prínosom pre projekty zamerané na zelené iniciatívy a ekologické povedomie.</p>
                     </div><!-- end messagebox -->
                 </div><!-- end col -->
 
@@ -196,7 +198,7 @@
         <div class="container">
             <div class="footer-distributed">
                 <div class="footer-left">                   
-                    <p class="footer-company-name"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
+                    <p class="footer-company-name" data-i18n="footer_rights"> Všetky práva vyhradené 2025 | MLADÁ VLNA | </p>
                 </div>   
             </div>
         </div><!-- end container -->
@@ -209,7 +211,8 @@
     <!-- ALL PLUGINS -->
     <script src="js/custom.js"></script>
     <script src="js/portfolio.js"></script>
-    <script src="js/hoverdir.js"></script>    
+    <script src="js/hoverdir.js"></script>
+    <script src="js/language.js"></script>    
 
 </body>
 </html>
