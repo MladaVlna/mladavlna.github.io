@@ -1,6 +1,10 @@
 {
-  "header_title_index": "Mladá vlna - civic association",
-  "header_title_projects": "Mladá vlna - projects",
+  "header_title_index": "Mladá vlna - Civic association",
+  "header_title_projects": "Mladá vlna - Projects",
+  "header_title_about": "Mladá vlna - About us",
+  "header_title_blog": "Mladá vlna - Blog",
+  "header_title_contact": "Mladá vlna - Contact",
+  "header_title_documents": "Mladá vlna - Documents",
 
   "home": "Home",
   "about": "About Us",
