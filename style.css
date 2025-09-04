@@ -444,10 +444,10 @@ a img.aligncenter {
 	height: auto;
 }
 
-.navbar-brand img{
+/* .navbar-brand img{
     max-width: 150px;
     max-height: 65px;
-}
+} */
 
 .header_style_01 .navbar-default .navbar-nav > li > a {
     border-radius: 0;
