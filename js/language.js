@@ -2,7 +2,7 @@
 Language change
 */
 function loadLanguage(lang) {
-    fetch(`language/${lang}.json`)
+    fetch(`/language/${lang}.json`)
       .then(res => res.json())
       .then(translations => {
         document.querySelectorAll('[data-i18n]').forEach(elem => {
