@@ -660,7 +660,7 @@ li.social-links a {
     overflow: hidden;
     position: relative;
     background-position: center center;
-    vertical-align: sub;
+    /* vertical-align: sub; */
     width: 100%;
     z-index: 2;
 }
