@@ -196,7 +196,7 @@ ul, li, ol{
 	list-style: none;
 }
 
-.objektiva ul, li{
+ul.objektiva li{
     margin-left: 50px;
     list-style-type: circle;
 }
