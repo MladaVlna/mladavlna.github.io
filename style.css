@@ -2932,6 +2932,31 @@ select.mobile-device {
 	background: rgba(34, 34, 34, 0.4);
 }
 
+.banner-bg-ctrlaltrights{
+	background: url(Projekty/CTRLBulgaria/logo.jpg);
+	padding: 120px 0;	
+	background-clip: initial;
+	background-color: rgba(0, 0, 0, 0);
+	background-origin: initial;
+	background-position: center 50%;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+	z-index: 0;
+}
+
+.banner-bg-ctrlaltrights::before{
+	content: "";
+	display: inline-block;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: -1;
+	background: rgba(34, 34, 34, 0.4);
+}
+
 .banner-bg-2{
 	background: url(uploads/blog.jpg);
 	padding: 120px 0;	
@@ -3575,3 +3600,24 @@ ul.clean-list li {
     height: auto;
     border-radius: 4px;
   }
+
+  .top-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* medzera medzi fotkami */
+    margin-top: 20px;
+}
+
+.top-row img {
+    max-width: 450px;
+}
+
+.bottom-row {
+    margin-top: 20px;
+}
+
+.bottom-row img {
+    max-width: 450px;
+    display: block;
+    margin: 0 auto; /* vycentrovanie */
+}
