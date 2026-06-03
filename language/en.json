@@ -1,6 +1,6 @@
 {
   "header_title_index": "Mladá vlna - Civic association",
-  "header_title_projects": "Mladá vlna - Projects",
+  "header_title_projects": "Mladá vlna - Opportunities",
   "header_title_about": "Mladá vlna - About us",
   "header_title_blog": "Mladá vlna - Blog",
   "header_title_contact": "Mladá vlna - Contact",
@@ -9,7 +9,7 @@
   "home": "Home",
   "about": "About Us",
   "blog": "Blog",
-  "projects": "Projects",
+  "projects": "Opportunities",
   "contact": "Contact",
   "documents": "Documents",
 
@@ -18,8 +18,8 @@
   "index_about_lead": "We are a civic association focused on supporting educational opportunities and personal development through the Erasmus+ program. Our main mission is to create opportunities for young people, students, youth workers, and the general public to participate in international projects, exchanges, and training.",
   "learn_more": "Learn More",
 
-  "projects_title": "Projects",
-  "projects_subtitle": "Current Projects",
+  "projects_title": "Opportunities",
+  "projects_subtitle": "Current Opportunities",
   "projects_lead": "Interested in our projects? Click Learn More.",
 
   "faq_title": "Frequently Asked Questions",
