@@ -3702,6 +3702,7 @@ ul.clean-list li {
 
 .top-row img {
     max-width: 450px;
+    max-height: 400px;
 }
 
 .bottom-row {
@@ -3714,6 +3715,4 @@ ul.clean-list li {
 .bottom-row img {
     max-width: 450px;
     max-height: 400px;
-    display: block;
-    margin: 0 auto; /* vycentrovanie */
 }
