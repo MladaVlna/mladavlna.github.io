@@ -3706,10 +3706,14 @@ ul.clean-list li {
 
 .bottom-row {
     margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* medzera medzi fotkami */
 }
 
 .bottom-row img {
     max-width: 450px;
+    max-height: 400px;
     display: block;
     margin: 0 auto; /* vycentrovanie */
 }
