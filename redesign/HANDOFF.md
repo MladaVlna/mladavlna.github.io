@@ -12,7 +12,8 @@ A redesign of mladavlna.github.io, the site of Mladá vlna, a Slovak civic assoc
 
 - **Hero:** a scroll-driven 3D scene of a misty Slovak spruce forest full of litter, with a snow-capped mountain behind. Scrolling walks the visitor down a trail and the litter ahead lifts away, leaving the forest clean.
 - **People:** five realistic volunteers walk to real litter pieces, crouch, pick them up with grabber sticks and carry rubbish bags.
-- **A brown bear** roams between the trees in the background.
+- **The walk ends inside a tree:** the last fifth of the scroll turns you to a big spruce beside the end of the trail and walks you into its trunk, with a slight push in; the screen goes dark, and the dark carries on below the hero (`.hero-exit`) and lightens into the first section.
+- **Volunteers wear hi-vis vests** (mostly yellow, one orange) with two reflective bands, **and dark work gloves.**
 - **Style:** green and blue palette, heavy sans-serif headline (Bricolage Grotesque), pill menu, rounded cards, pale green content sections (about, projects, photo strip, how to join, questions, contact).
 
 `redesign/index.html` is an older, rejected first homepage. Leave it unless asked.
@@ -25,7 +26,6 @@ A redesign of mladavlna.github.io, the site of Mladá vlna, a Slovak civic assoc
 | `js/hero-forest.js` | The forest scene: sky, mountain, ground, trees, plants, light, litter, scroll walk, quality control |
 | `js/forest-volunteers.js` | Realistic rigged characters and their walk, idle and crouch behaviour (loads glTF with GLTFLoader + MeshoptDecoder) |
 | `js/forest-people.js` | Simple hand-built figures, used only as a fallback if the character files fail to load |
-| `js/forest-bear.js` | The bear |
 | `models/*.glb` | Five Microsoft Rocketbox characters (MIT licence, text included) as meshopt-compressed glTF, mesh and skeleton only, 150–220 KB each |
 | `models/anims.glb` | All motion in one file: idle, crouch down, stand up, female walk, male walk (bone rotations and hip position only) |
 | `models/*.webp` | Character textures, 512 px WebP (body, head, and hair with alpha) |
@@ -44,10 +44,11 @@ Then open `http://localhost:8123/redesign/home2.html`.
 
 Test switches on that address:
 
-- `?debug` exposes `window.__forest` (litter pieces, people, bear, scene, renderer, per-frame timings, and a `view` hook to move the camera).
+- `?debug` exposes `window.__forest` (litter pieces, people, scene, renderer, per-frame timings, and a `view` hook to move the camera).
 - `?cold` makes every drawing program look new, to imitate a first-ever visit.
 - `?tier=low`, `?tier=medium`, `?tier=high` force a quality tier (otherwise it is picked from the graphics chip, memory, cores and screen width). `window.__forest.tier` and `.gpu` show what was picked.
 - `?ratio=1` pins the drawing resolution and turns off dynamic resolution (for screenshots).
+- With `?debug`, setting `window.__forest.snap = true` makes the camera jump to the scroll position at once (no easing), for screenshots along the walk and the dive.
 - `?still` shows the poster only, as visitors with reduced motion, data saver or a 2G connection see it.
 - With `?debug`, `window.__forest.ms` also reports `ratio` (current resolution), `locked` (true when held at a steady 30 fps), `frame` (smoothed ms per frame) and `refresh` (the screen's pace).
 
@@ -55,17 +56,17 @@ Test switches on that address:
 
 - **Tiers** (top of `hero-forest.js`, `TIERS`): high = everything; medium (Intel, Apple, Mali/Adreno, ≤4 GB or ≤4 cores) = slightly fewer trees, plants and litter, resolution up to 1.25; low (old Intel HD/UHD 5xx–6xx, weak phone chips, software rendering, ≤2 GB) = fewer of everything, no people, no antialiasing, held at 30 fps. Phones narrower than 800 px keep the smaller counts they always had.
 - **Dynamic resolution** replaces the old one-off quality steps: the pixel ratio moves between 0.6 and the tier's maximum in small steps, with a ceiling that drops if a step up didn't hold. If even a reduced picture can't keep up, it locks to a steady 30 fps.
-- **Geometry:** spruces are about 300 triangles each (were about 1,900) and are grouped in 12 m slices so slices behind you or outside the shadow area are skipped. Nothing is built more than 85 m from the walk (the mist hides it). Ferns and grass are sliced the same way.
+- **Geometry:** spruces more than 13 m from the walk are about 300 triangles each (were about 1,900); those closer, and the last tree, use a finer shape (about 900) and are grouped in 12 m slices so slices behind you or outside the shadow area are skipped. Nothing is built more than 85 m from the walk (the mist hides it). Ferns and grass are sliced the same way.
 - **Two passes:** the sky and the mountain are drawn first with their own deep camera; the forest camera stops at 110 m.
-- **Shadows:** only trees, logs, people and the bear cast them; the shadow map is redrawn every other frame and when the sun area steps along (PCF, not soft PCF).
+- **Shadows:** only trees, logs and people cast them; the shadow map is redrawn every other frame and when the sun area steps along (PCF, not soft PCF).
 - **Litter** matrices are only recomputed when the walk moved, a piece is in the air, or a volunteer bagged one.
 - **Loading:** the poster shows at once; the forest fades in over it; the volunteers (about 1.5 MB) load only after the forest is on screen, and not at all on the low tier or a 3G connection.
-- **Measured in headless Chromium (software rendering, so no meaningful fps):** high tier about 0.5 million triangles and about 125 draw calls per frame, down from 1.71 million triangles. Hero download about 1.9 MB of local files (plus three.js from the CDN), down from about 14 MB.
+- **Measured in headless Chromium (software rendering, so no meaningful fps):** high tier about 0.55 million triangles and about 150 draw calls per frame, down from 1.71 million triangles. Hero download about 1.9 MB of local files (plus three.js from the CDN), down from about 14 MB.
 
 ## Known weak spots
 
-- **The bear is hand-built from rounded shapes** and looks blobby up close. The Rocketbox library has no bear; a realistic one needs a model from elsewhere.
-- **Volunteers have no hi-vis vests.** They wear their own clothes.
+- **The vest and gloves are painted in the shader** from which bones move each part of the body (chest and shoulders: vest; hands: gloves), so their edges follow the mesh, not a sewn seam. The hood of a hoodie partly turns vest-coloured. A modelled vest would be cleaner.
+- **The dive into the tree uses a separate, finer bark texture** on a slightly wider trunk; it is painted at start-up like the other textures.
 - **Frame rate after the November optimisation is unmeasured on real hardware.** The cloud has no graphics chip. Check on the owner's laptop (Intel Iris Xe, picked as the medium tier) with `?debug`: watch `__forest.ms.ratio`, `locked` and `frame`.
 - **Tier detection is a guess from the graphics chip name.** Browsers that hide it (some Firefox and Safari settings) fall back to memory and core counts. Wrong guesses can be checked with `?tier=`.
 - **Removing the far trees uncovers a little more of the mountain's base** than before; compare with the old build if it looks different.

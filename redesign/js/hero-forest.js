@@ -3,10 +3,9 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createPeople } from './forest-people.js';
 import { createVolunteers } from './forest-volunteers.js';
-import { createBear } from './forest-bear.js';
 
 const hero = document.querySelector('.hero');
 const stage = document.querySelector('.hero__stage');
@@ -102,6 +101,10 @@ function start() {
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const path = (z) => Math.sin(z * 0.07) * 2.6;                 // the trail winds a little
   const START_Z = 12, END_Z = -26;
+  // The walk takes the first WALK_END of the scroll; the rest turns you to this tree beside the end of the
+  // trail and walks you into its trunk, and the screen goes dark into the section below.
+  const WALK_END = 0.78;
+  const END_TREE = { x: path(END_Z - 7) + 0.9, z: END_Z - 7, radius: 0.4 };
   const REACH = 85;                                               // nothing is built further than this from the walk: the mist hides it all
   const fromWalk = (x, z) => { const wz = Math.min(START_Z, Math.max(END_Z, z)); return Math.hypot(x - path(wz), z - wz); };
   const strokes = (n) => Math.round(n * tier.paint);              // weaker devices paint the textures with fewer strokes
@@ -259,20 +262,21 @@ function start() {
   });
   treeTex.wrapS = treeTex.wrapT = THREE.ClampToEdgeWrapping;
 
-  function spruce(tiers, spread) {
+  // detail: 0 for the forest at large, 1 for the trees beside the trail, where you see them up close.
+  function spruce(tiers, spread, detail = 0) {
     const parts = [];
     const half = (geo, right) => {                                // point this part at its half of the texture
       const uv = geo.attributes.uv;
       for (let i = 0; i < uv.count; i++) uv.setX(i, (right ? 0.5 : 0) + 0.004 + uv.getX(i) * 0.492);
       return geo;
     };
-    const trunk = new THREE.CylinderGeometry(0.07, 0.3, 12.4, 7, 1);
+    const trunk = new THREE.CylinderGeometry(0.07, 0.3, 12.4, detail ? 12 : 7, 1);
     trunk.translate(0, 6.2, 0);
     parts.push(half(trunk, false));
     for (let i = 0; i < tiers; i++) {
       const f = i / (tiers - 1);
       const r = spread * (1 - f * 0.9) + 0.22, h = r * 0.95 + 0.5;
-      const bough = new THREE.ConeGeometry(r, h, 10, 1, true);    // the needle texture carries the detail
+      const bough = new THREE.ConeGeometry(r, h, detail ? 16 : 10, detail ? 2 : 1, true);   // the needle texture carries the detail
       const bp = bough.attributes.position;
       for (let v = 0; v < bp.count; v++) {                        // uneven boughs, drooping at the tips
         const y = bp.getY(v), k = 1 - (y + h / 2) / h;            // 0 at the tip, 1 at the rim
@@ -309,9 +313,11 @@ function start() {
     return meshes;
   }
   const TREES = Math.round(600 * tier.trees);
-  const trunks = [];                                             // [x, z] of every tree, for the bear to walk around
-  [spruce(13, 2.5), spruce(11, 2.0), spruce(15, 2.9)].forEach((geo, v) => {
-    const n = Math.floor(TREES / 3), items = [];
+  const NEAR = 13;                                                // trees this close to the walk get the finer shape
+  const shapes = [[13, 2.5], [11, 2.0], [15, 2.9]];
+  const treeSetup = (mesh) => { mesh.castShadow = true; mesh.receiveShadow = true; mesh.customDepthMaterial = treeDepth; };
+  shapes.forEach(([tiers, spread]) => {
+    const n = Math.floor(TREES / 3), items = [], close = [];
     for (let i = 0; i < n; i++) {
       let x, z;
       do { x = rand(-70, 70); z = rand(-125, 22); } while (Math.abs(x - path(z)) < 3.6);
@@ -319,12 +325,42 @@ function start() {
       quat.setFromEuler(eul.set(rand(-0.03, 0.03), rand(0, 6.28), rand(-0.03, 0.03)));
       const matrix = new THREE.Matrix4().compose(pos.set(x, heightAt(x, z) - 0.25, z), quat, scl.set(s * rand(1.0, 1.3), s, s * rand(1.0, 1.3)));
       const color = new THREE.Color().setHSL(0.4 + rand(-0.03, 0.04), 0.25, rand(0.62, 0.95));
-      if (fromWalk(x, z) > REACH) continue;                     // lost in the mist from anywhere on the walk
-      trunks.push([x, z]);
-      items.push({ x, z, matrix, color });
+      const d = fromWalk(x, z);
+      if (d > REACH) continue;                                  // lost in the mist from anywhere on the walk
+      if (Math.hypot(x - END_TREE.x, z - END_TREE.z) < 4) continue;   // keep the way to the last tree clear
+      (d < NEAR ? close : items).push({ x, z, matrix, color });
     }
-    sliced(geo, treeMat, items, (mesh) => { mesh.castShadow = true; mesh.receiveShadow = true; mesh.customDepthMaterial = treeDepth; });
+    sliced(spruce(tiers, spread, 0), treeMat, items, treeSetup);
+    sliced(spruce(tiers, spread, 1), treeMat, close, treeSetup);
   });
+
+  // ---------- the last tree: the walk ends by stepping into its trunk ----------
+  {
+    const S = 1.4, y0 = heightAt(END_TREE.x, END_TREE.z) - 0.25;
+    const tree = new THREE.InstancedMesh(spruce(15, 2.9, 1), treeMat, 1);
+    tree.setMatrixAt(0, m4.compose(pos.set(END_TREE.x, y0, END_TREE.z), quat.identity(), scl.set(S, S, S)));
+    tree.setColorAt(0, tint.setHSL(0.4, 0.25, 0.8));
+    treeSetup(tree);
+    tree.frustumCulled = false;
+    scene.add(tree);
+    // Up close the bark needs its own finer texture, wrapped round a slightly wider trunk.
+    const bark = draw(256, 512, (g) => {
+      g.fillStyle = '#4a3a2c'; g.fillRect(0, 0, 256, 512);
+      for (let i = 0; i < strokes(1400); i++) {
+        g.strokeStyle = pick(['rgba(24,18,12,0.65)', 'rgba(96,78,58,0.45)', 'rgba(60,70,50,0.35)', 'rgba(130,112,86,0.3)']);
+        g.lineWidth = rand(1, 4);
+        const x = rand(0, 256), y = rand(-40, 512);
+        g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + rand(-4, 4), y + 15, x + rand(-4, 4), y + 30, x + rand(-3, 3), y + rand(20, 60)); g.stroke();
+      }
+    });
+    bark.wrapS = bark.wrapT = THREE.RepeatWrapping; bark.repeat.set(2, 9);
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * S * 1.04, 0.3 * S * 1.04, 12.4 * S, 28, 1, true),
+      new THREE.MeshStandardMaterial({ map: bark, bumpMap: bark, bumpScale: 2.5, roughness: 1, envMapIntensity: 0.1 }));
+    trunk.position.set(END_TREE.x, y0 + 6.2 * S, END_TREE.z);
+    trunk.castShadow = true; trunk.receiveShadow = true;
+    scene.add(trunk);
+    END_TREE.radius = (0.3 - 0.23 * (1.9 / 12.4)) * S * 1.04;     // trunk radius at eye height
+  }
 
   // ---------- ferns and grass ----------
   const fernTex = draw(256, 256, (g) => {
@@ -474,19 +510,22 @@ function start() {
     g.fillStyle = '#c9ced2'; g.beginPath(); g.moveTo(0, 96); g.lineTo(128, 40); g.lineTo(128, 62); g.lineTo(0, 114); g.closePath(); g.fill();
     g.fillStyle = '#3d4246'; for (let i = 0; i < 5; i++) g.fillRect(18, 26 + i * 6, rand(24, 54), 2.5);
   });
-  const bag = new THREE.IcosahedronGeometry(0.24, 2);             // flat-shaded and crumpled: fewer faces read the same
+  // Plastic bags are smooth-shaded spheres (one shared vertex per point), pushed about into folds and creases.
+  const blob = (r, w, h) => { const g = new THREE.SphereGeometry(r, w, h); g.deleteAttribute('uv'); g.deleteAttribute('normal'); return mergeVertices(g); };
+  const crease = (v) => Math.pow(1 - Math.abs(Math.sin(v)), 6);   // 0 mostly, 1 along a narrow fold line
+  const bag = blob(0.24, 18, 12);
   const bagPos = bag.attributes.position;
   for (let i = 0; i < bagPos.count; i++) {                        // a crumpled, half-collapsed carrier bag
     const x = bagPos.getX(i), y = bagPos.getY(i), z = bagPos.getZ(i);
-    const k = 0.72 + 0.3 * Math.sin(x * 19) * Math.cos(z * 17) + 0.16 * Math.sin(y * 31 + x * 11);
+    const k = 0.78 + 0.2 * Math.sin(x * 11) * Math.cos(z * 9) + 0.08 * Math.sin(y * 23 + x * 7) - 0.12 * crease(x * 13 + z * 11) - 0.08 * crease(z * 17 - x * 5);
     bagPos.setXYZ(i, x * k * 1.3, y * k * 0.42, z * k);
   }
   bag.computeVertexNormals();
   // Fly-tipped rubbish: old tyres and full bin bags.
-  const sack = new THREE.IcosahedronGeometry(0.3, 3), sackPos = sack.attributes.position;
+  const sack = blob(0.3, 24, 16), sackPos = sack.attributes.position;
   for (let i = 0; i < sackPos.count; i++) {
-    const x = sackPos.getX(i), y = sackPos.getY(i), z = sackPos.getZ(i);
-    const k = 1 + 0.13 * Math.sin(x * 13 + y * 7) * Math.cos(z * 11) + 0.06 * Math.sin(y * 23 + z * 19);
+    const x = sackPos.getX(i), y = sackPos.getY(i), z = sackPos.getZ(i), a = Math.atan2(z, x);
+    const k = 1 + 0.07 * Math.sin(x * 13 + y * 7) * Math.cos(z * 11) - 0.06 * crease(a * 5 + y * 4) * (0.4 + Math.max(0, y) * 3);   // folds gathering to the knot
     const neck = y > 0.12 ? Math.max(0.14, 1 - (y - 0.12) * 4.6) : 1;   // tied at the top
     sackPos.setXYZ(i, x * k * neck, (y < 0 ? y * 0.8 : y * 1.35) * k, z * k * neck);
   }
@@ -498,7 +537,7 @@ function start() {
     new THREE.MeshStandardMaterial({ map: canMap, roughness: 0.3, metalness: 0.85, envMapIntensity: 1.3 }),
     new THREE.MeshStandardMaterial({ roughness: 0.35, envMapIntensity: 1.1 }),
     new THREE.MeshStandardMaterial({ roughness: 0.6, envMapIntensity: 0.8 }),
-    new THREE.MeshStandardMaterial({ roughness: 0.32, envMapIntensity: 1.2, flatShading: true }),
+    new THREE.MeshStandardMaterial({ roughness: 0.32, envMapIntensity: 1.2 }),
     new THREE.MeshStandardMaterial({ roughness: 0.92, envMapIntensity: 0.25 }),
     new THREE.MeshStandardMaterial({ roughness: 0.28, envMapIntensity: 1.0 }),
   ];
@@ -539,11 +578,11 @@ function start() {
 
   // ---------- volunteers cleaning up ----------
   // With ?debug in the address, tests can read the litter state and move the camera.
-  const debug = params.has('debug') ? (window.__forest = { pieces, people: [], bear: null, view: null, scene, backdrop, renderer, sun, tier: tierName, gpu, settings: tier }) : null;
+  const debug = params.has('debug') ? (window.__forest = { pieces, people: [], view: null, scene, backdrop, renderer, sun, tier: tierName, gpu, settings: tier }) : null;
 
   // Realistic rigged characters; if their files fail to load, the simple hand-built figures stand in.
   // They load only once the forest is on screen, so the first picture isn't held up by their 1.5 MB.
-  const crew = { count: tier.people, path, heightAt, zFrom: 4, zTo: END_Z - 10, pieces, prepare: (o) => prepare(o) };
+  const crew = { count: tier.people, path, heightAt, zFrom: 4, zTo: END_Z + 2, pieces, prepare: (o) => prepare(o) };   // they stay clear of the last tree
   let updatePeople = () => {};
   const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
   const loadPeople = () => {
@@ -553,17 +592,14 @@ function start() {
       .catch((err) => { console.warn('Realistic volunteers unavailable, using simple figures.', err); updatePeople = createPeople(scene, crew); })), 800);
   };
 
-  // ---------- a bear in the background ----------
-  let trailZ = START_Z;                                          // where the visitor currently is on the trail
-  const updateBear = createBear(scene, { path, heightAt, trees: trunks, cameraZ: () => trailZ });
-  if (debug) debug.bear = updateBear.root;
 
   // ---------- layout and input ----------
+  let baseFov = 55;
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = farCamera.aspect = w / h;
-    camera.fov = farCamera.fov = w / h < 0.8 ? 72 : 55;
+    baseFov = camera.fov = farCamera.fov = w / h < 0.8 ? 72 : 55;
     camera.updateProjectionMatrix(); farCamera.updateProjectionMatrix();
   }
   resize();
@@ -646,7 +682,7 @@ function start() {
   let t = 0, walk = 0, stride = 0;
 
   let lastDrawn = 0, frameNo = 0, shadowAt = null, litterWalk = -1;
-  const SHADOW_EVERY = 2;                                          // people and the bear move: their shadows are redrawn every other frame
+  const SHADOW_EVERY = 2;                                          // the people move: their shadows are redrawn every other frame
 
   (function frame(now) {
     requestAnimationFrame(frame);
@@ -665,14 +701,32 @@ function start() {
     const target = span > 0 ? Math.min(1, Math.max(0, window.scrollY / span)) : 0;
     const before = walk;
     walk += (target - walk) * 0.08;
+    if (debug && debug.snap) walk = target;                       // ?debug: tests can skip the easing
     stride += Math.abs(walk - before) * 70;                       // footsteps only while moving
     stage.style.setProperty('--p', walk.toFixed(4));
 
-    const cz = START_Z + (END_Z - START_Z) * walk;
+    const along = Math.min(1, walk / WALK_END);                    // down the trail
+    const dive = Math.max(0, (walk - WALK_END) / (1 - WALK_END));  // then into the last tree
+    const cz = START_Z + (END_Z - START_Z) * along;
     lx += (px - lx) * 0.04; ly += (py - ly) * 0.04;
+    const calm = 1 - sm(0, 0.5, dive);                              // the pointer sway fades as you turn to the tree
     camera.position.set(path(cz) + Math.sin(stride * 0.5) * 0.035, 1.7 + Math.abs(Math.sin(stride)) * 0.045 + Math.sin(t * 0.8) * 0.012, cz);
-    look.set(path(cz - 12) + lx * 5, 2.3 - ly * 2.5, cz - 12);
+    look.set(path(cz - 12) + lx * 5 * calm, 2.3 - ly * 2.5 * calm, cz - 12);
+    if (dive > 0) {
+      // Turn to the trunk first, then walk up to it; stop a hand's width from the bark.
+      const dx = camera.position.x - END_TREE.x, dz = camera.position.z - END_TREE.z, d = Math.hypot(dx, dz) || 1;
+      const stopAt = END_TREE.radius + 0.16;
+      pos.set(END_TREE.x + dx / d * stopAt, 1.75, END_TREE.z + dz / d * stopAt);
+      camera.position.lerp(pos, sm(0.05, 0.82, dive));
+      look.lerp(pos.set(END_TREE.x, 1.75, END_TREE.z), sm(0, 0.4, dive));
+    }
     camera.lookAt(look);
+    // At the bark, a slight push in, as if stepping into the tree, while the picture goes dark.
+    const fov = baseFov - sm(0.7, 1, dive) * baseFov * 0.3;
+    if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = farCamera.fov = fov; camera.updateProjectionMatrix(); farCamera.updateProjectionMatrix(); }
+    const dark = sm(0.74, 0.98, dive);
+    stage.style.setProperty('--dark', dark.toFixed(3));
+    if (dark > 0.995 && warm.shown) return;                        // all black: nothing to draw until you scroll back
 
     // The shadow area follows you down the trail, in whole steps so the shadows don't shimmer.
     const sx = Math.round(camera.position.x / 2) * 2, sz = Math.round((cz - 16) / 2) * 2;
@@ -719,10 +773,7 @@ function start() {
     fall.needsUpdate = true;
     needles.position.z = cz - START_Z;
 
-    trailZ = cz;
-    const T1 = performance.now();
-    updateBear(t, reduced ? 0 : dt);
-    const T2 = performance.now();
+    const T1 = performance.now(), T2 = T1;
     updatePeople(t, reduced ? 0 : dt);
     const T3 = performance.now();
     if (debug && debug.view) debug.view(camera);                  // ?debug: lets a test move the camera
@@ -737,7 +788,7 @@ function start() {
     if (!warmUp(performance.now())) return;
     if (debug) {
       const T4 = performance.now();
-      debug.ms = { scene: T1 - T0, bear: T2 - T1, people: T3 - T2, draw: T4 - T3, calls: renderer.info.render.calls + farCalls, triangles: renderer.info.render.triangles + farTris,
+      debug.ms = { scene: T1 - T0, people: T3 - T2, draw: T4 - T3, calls: renderer.info.render.calls + farCalls, triangles: renderer.info.render.triangles + farTris,
         ratio: dyn.ratio, locked: dyn.locked, frame: Math.round(dyn.ema * 10) / 10, refresh: Math.round(dyn.refresh * 10) / 10 };
     }
     pace(now);

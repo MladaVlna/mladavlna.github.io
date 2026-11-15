@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const rand = (a, b) => a + Math.random() * (b - a);
 const MODELS = 'models/';
@@ -43,6 +44,51 @@ function fitClip(clip, name, vertical, heightScale, pin) {
 
 const hipTrack = (clip) => clip.tracks.find((x) => x.name === 'Bip01.position');
 
+// Hi-vis vests and work gloves, painted over the clothes in the shader. Which part of the body a vertex
+// belongs to comes from the bones that move it: chest and shoulders get the vest, hands and fingers the
+// gloves. gear = (vest amount, glove amount, height up the vest from 0 at the hem to 1 at the collar).
+const TORSO = /^Bip01_(Spine\d?|[LR]_Clavicle)$/, HAND = /^Bip01_[LR]_(Hand|Finger)/;
+const GET = ['getX', 'getY', 'getZ', 'getW'];
+const comp = (attr, i, k) => attr[GET[k]](i);       // works for interleaved (compressed) attributes too
+function addGear(mesh) {
+  const g = mesh.geometry;
+  if (g.attributes.gear) return;
+  const idx = g.attributes.skinIndex, wt = g.attributes.skinWeight, ps = g.attributes.position, bones = mesh.skeleton.bones;
+  const gear = new Float32Array(ps.count * 3);
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < ps.count; i++) {
+    let vest = 0, glove = 0;
+    for (let k = 0; k < 4; k++) {
+      const w = comp(wt, i, k); if (!w) continue;
+      const name = bones[Math.round(comp(idx, i, k))]?.name || '';
+      if (TORSO.test(name)) vest += w; else if (HAND.test(name)) glove += w;
+    }
+    gear[i * 3] = vest; gear[i * 3 + 1] = glove;
+    if (vest > 0.5) { lo = Math.min(lo, ps.getY(i)); hi = Math.max(hi, ps.getY(i)); }
+  }
+  for (let i = 0; i < ps.count; i++) gear[i * 3 + 2] = (ps.getY(i) - lo) / (hi - lo || 1);
+  g.setAttribute('gear', new THREE.BufferAttribute(gear, 3));
+}
+function wearGear(material, vestColor) {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uVest = { value: new THREE.Color(vestColor) };
+    shader.uniforms.uGlove = { value: new THREE.Color(0x2b3530) };
+    shader.vertexShader = 'attribute vec3 gear;\nvarying vec3 vGear;\n' + shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vGear = gear;');
+    shader.fragmentShader = 'uniform vec3 uVest;\nuniform vec3 uGlove;\nvarying vec3 vGear;\n' + shader.fragmentShader
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        // Keep a little of the folds and shading of the clothes underneath.
+        float folds = mix(1.0, 0.62 + 0.9 * dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)), 0.4);
+        float vest = smoothstep(0.42, 0.58, vGear.x);
+        float glove = smoothstep(0.42, 0.58, vGear.y);
+        float band = (step(0.12, vGear.z) - step(0.2, vGear.z)) + (step(0.34, vGear.z) - step(0.42, vGear.z));   // two reflective strips
+        vec3 vestColor = mix(uVest, vec3(0.62, 0.66, 0.68), band) * clamp(folds, 0.6, 1.15);
+        diffuseColor.rgb = mix(diffuseColor.rgb, vestColor, vest);
+        diffuseColor.rgb = mix(diffuseColor.rgb, uGlove * clamp(folds, 0.7, 1.1), glove);`)
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        totalEmissiveRadiance += vestColor * vest * (1.0 - band) * 0.18;   // fluorescent cloth stays bright in the shade`);
+  };
+}
+
 async function loadCast(howMany) {
   const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const textures = new THREE.TextureLoader();
@@ -55,10 +101,10 @@ async function loadCast(howMany) {
   const shared = { idle: clip('idle'), down: clip('down'), up: clip('up') };
 
   const cast = [];
-  for (const who of CAST.slice(0, howMany)) { cast.push(await one(who)); await breathe(); }
+  for (const [i, who] of CAST.slice(0, howMany).entries()) { cast.push(await one(who, i % 3 === 2 ? 0xff6a1a : 0xd8f52a)); await breathe(); }   // mostly yellow, some orange
   return cast;
 
-  async function one(who) {
+  async function one(who, vestColor) {
     const model = (await gltf.loadAsync(MODELS + who.file + '.glb')).scene;
     model.traverse((o) => {
       if (!o.isMesh) return;
@@ -67,7 +113,9 @@ async function loadCast(howMany) {
         if (n.includes('opacity') && !who.hair) return new THREE.MeshBasicMaterial({ visible: false });
         if (n.includes('opacity')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_opacity_color.webp'), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.85, envMapIntensity: 0.25 });
         if (n.includes('head')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_head_color.webp'), roughness: 0.72, envMapIntensity: 0.25 });
-        return new THREE.MeshStandardMaterial({ map: image(who.tex + '_body_color.webp'), roughness: 0.88, envMapIntensity: 0.25 });
+        const body = new THREE.MeshStandardMaterial({ map: image(who.tex + '_body_color.webp'), roughness: 0.88, envMapIntensity: 0.25 });
+        if (o.isSkinnedMesh) { addGear(o); wearGear(body, vestColor); }
+        return body;
       });
       o.material = Array.isArray(o.material) ? fitted : fitted[0];
       o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
@@ -132,10 +180,14 @@ function buildKit() {
   found.rotation.z = Math.PI / 2; found.visible = false;
 
   // Rubbish bag: a lumpy, half-full sack gathered at the top, hanging from the left hand.
-  const geo = new THREE.IcosahedronGeometry(0.2, 3), bp = geo.attributes.position;
+  let geo = new THREE.SphereGeometry(0.2, 20, 14);
+  geo.deleteAttribute('uv'); geo.deleteAttribute('normal');
+  geo = mergeVertices(geo);                                         // one vertex per point, so the plastic shades smoothly
+  const bp = geo.attributes.position;
   for (let i = 0; i < bp.count; i++) {
-    const x = bp.getX(i), y = bp.getY(i), z = bp.getZ(i);
-    const k = 1 + 0.14 * Math.sin(x * 17 + y * 9) * Math.cos(z * 13) + 0.06 * Math.sin(y * 31 + z * 23);
+    const x = bp.getX(i), y = bp.getY(i), z = bp.getZ(i), a = Math.atan2(z, x);
+    const fold = Math.pow(1 - Math.abs(Math.sin(a * 4 + y * 9)), 6);   // soft folds running up to the knot
+    const k = 1 + 0.08 * Math.sin(x * 17 + y * 9) * Math.cos(z * 13) - 0.07 * fold;
     const neck = y > 0 ? Math.max(0.16, 1 - y * 3.3) : 1;
     bp.setXYZ(i, x * k * neck, y * 1.75 * k, z * k * 0.85 * neck);
   }

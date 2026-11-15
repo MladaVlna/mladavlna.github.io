@@ -1,6 +1,7 @@
 /* Second homepage: bold, friendly and clean. Navy hero with one 3D object, then warm cream sections. */
 :root {
   --navy: #0a211c;          /* deep forest: hero, closing band, footer */
+  --night: #040a08;         /* inside the tree trunk, where the hero walk ends */
   --ink: #0c231d;
   --cream: #f1f6ef;
   --tint: #e1ecdf;
@@ -58,10 +59,12 @@ h3 { font-size: 1.4rem; letter-spacing: -0.02em; line-height: 1.1; }
 .menu-btn { display: none; font: 600 0.92rem var(--sans); color: #fff; background: rgba(8, 30, 25, 0.88); border: 1px solid rgba(255, 255, 255, 0.12); padding: 12px 18px; border-radius: 999px; cursor: pointer; }
 
 /* ---------- hero ---------- */
-/* The hero is taller than the screen; its stage stays pinned while the scroll walks the camera down the trail. */
-.hero { position: relative; height: 260vh; }
+/* The hero is taller than the screen; its stage stays pinned while the scroll walks the camera down the trail,
+   then into the trunk of the last tree, where the stage goes dark (--dark, 0 to 1) and hands over to the page. */
+.hero { position: relative; height: 330vh; }
 .hero__stage {
   --p: 0;
+  --dark: 0;
   position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 540px; overflow: hidden; color: #fff;
   background: linear-gradient(#cfeee6 0%, #8fc7c2 48%, #2c6a55 60%, var(--navy) 100%);
 }
@@ -83,6 +86,12 @@ h3 { font-size: 1.4rem; letter-spacing: -0.02em; line-height: 1.1; }
     linear-gradient(90deg, rgba(6, 24, 19, 0.55) 0%, transparent 55%),
     linear-gradient(180deg, rgba(6, 24, 19, 0.4) 0%, transparent 20%);
 }
+.hero__dark { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--night); opacity: var(--dark); }
+.hero__copy, .hero__hint, .hero .eu { opacity: calc(1 - var(--dark) * 1.6); }
+/* The dark carries on below the hero and lightens into the first section. */
+.hero-exit { height: 55vh; background: linear-gradient(var(--night) 0%, var(--night) 10%, #12271f 40%, #8fa898 78%, var(--cream) 100%); }
+/* Visitors who get the still picture instead of the 3D have nothing to scroll through. */
+.hero-still .hero { height: auto; }
 .hero__copy { position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: clamp(96px, 15vh, 150px); max-width: 760px; }
 .hero__copy .mono { color: var(--sun); margin-bottom: 20px; }
 h1 { font-size: clamp(3.8rem, 12vw, 11rem); letter-spacing: -0.05em; line-height: 0.84; }
