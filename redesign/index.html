@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mladá vlna – občianske združenie</title>
+  <meta name="description" content="Mladá vlna o. z. pomáha mladým zapojiť sa do Erasmus+ výmen po celej Európe.">
+  <meta name="theme-color" content="#050d18">
+  <link rel="icon" href="../images/logos/logo_small.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Hanken+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#about" data-i18n="skip">Preskočiť na obsah</a>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">Mladá vlna</a>
+    <nav class="nav" aria-label="Hlavná navigácia">
+      <a href="#about" data-i18n="nav_about">O nás</a>
+      <a href="#week" data-i18n="nav_week">Výmena</a>
+      <a href="#projects" data-i18n="nav_calls">Projekty</a>
+      <a href="#questions" data-i18n="nav_faq">Otázky</a>
+      <a href="#contact" data-i18n="nav_contact">Kontakt</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Jazyk / Language">
+      <button type="button" data-lang="sk" aria-pressed="true">SK</button>
+      <span aria-hidden="true">/</span>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero__stage">
+        <canvas class="hero__canvas" aria-hidden="true"></canvas>
+        <div class="hero__shade" aria-hidden="true"></div>
+
+        <div class="hero__copy">
+          <p class="kicker" data-i18n="kicker">Mladá vlna · občianske združenie · Erasmus+</p>
+          <h1 class="hero__lines">
+            <span class="line line--a" data-i18n="line_a">Toto niekto zahodil.</span>
+            <span class="line line--b" data-i18n="line_b">Mladí ľudia z toho postavili mesto.</span>
+          </h1>
+          <div class="hero__rest">
+            <p class="lead" data-i18n="lead">Mládežnícke výmeny po celej Európe. Zadarmo, pre každého od 13 do 30 rokov.</p>
+            <div class="cta">
+              <a class="btn" href="#projects" data-i18n="cta_calls">Projekty a výzvy</a>
+              <a class="link" href="#week" data-i18n="cta_how">Ako vyzerá výmena</a>
+            </div>
+          </div>
+        </div>
+
+        <img class="eu" src="../images/eu-bigger.png" alt="Co-funded by the European Union" width="250" height="65">
+        <p class="hero__scroll" data-i18n="scroll">Posúvaj nadol</p>
+        <p class="hero__credit">Foto: Hush Naidoo Jade Photography / Unsplash · ReToy, Košice 2025</p>
+      </div>
+    </section>
+
+    <section class="about wrap" id="about">
+      <p class="label" data-i18n="about_label">O nás</p>
+      <p class="statement reveal" data-i18n="about_statement">Sme občianske združenie z východného Slovenska. Berieme mladých ľudí do Európy a Európu privážame do <em>Košíc.</em></p>
+      <div class="about__cols reveal">
+        <p data-i18n="about_p1">Cez program Erasmus+ vytvárame príležitosti pre mladých ľudí, študentov, pracovníkov s mládežou aj širokú verejnosť, aby sa zapojili do medzinárodných projektov, výmen a školení.</p>
+        <p data-i18n="about_p2">Veríme v silu vzdelávania a medzikultúrnej spolupráce. Z výmeny si odnesieš lepšiu angličtinu, nové zručnosti a priateľov naprieč Európou.</p>
+      </div>
+    </section>
+
+    <section class="week" id="week">
+      <div class="wrap">
+        <p class="label" data-i18n="week_label">Výmena</p>
+        <h2 class="reveal" data-i18n="week_title">Osem dní, deň po <em>dni.</em></h2>
+        <p class="week__intro reveal" data-i18n="week_intro">Výmena trvá osem až deväť dní. Každá je iná, ale takto zvyčajne plynie.</p>
+
+        <ol class="days">
+          <li class="day" data-tone="#0b1a2c">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">01</span>
+              <h3 data-i18n="d1_t">Príchod</h3>
+              <p data-i18n="d1_p">Prichádzaš so svojím národným tímom. Ľudí z ostatných krajín ešte nepoznáš.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Populism101/image3.jpeg" alt="" loading="lazy"><figcaption>Populism 101 · Orahovica</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#10283f">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">02</span>
+              <h3 data-i18n="d2_t">Ľady sa lámu</h3>
+              <p data-i18n="d2_p">Zoznamovacie hry a tímové úlohy. Do večera poznáš mená a angličtina ide ľahšie, než si čakal.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Retoy/image4.jpeg" alt="" loading="lazy"><figcaption>ReToy · Košice</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#16334c">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">03</span>
+              <h3 data-i18n="d3_t">Von, medzi ľudí</h3>
+              <p data-i18n="d3_p">Program sa nedeje len v miestnosti. Na výmenách ReToy a The Masters of Puppets sme čistili okolie a z nazbieraného odpadu tvorili.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/MasterofPuppets/image2.jpg" alt="" loading="lazy"><figcaption>The Masters of Puppets · Rymanów</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#173246">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">04</span>
+              <h3 data-i18n="d4_t">Tvoríš</h3>
+              <p data-i18n="d4_p">Bábky, model mesta, kampaň alebo simulácia. V medzinárodnom tíme vzniká niečo, čo ráno ešte neexistovalo.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Retoy/image14.jpeg" alt="" loading="lazy"><figcaption>ReToy · Košice</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#2a1f1d">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">05</span>
+              <h3 data-i18n="d5_t">Medzikultúrny večer</h3>
+              <p data-i18n="d5_p">Každá krajina prinesie jedlo, hudbu a tance. Na tieto večery účastníci spomínajú najdlhšie.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Retoy/image16.jpeg" alt="" loading="lazy"><figcaption>ReToy · Košice</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#10283f">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">06</span>
+              <h3 data-i18n="d6_t">Nové nástroje</h3>
+              <p data-i18n="d6_p">3D tlač, umelá inteligencia, overovanie faktov. Skúšaš si veci, ku ktorým sa bežne nedostaneš.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Retoy/image1.jpg" alt="" loading="lazy"><figcaption>ReToy · Košice</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#1a2b3b">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">07</span>
+              <h3 data-i18n="d7_t">Pre ľudí okolo</h3>
+              <p data-i18n="d7_p">Výsledok nezostane v šuplíku. Hrali sme bábkové divadlo pre deti v škôlke a darovali hračky aj model mesta.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/MasterofPuppets/image1.jpeg" alt="" loading="lazy"><figcaption>The Masters of Puppets · Rymanów</figcaption></figure>
+          </li>
+          <li class="day" data-tone="#050d18">
+            <div class="day__text reveal">
+              <span class="day__no" aria-hidden="true">08</span>
+              <h3 data-i18n="d8_t">Rozlúčka</h3>
+              <p data-i18n="d8_p">Lúči sa ťažšie, než si čakal. Domov ideš s priateľmi z celej Európy a s odvahou ozvať sa.</p>
+            </div>
+            <figure class="day__photo reveal"><img src="../Projekty/Populism101/image1.jpeg" alt="" loading="lazy"><figcaption>Populism 101 · Orahovica</figcaption></figure>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="projects wrap" id="projects">
+      <p class="label" data-i18n="proj_label">Projekty</p>
+      <h2 class="reveal" data-i18n="proj_title">Kam nás vlna <em>zaniesla.</em></h2>
+      <p class="projects__open reveal"><span data-i18n="proj_open">Momentálne nie je otvorená žiadna výzva. Sleduj náš</span> <a href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram</a>.</p>
+
+      <ul class="plist">
+        <li><a href="../Projekty/Populism101/populism.html" data-img="../Projekty/Populism101/image1.jpeg">
+          <span class="plist__name">Populism 101</span>
+          <span class="plist__place" data-i18n="p1_place">Orahovica, Chorvátsko</span>
+          <span class="plist__date">14.–22. 7. 2026</span>
+        </a></li>
+        <li><a href="../Projekty/MasterofPuppets/masterofpuppets.html" data-img="../Projekty/MasterofPuppets/image3.jpg">
+          <span class="plist__name">The Masters of Puppets</span>
+          <span class="plist__place" data-i18n="p2_place">Rymanów, Poľsko</span>
+          <span class="plist__date">11.–19. 3. 2026</span>
+        </a></li>
+        <li><a href="../Projekty/Smart&amp;Sustainable/sustainable.html" data-img="../Projekty/Smart&amp;Sustainable/image3.jpg">
+          <span class="plist__name">Smart &amp; Sustainable</span>
+          <span class="plist__place" data-i18n="p3_place">Košice, Slovensko</span>
+          <span class="plist__date">27. 12. 2025 – 4. 1. 2026</span>
+        </a></li>
+        <li><a href="../Projekty/Retoy/retoy.html" data-img="../Projekty/Retoy/image1.jpg">
+          <span class="plist__name">ReToy</span>
+          <span class="plist__place" data-i18n="p4_place">Košice, Slovensko</span>
+          <span class="plist__date">8.–16. 9. 2025</span>
+        </a></li>
+        <li><a href="../Projekty/CTRLBulgaria/ctrlaltrights.html" data-img="../Projekty/CTRLBulgaria/photo1.jpg">
+          <span class="plist__name">CTRL + ALT + RIGHTS</span>
+          <span class="plist__place" data-i18n="p5_place">Stara Zagora, Bulharsko</span>
+          <span class="plist__date">14.–21. 6. 2025</span>
+        </a></li>
+      </ul>
+      <img class="plist__preview" alt="" aria-hidden="true">
+    </section>
+
+    <section class="faq wrap" id="questions">
+      <p class="label" data-i18n="faq_label">Otázky</p>
+      <h2 class="reveal" data-i18n="faq_title">Na čo sa ľudia pýtajú <em>najčastejšie.</em></h2>
+
+      <div class="faq__list">
+        <details>
+          <summary data-i18n="q1">Nie je to náhodou podvod?</summary>
+          <p><span data-i18n="a1">Nie. Všetky projekty financuje program Erasmus+ pod dozorom Európskej komisie. Zoznam schválených projektov nájdeš na</span> <a href="https://erasmus-plus.ec.europa.eu/projects/" target="_blank" rel="noopener noreferrer" data-i18n="a1_link">stránke Európskej komisie</a>.</p>
+        </details>
+        <details>
+          <summary data-i18n="q2">Koľko budem platiť?</summary>
+          <p data-i18n="a2">Nič. Ubytovanie a stravu na mieste hradí grant Európskej únie. Cestovné sa do určitej výšky, podľa vzdialenosti, prepláca po skončení projektu, zvyčajne do jedného mesiaca.</p>
+        </details>
+        <details>
+          <summary data-i18n="q3">Musím byť študent?</summary>
+          <p data-i18n="a3">Nie. Na mládežnícku výmenu stačí vek 13 až 30 rokov, vedúci tímu môže byť starší. Na tréningový kurz stačí vek 18 a viac. Potvrdenie o štúdiu ani o zamestnaní netreba.</p>
+        </details>
+        <details>
+          <summary data-i18n="q4">Neviem dobre po anglicky. Je to problém?</summary>
+          <p data-i18n="a4">Vôbec nie. Cestuješ v národnom tíme, takže máš vždy pri sebe Slovákov, ktorí ti pomôžu prekladať aj vyjadriť sa. A angličtinu si precvičíš.</p>
+        </details>
+        <details>
+          <summary data-i18n="q5">Ako sa prihlásim?</summary>
+          <p data-i18n="a5">Vyplníš prihlasovací formulár pri projekte, ktorý ťa zaujíma. Po zvážení všetkých kandidátov sa ti ozveme.</p>
+        </details>
+        <details>
+          <summary data-i18n="q6">Kde nájdem podrobnosti o projekte?</summary>
+          <p data-i18n="a6">V takzvanom infopacku. Nájdeš ho na stránke každého projektu.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wrap" id="contact">
+    <p class="footer__big"><a href="mailto:contact@mladavlna.org">contact@mladavlna.org</a></p>
+    <div class="footer__cols">
+      <p>Mladá vlna, o. z.<br>Tomášikova 22<br>080 01 Prešov<br><span data-i18n="country">Slovenská republika</span></p>
+      <p><a href="tel:+421918208346">+421 918 208 346</a><br><a href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram</a><br><a href="../documents.html" data-i18n="docs">Dokumenty</a></p>
+      <img class="eu eu--footer" src="../images/eu-bigger.png" alt="Co-funded by the European Union" width="250" height="65">
+    </div>
+    <p class="footer__note">© 2026 Mladá vlna</p>
+  </footer>
+
+  <script type="module" src="js/hero.js"></script>
+  <script src="js/site.js" defer></script>
+</body>
+</html>
