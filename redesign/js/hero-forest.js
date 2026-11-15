@@ -11,44 +11,100 @@ import { createBear } from './forest-bear.js';
 const hero = document.querySelector('.hero');
 const stage = document.querySelector('.hero__stage');
 const canvas = document.querySelector('.hero__canvas');
+const params = new URLSearchParams(location.search);
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const net = navigator.connection || {};
+// Visitors who asked for less motion or less data, or who are on a very slow connection, get the still
+// picture (the poster in the page) and no 3D at all. ?still in the address shows that version.
+const still = reduced || net.saveData || /^(slow-2g|2g)$/.test(net.effectiveType || '') || params.has('still');
+const slowNet = net.effectiveType === '3g';                     // the forest, but not the 1.5 MB of people
 
-let renderer;
-try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); }
-catch (e) { document.documentElement.classList.add('no-webgl'); }
+// How much the device can draw, decided once before anything is built. ?tier=low|medium|high overrides it.
+const TIERS = {
+  high: { trees: 1, ferns: 2200, grass: 3600, litter: 1150, stones: 70, shadow: 2048, ratio: 1.5, people: 5, paint: 1, aa: true, mists: 16, rays: 11, pollen: 1100, needles: 260, lock30: false },
+  medium: { trees: 0.85, ferns: 1700, grass: 2600, litter: 900, stones: 60, shadow: 2048, ratio: 1.25, people: 5, paint: 1, aa: true, mists: 14, rays: 10, pollen: 800, needles: 200, lock30: false },
+  low: { trees: 0.6, ferns: 700, grass: 900, litter: 480, stones: 40, shadow: 1024, ratio: 1, people: 0, paint: 0.4, aa: false, mists: 9, rays: 7, pollen: 400, needles: 100, lock30: true },
+};
+function gpuName() {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl');
+    if (!gl) return null;
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+    const lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    return name;
+  } catch (e) { return null; }
+}
+function pickTier(gpu) {
+  if (TIERS[params.get('tier')]) return params.get('tier');
+  const g = (gpu || '').toLowerCase();
+  const mem = navigator.deviceMemory || 8, cores = navigator.hardwareConcurrency || 4;
+  const narrow = Math.min(window.innerWidth, window.screen.width || window.innerWidth) < 800;
+  let tier = 'high';
+  if (/swiftshader|llvmpipe|software|basic render|mali-[t4]|mali-g[1-5]\d\b|adreno[^0-9]*[1-5]\d\d\b|powervr|\bhd graphics\b|uhd graphics [56]\d\d/.test(g)) tier = 'low';
+  else if (/intel|iris|mali|adreno|apple|qualcomm|mobile|radeon\(tm\) graphics|vega \d\b/.test(g)) tier = 'medium';
+  if (mem <= 2 || cores <= 2) tier = 'low';
+  else if ((mem <= 4 || cores <= 4 || narrow) && tier === 'high') tier = 'medium';
+  return tier;
+}
+
+let renderer, tierName, gpu;
+if (still) document.documentElement.classList.add('hero-still');
+else {
+  gpu = gpuName();
+  tierName = pickTier(gpu);
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: TIERS[tierName].aa, powerPreference: 'high-performance' }); }
+  catch (e) { document.documentElement.classList.add('no-webgl'); }
+}
 if (renderer) start();
 
 function start() {
   // ?cold in the address makes every drawing program look new, to test a first-ever visit.
-  if (new URLSearchParams(location.search).has('cold')) THREE.ShaderChunk.common += '\n// cold ' + Date.now() + '\n';
+  if (params.has('cold')) THREE.ShaderChunk.common += '\n// cold ' + Date.now() + '\n';
   const small = window.innerWidth < 800;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.5));
+  const tier = { ...TIERS[tierName] };
+  if (small) {                                                    // phones: the counts the scene always used there
+    Object.assign(tier, { trees: Math.min(tier.trees, 0.5), ferns: Math.min(tier.ferns, 900), grass: Math.min(tier.grass, 1400), litter: Math.min(tier.litter, 520),
+      shadow: 1024, ratio: Math.min(tier.ratio, 1.25), people: Math.min(tier.people, 3), pollen: Math.min(tier.pollen, 500), needles: Math.min(tier.needles, 120) });
+  }
+  if (slowNet) tier.people = 0;
+  const fixedRatio = parseFloat(params.get('ratio'));              // ?ratio=1 pins the resolution (tests, screenshots)
+  renderer.setPixelRatio(fixedRatio > 0 ? fixedRatio : Math.min(window.devicePixelRatio, tier.ratio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.34;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.autoUpdate = false;                          // redrawn only when something casting a shadow has moved (see the loop)
+  renderer.autoClear = false;                                     // two passes per frame: far backdrop, then the forest
 
   const MIST = 0x8fc7c2;
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(MIST, 0.03);
   scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.background = skyTexture();
+  // The sky and the mountains sit hundreds of metres away, far past where the mist hides the forest. They are
+  // drawn first in a pass of their own with a deep camera, so the forest camera can stop at 110 m.
+  const backdrop = new THREE.Scene();
+  backdrop.background = skyTexture();
 
   scene.add(new THREE.HemisphereLight(0xd4f1ea, 0x1c3a2a, 1.5));
   // A low morning sun behind the trees: long shadows fall towards you across the trail.
   const SUN = new THREE.Vector3(18, 26, -40);
   const sun = new THREE.DirectionalLight(0xfff0c2, 3.0);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+  sun.shadow.mapSize.set(tier.shadow, tier.shadow);
   Object.assign(sun.shadow.camera, { left: -42, right: 42, top: 42, bottom: -42, near: 1, far: 150 });
   sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.35;
   scene.add(sun, sun.target);
 
-  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1200);
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 110);
+  const farCamera = new THREE.PerspectiveCamera(55, 1, 50, 1200);
   const rand = (a, b) => a + Math.random() * (b - a);
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const path = (z) => Math.sin(z * 0.07) * 2.6;                 // the trail winds a little
   const START_Z = 12, END_Z = -26;
+  const REACH = 85;                                               // nothing is built further than this from the walk: the mist hides it all
+  const fromWalk = (x, z) => { const wz = Math.min(START_Z, Math.max(END_Z, z)); return Math.hypot(x - path(wz), z - wz); };
+  const strokes = (n) => Math.round(n * tier.paint);              // weaker devices paint the textures with fewer strokes
   const uTime = { value: 0 };
   const m4 = new THREE.Matrix4(), pos = new THREE.Vector3(), quat = new THREE.Quaternion(), scl = new THREE.Vector3(), eul = new THREE.Euler();
   const tint = new THREE.Color();
@@ -117,7 +173,7 @@ function start() {
       }
       return h * (0.72 + 0.5 * ridged(x * 0.011, z * 0.011)) + ridged(x * 0.03, z * 0.03) * 7;
     };
-    const geo = new THREE.PlaneGeometry(1100, 360, 300, 110);
+    const geo = new THREE.PlaneGeometry(1100, 360, 200, 72);
     geo.rotateX(-Math.PI / 2);
     geo.translate(0, 0, -350);
     const mp = geo.attributes.position;
@@ -140,17 +196,17 @@ function start() {
     geo.setAttribute('color', new THREE.BufferAttribute(mcol, 3));
     const mountain = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, fog: false }));
     mountain.position.y = -6;
-    scene.add(mountain);
+    backdrop.add(mountain);
   }
 
   // ---------- forest floor: moss, fallen needles and a worn trail ----------
   const floorTex = draw(512, 512, (g, w, h) => {
     g.fillStyle = '#5c7a52'; g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 900; i++) {                               // patches of moss and shade
+    for (let i = 0; i < strokes(900); i++) {                      // patches of moss and shade
       g.fillStyle = pick(['rgba(40,84,48,0.35)', 'rgba(92,132,70,0.3)', 'rgba(28,56,38,0.4)', 'rgba(120,150,84,0.22)']);
       g.beginPath(); g.ellipse(rand(0, w), rand(0, h), rand(6, 34), rand(5, 22), rand(0, 3.14), 0, 6.28); g.fill();
     }
-    for (let i = 0; i < 5200; i++) {                              // fallen needles and twigs
+    for (let i = 0; i < strokes(5200); i++) {                     // fallen needles and twigs
       g.strokeStyle = pick(['rgba(96,70,38,0.75)', 'rgba(140,104,58,0.6)', 'rgba(52,40,26,0.7)', 'rgba(176,150,96,0.45)']);
       g.lineWidth = rand(0.6, 1.5);
       const x = rand(0, w), y = rand(0, h), a = rand(0, 6.28), l = rand(4, 13);
@@ -182,14 +238,14 @@ function start() {
   // One texture holds bark (left half) and a spray of needles with a ragged lower edge (right half).
   const treeTex = draw(512, 256, (g) => {
     g.fillStyle = '#4a3a2c'; g.fillRect(0, 0, 256, 256);
-    for (let i = 0; i < 520; i++) {                               // furrowed bark
+    for (let i = 0; i < strokes(520); i++) {                      // furrowed bark
       g.strokeStyle = pick(['rgba(24,18,12,0.6)', 'rgba(96,78,58,0.45)', 'rgba(60,70,50,0.35)']);
       g.lineWidth = rand(1, 3.5);
       const x = rand(0, 256), y = rand(0, 256);
       g.beginPath(); g.moveTo(x, y); g.lineTo(x + rand(-3, 3), y + rand(10, 44)); g.stroke();
     }
     g.fillStyle = '#1c4a34'; g.fillRect(256, 0, 256, 256);
-    for (let i = 0; i < 2600; i++) {                              // needles hanging down the bough
+    for (let i = 0; i < strokes(2600); i++) {                     // needles hanging down the bough
       g.strokeStyle = pick(['rgba(12,40,28,0.7)', 'rgba(44,104,70,0.6)', 'rgba(70,134,88,0.4)', 'rgba(8,26,20,0.6)']);
       g.lineWidth = rand(0.8, 2);
       const x = rand(256, 512), y = rand(0, 256);
@@ -210,13 +266,13 @@ function start() {
       for (let i = 0; i < uv.count; i++) uv.setX(i, (right ? 0.5 : 0) + 0.004 + uv.getX(i) * 0.492);
       return geo;
     };
-    const trunk = new THREE.CylinderGeometry(0.07, 0.3, 12.4, 12, 6);
+    const trunk = new THREE.CylinderGeometry(0.07, 0.3, 12.4, 7, 1);
     trunk.translate(0, 6.2, 0);
     parts.push(half(trunk, false));
     for (let i = 0; i < tiers; i++) {
       const f = i / (tiers - 1);
       const r = spread * (1 - f * 0.9) + 0.22, h = r * 0.95 + 0.5;
-      const bough = new THREE.ConeGeometry(r, h, 22, 3, true);
+      const bough = new THREE.ConeGeometry(r, h, 10, 1, true);    // the needle texture carries the detail
       const bp = bough.attributes.position;
       for (let v = 0; v < bp.count; v++) {                        // uneven boughs, drooping at the tips
         const y = bp.getY(v), k = 1 - (y + h / 2) / h;            // 0 at the tip, 1 at the rim
@@ -235,23 +291,39 @@ function start() {
   const treeMat = new THREE.MeshStandardMaterial({ map: treeTex, alphaTest: 0.5, roughness: 1, side: THREE.DoubleSide, envMapIntensity: 0.1 });
   addWind(treeMat, 'pow(max(position.y, 0.0) / 12.0, 2.0)', '0.16');
   const treeDepth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: treeTex, alphaTest: 0.5 });
-  const TREES = small ? 300 : 600;
+  // Instances are grouped into slices along the trail, so the graphics chip skips the slices behind
+  // you or outside the shadow area. items: [{ x, z, matrix, color }].
+  const SLICE = 12;
+  function sliced(geo, mat, items, setup) {
+    const groups = new Map();
+    for (const it of items) { const k = Math.floor(it.z / SLICE); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(it); }
+    const meshes = [];
+    for (const list of groups.values()) {
+      const mesh = new THREE.InstancedMesh(geo, mat, list.length);
+      list.forEach((it, i) => { mesh.setMatrixAt(i, it.matrix); if (it.color) mesh.setColorAt(i, it.color); });
+      mesh.computeBoundingSphere();
+      mesh.boundingSphere.radius += 1.5;                          // room for the wind
+      setup(mesh);
+      scene.add(mesh); meshes.push(mesh);
+    }
+    return meshes;
+  }
+  const TREES = Math.round(600 * tier.trees);
   const trunks = [];                                             // [x, z] of every tree, for the bear to walk around
   [spruce(13, 2.5), spruce(11, 2.0), spruce(15, 2.9)].forEach((geo, v) => {
-    const n = Math.floor(TREES / 3);
-    const mesh = new THREE.InstancedMesh(geo, treeMat, n);
+    const n = Math.floor(TREES / 3), items = [];
     for (let i = 0; i < n; i++) {
       let x, z;
       do { x = rand(-70, 70); z = rand(-125, 22); } while (Math.abs(x - path(z)) < 3.6);
-      trunks.push([x, z]);
       const s = rand(0.62, 1.2);                               // 7 to 15 metres tall
       quat.setFromEuler(eul.set(rand(-0.03, 0.03), rand(0, 6.28), rand(-0.03, 0.03)));
-      mesh.setMatrixAt(i, m4.compose(pos.set(x, heightAt(x, z) - 0.25, z), quat, scl.set(s * rand(1.0, 1.3), s, s * rand(1.0, 1.3))));
-      mesh.setColorAt(i, tint.setHSL(0.4 + rand(-0.03, 0.04), 0.25, rand(0.62, 0.95)));
+      const matrix = new THREE.Matrix4().compose(pos.set(x, heightAt(x, z) - 0.25, z), quat, scl.set(s * rand(1.0, 1.3), s, s * rand(1.0, 1.3)));
+      const color = new THREE.Color().setHSL(0.4 + rand(-0.03, 0.04), 0.25, rand(0.62, 0.95));
+      if (fromWalk(x, z) > REACH) continue;                     // lost in the mist from anywhere on the walk
+      trunks.push([x, z]);
+      items.push({ x, z, matrix, color });
     }
-    mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
-    mesh.customDepthMaterial = treeDepth;
-    scene.add(mesh);
+    sliced(geo, treeMat, items, (mesh) => { mesh.castShadow = true; mesh.receiveShadow = true; mesh.customDepthMaterial = treeDepth; });
   });
 
   // ---------- ferns and grass ----------
@@ -292,33 +364,31 @@ function start() {
   function plants(tex, count, minS, maxS, reach, lightness) {
     const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 1, envMapIntensity: 0.15 });
     addWind(mat, 'uv.y * uv.y', '0.07');
-    const mesh = new THREE.InstancedMesh(tuft(), mat, count);
+    const items = [], geo = tuft();
     for (let i = 0; i < count; i++) {
       const z = rand(END_Z - 30, START_Z + 4);
       const x = path(z) + (Math.random() < 0.5 ? -1 : 1) * (1.5 + Math.pow(Math.random(), 1.4) * reach);
       const s = rand(minS, maxS);
       quat.setFromEuler(eul.set(0, rand(0, 6.28), 0));
-      mesh.setMatrixAt(i, m4.compose(pos.set(x, heightAt(x, z) - 0.03, z), quat, scl.set(s * rand(0.9, 1.4), s, s * rand(0.9, 1.4))));
-      mesh.setColorAt(i, tint.setHSL(0.33 + rand(-0.04, 0.04), 0.3, rand(lightness - 0.15, lightness + 0.15)));
+      items.push({ x, z, matrix: new THREE.Matrix4().compose(pos.set(x, heightAt(x, z) - 0.03, z), quat, scl.set(s * rand(0.9, 1.4), s, s * rand(0.9, 1.4))),
+        color: new THREE.Color().setHSL(0.33 + rand(-0.04, 0.04), 0.3, rand(lightness - 0.15, lightness + 0.15)) });
     }
-    mesh.receiveShadow = true; mesh.frustumCulled = false;
-    scene.add(mesh);
-    return mesh;
+    return sliced(geo, mat, items, (mesh) => { mesh.receiveShadow = true; });   // low plants cast no shadow
   }
-  plants(fernTex, small ? 900 : 2200, 0.5, 1.25, 20, 0.75);
-  const grass = plants(grassTex, small ? 1400 : 3600, 0.18, 0.5, 14, 0.8);
+  plants(fernTex, tier.ferns, 0.5, 1.25, 20, 0.75);
+  plants(grassTex, tier.grass, 0.18, 0.5, 14, 0.8);
 
   // Mossy boulders and fallen logs.
   const stone = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.6, 2),
-    new THREE.MeshStandardMaterial({ map: floorTex, color: 0x9fb09a, roughness: 1, envMapIntensity: 0.15 }), 70);
-  for (let i = 0; i < 70; i++) {
+    new THREE.MeshStandardMaterial({ map: floorTex, color: 0x9fb09a, roughness: 1, envMapIntensity: 0.15 }), tier.stones);
+  for (let i = 0; i < tier.stones; i++) {
     let x, z;
     do { x = rand(-26, 26); z = rand(-60, 16); } while (Math.abs(x - path(z)) < 2.2);
     const s = rand(0.4, 1.6);
     quat.setFromEuler(eul.set(rand(0, 6.28), rand(0, 6.28), rand(0, 6.28)));
     stone.setMatrixAt(i, m4.compose(pos.set(x, heightAt(x, z) - 0.05, z), quat, scl.set(s * 1.3, s * 0.7, s)));
   }
-  stone.castShadow = true; stone.receiveShadow = true;
+  stone.receiveShadow = true;                                     // too low to throw a shadow worth drawing
   scene.add(stone);
   const barkTex = treeTex.clone(); barkTex.repeat.set(0.49, 1); barkTex.needsUpdate = true;
   const logs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.27, 5, 12),
@@ -342,7 +412,7 @@ function start() {
     g.fillStyle = down; g.fillRect(0, 0, 64, 256);
   });
   const rays = [];
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < tier.rays; i++) {
     const ray = new THREE.Mesh(new THREE.PlaneGeometry(rand(2, 6), 46),
       new THREE.MeshBasicMaterial({ map: rayTex, color: 0xf4f7cf, transparent: true, opacity: rand(0.09, 0.2), blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide }));
     ray.position.set(rand(-16, 22), 15, rand(-56, -4));
@@ -359,7 +429,7 @@ function start() {
     }
   });
   const mists = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < tier.mists; i++) {
     const puff = new THREE.Mesh(new THREE.PlaneGeometry(rand(26, 46), rand(5, 9)),
       new THREE.MeshBasicMaterial({ map: puffTex, color: 0xd9f1ea, transparent: true, opacity: rand(0.3, 0.6), depthWrite: false, fog: false }));
     puff.position.set(rand(-24, 24), rand(0.8, 3), rand(-64, -6));
@@ -381,12 +451,12 @@ function start() {
     scene.add(pts);
     return pts;
   }
-  const pollen = cloud(small ? 500 : 1100, 0.09, 0xf6ffd9, 0.75, THREE.AdditiveBlending);
-  const needles = cloud(small ? 120 : 260, 0.07, 0x7a5a30, 0.9, THREE.NormalBlending);
+  const pollen = cloud(tier.pollen, 0.09, 0xf6ffd9, 0.75, THREE.AdditiveBlending);
+  const needles = cloud(tier.needles, 0.07, 0x7a5a30, 0.9, THREE.NormalBlending);
 
   // ---------- litter on the forest floor ----------
   const profile = [[0, -0.5], [0.15, -0.5], [0.17, -0.45], [0.17, -0.3], [0.17, -0.15], [0.17, 0], [0.17, 0.1], [0.15, 0.2], [0.075, 0.33], [0.06, 0.36], [0.06, 0.4], [0.072, 0.4], [0.072, 0.47], [0, 0.47]];
-  const bottle = new THREE.LatheGeometry(profile.map(([x, y]) => new THREE.Vector2(x, y)), 24);
+  const bottle = new THREE.LatheGeometry(profile.map(([x, y]) => new THREE.Vector2(x, y)), 12);
   bottle.scale(0.62, 0.62, 0.62);
   // Clear plastic body, a printed label band and a solid cap. v runs along the bottle from base (0) to cap (1).
   const band = (g, v0, v1, fill) => { g.fillStyle = fill; g.fillRect(0, 256 * (1 - v1), 64, 256 * (v1 - v0)); };
@@ -404,7 +474,7 @@ function start() {
     g.fillStyle = '#c9ced2'; g.beginPath(); g.moveTo(0, 96); g.lineTo(128, 40); g.lineTo(128, 62); g.lineTo(0, 114); g.closePath(); g.fill();
     g.fillStyle = '#3d4246'; for (let i = 0; i < 5; i++) g.fillRect(18, 26 + i * 6, rand(24, 54), 2.5);
   });
-  const bag = new THREE.IcosahedronGeometry(0.24, 3);
+  const bag = new THREE.IcosahedronGeometry(0.24, 2);             // flat-shaded and crumpled: fewer faces read the same
   const bagPos = bag.attributes.position;
   for (let i = 0; i < bagPos.count; i++) {                        // a crumpled, half-collapsed carrier bag
     const x = bagPos.getX(i), y = bagPos.getY(i), z = bagPos.getZ(i);
@@ -421,8 +491,8 @@ function start() {
     sackPos.setXYZ(i, x * k * neck, (y < 0 ? y * 0.8 : y * 1.35) * k, z * k * neck);
   }
   sack.computeVertexNormals();
-  const geos = [bottle, new THREE.CylinderGeometry(0.075, 0.075, 0.24, 24), new THREE.CylinderGeometry(0.06, 0.06, 0.05, 18), new RoundedBoxGeometry(0.3, 0.2, 0.13, 3, 0.025), bag,
-    new THREE.TorusGeometry(0.27, 0.105, 14, 30), sack];
+  const geos = [bottle, new THREE.CylinderGeometry(0.075, 0.075, 0.24, 14), new THREE.CylinderGeometry(0.06, 0.06, 0.05, 10), new RoundedBoxGeometry(0.3, 0.2, 0.13, 2, 0.025), bag,
+    new THREE.TorusGeometry(0.27, 0.105, 8, 18), sack];
   const mats = [
     new THREE.MeshStandardMaterial({ map: bottleMap, alphaMap: bottleAlpha, transparent: true, roughness: 0.08, metalness: 0.0, envMapIntensity: 1.8 }),
     new THREE.MeshStandardMaterial({ map: canMap, roughness: 0.3, metalness: 0.85, envMapIntensity: 1.3 }),
@@ -443,7 +513,7 @@ function start() {
   ];
   const REST = [0.105, 0.075, 0.028, 0.065, 0.07, 0.1, 0.23];                // how high each kind sits when lying on the ground
   const pieces = [];
-  const LITTER = small ? 520 : 1150;
+  const LITTER = tier.litter;
   for (let i = 0; i < LITTER; i++) {
     const z = rand(END_Z - 2, START_Z - 2);                       // none beyond the end of the walk, so the forest ends up clean
     const x = path(z) + (Math.random() < 0.5 ? -1 : 1) * (Math.pow(Math.random(), 1.6) * 9 + 0.2);   // most lies close to the trail
@@ -459,7 +529,7 @@ function start() {
   const meshes = geos.map((g, t) => {
     const mesh = new THREE.InstancedMesh(g, mats[t], pieces.filter((p) => p.type === t).length);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+    mesh.receiveShadow = true; mesh.frustumCulled = false;      // litter casts no shadow: too small to notice, costly to draw twice
     scene.add(mesh);
     return mesh;
   });
@@ -469,15 +539,19 @@ function start() {
 
   // ---------- volunteers cleaning up ----------
   // With ?debug in the address, tests can read the litter state and move the camera.
-  const debug = new URLSearchParams(location.search).has('debug') ? (window.__forest = { pieces, people: [], bear: null, view: null, scene, renderer, sun }) : null;
+  const debug = params.has('debug') ? (window.__forest = { pieces, people: [], bear: null, view: null, scene, backdrop, renderer, sun, tier: tierName, gpu, settings: tier }) : null;
 
   // Realistic rigged characters; if their files fail to load, the simple hand-built figures stand in.
-  const crew = { count: small ? 3 : 5, path, heightAt, zFrom: 4, zTo: END_Z - 10, pieces, prepare: (o) => prepare(o) };
+  // They load only once the forest is on screen, so the first picture isn't held up by their 1.5 MB.
+  const crew = { count: tier.people, path, heightAt, zFrom: 4, zTo: END_Z - 10, pieces, prepare: (o) => prepare(o) };
   let updatePeople = () => {};
   const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
-  whenIdle(() => createVolunteers(scene, crew)
-    .then((update) => { updatePeople = update; if (debug) debug.people = update.people; })
-    .catch((err) => { console.warn('Realistic volunteers unavailable, using simple figures.', err); updatePeople = createPeople(scene, crew); }));
+  const loadPeople = () => {
+    if (crew.count <= 0) return;
+    setTimeout(() => whenIdle(() => createVolunteers(scene, crew)
+      .then((update) => { updatePeople = update; if (debug) debug.people = update.people; })
+      .catch((err) => { console.warn('Realistic volunteers unavailable, using simple figures.', err); updatePeople = createPeople(scene, crew); })), 800);
+  };
 
   // ---------- a bear in the background ----------
   let trailZ = START_Z;                                          // where the visitor currently is on the trail
@@ -488,9 +562,9 @@ function start() {
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.fov = w / h < 0.8 ? 72 : 55;
-    camera.updateProjectionMatrix();
+    camera.aspect = farCamera.aspect = w / h;
+    camera.fov = farCamera.fov = w / h < 0.8 ? 72 : 55;
+    camera.updateProjectionMatrix(); farCamera.updateProjectionMatrix();
   }
   resize();
   window.addEventListener('resize', resize);
@@ -507,7 +581,7 @@ function start() {
   // then does the forest fade in over the still backdrop.
   const warm = { compiled: false, shown: false, steady: 0, last: 0, since: performance.now() };
   const compiled = () => { warm.compiled = true; warm.since = performance.now(); };
-  if (renderer.compileAsync) renderer.compileAsync(scene, camera).then(compiled, compiled); else compiled();
+  if (renderer.compileAsync) Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(backdrop, farCamera)]).then(compiled, compiled); else compiled();
   setTimeout(compiled, 25000);                                   // never wait forever
   function warmUp(now) {                                         // true once the forest is on screen
     if (warm.shown) return true;
@@ -517,7 +591,8 @@ function start() {
     if (warm.steady >= 4 || now - warm.since > 8000) {
       warm.shown = true;
       canvas.classList.add('is-ready');
-      smooth.settle = 4000;
+      dyn.cool = now + 2500;                                       // let the fade-in finish before judging the pace
+      loadPeople();
     }
     return warm.compiled;
   }
@@ -525,37 +600,40 @@ function start() {
   const prepare = (object) => (renderer.compileAsync ? renderer.compileAsync(object, camera, scene).catch(() => {}) : Promise.resolve());
 
   // ---------- keeping it smooth ----------
-  // If the frame rate stays really low (under 22 a second for four seconds), quality is stepped down one
-  // notch at a time. A step that doesn't help is undone, so a machine that is slow for some other reason
-  // keeps the full picture. A steady 30 is left alone: changing quality costs a brief stutter of its own.
-  const setRatio = (r) => { renderer.setPixelRatio(r); resize(); };
-  const setShadow = (px) => { sun.shadow.mapSize.set(px, px); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } };
-  const fullRatio = renderer.getPixelRatio(), fullShadow = sun.shadow.mapSize.x;
-  const steps = [
-    { on: () => setRatio(1), off: () => setRatio(fullRatio), skip: fullRatio <= 1 },
-    { on: () => setShadow(1024), off: () => setShadow(fullShadow), skip: fullShadow <= 1024 },
-    { on: () => { grass.visible = false; }, off: () => { grass.visible = true; } },
-    { on: () => setRatio(0.75), off: () => setRatio(Math.min(fullRatio, 1)) },
-  ].filter((s) => !s.skip);
-  const smooth = { frames: 0, since: performance.now(), settle: 4000, step: -1, before: 0, done: false, low: 0 };
-  function watchFrameRate(now) {
-    if (smooth.done || document.hidden) { smooth.frames = 0; smooth.since = now; return; }
-    if (smooth.settle > 0) { smooth.settle -= now - smooth.last || 0; smooth.last = now; smooth.frames = 0; smooth.since = now; return; }
-    smooth.last = now;
-    smooth.frames++;
-    const elapsed = now - smooth.since;
-    if (elapsed < 2000) return;
-    const fps = smooth.frames * 1000 / elapsed;
-    smooth.frames = 0; smooth.since = now;
-    if (smooth.step >= 0 && smooth.before > 0 && fps < smooth.before * 1.12) {   // the last step didn't help: undo it and stop
-      steps[smooth.step].off(); smooth.done = true; return;
+  // Dynamic resolution: a smoothed frame time is compared with the screen's own pace. When frames run late
+  // for a second, the drawing resolution drops a small step (down to 0.6); after five calm seconds it
+  // climbs back by a smaller step. A step up that brings the lateness back lowers the ceiling, so it
+  // doesn't see-saw. If even a reduced picture can't keep up, the scene settles on a steady 30 frames a
+  // second (every other screen refresh) instead of a jittery 40 to 55. Weak devices start there.
+  const dyn = { ratio: renderer.getPixelRatio(), max: renderer.getPixelRatio(), ceiling: renderer.getPixelRatio(), min: Math.min(0.6, renderer.getPixelRatio()),
+    ema: 0, refresh: 16.7, raf: 0, lastRaf: 0, last: 0, slow: 0, calm: 0, cool: 0, raisedAt: -1e9, locked: tier.lock30 };
+  const setRatio = (r) => { dyn.ratio = Math.round(r * 100) / 100; renderer.setPixelRatio(dyn.ratio); resize(); };
+  function trackRefresh(now) {                                    // the screen's pace, from the quickest steady rAF rhythm seen
+    const d = now - dyn.lastRaf; dyn.lastRaf = now;
+    if (d <= 0 || d > 100) return;
+    dyn.raf = dyn.raf ? dyn.raf * 0.9 + d * 0.1 : d;
+    dyn.refresh = Math.max(6, Math.min(dyn.refresh, dyn.raf) * 0.999 + dyn.raf * 0.001);
+  }
+  const budget = () => (dyn.locked ? 1000 / 30 : Math.max(dyn.refresh, 1000 / 60));
+  function pace(now) {                                            // called after each drawn frame
+    if (fixedRatio > 0) return;
+    const d = now - dyn.last; dyn.last = now;
+    if (document.hidden || d > 250) { dyn.ema = 0; return; }
+    dyn.ema = dyn.ema ? dyn.ema * 0.9 + d * 0.1 : d;
+    if (now < dyn.cool) { dyn.slow = dyn.calm = 0; return; }
+    const b = budget();
+    dyn.slow = dyn.ema > b * 1.2 ? dyn.slow + d : 0;
+    dyn.calm = dyn.ema < b * 1.06 ? dyn.calm + d : 0;
+    if (dyn.slow > 1000) {
+      if (now - dyn.raisedAt < 4000) dyn.ceiling = Math.max(dyn.min, dyn.ratio - 0.05);   // that last step up was too much
+      if (!dyn.locked && dyn.ratio <= dyn.max * 0.75 + 0.001) { dyn.locked = true; setRatio(Math.min(dyn.ceiling, dyn.max * 0.9)); }
+      else if (dyn.ratio > dyn.min + 0.001) setRatio(Math.max(dyn.min, dyn.ratio - 0.1));
+      else if (!dyn.locked) dyn.locked = true;
+      dyn.slow = dyn.calm = 0; dyn.cool = now + 1500;
+    } else if (dyn.calm > 5000 && dyn.ratio < dyn.ceiling - 0.001) {
+      setRatio(Math.min(dyn.ceiling, dyn.ratio + 0.05));
+      dyn.raisedAt = now; dyn.slow = dyn.calm = 0; dyn.cool = now + 1500;
     }
-    smooth.before = 0;
-    smooth.low = fps < 22 ? smooth.low + 1 : 0;
-    if (smooth.low < 2 || smooth.step + 1 >= steps.length) return;
-    smooth.low = 0; smooth.before = fps; smooth.step++;
-    steps[smooth.step].on();
-    smooth.settle = 1800;                                         // let the change take effect before judging it
   }
 
   // Free the graphics memory when the page is left, so reloads and back-and-forth visits don't pile up.
@@ -567,9 +645,16 @@ function start() {
   const look = new THREE.Vector3();
   let t = 0, walk = 0, stride = 0;
 
-  (function frame() {
+  let lastDrawn = 0, frameNo = 0, shadowAt = null, litterWalk = -1;
+  const SHADOW_EVERY = 2;                                          // people and the bear move: their shadows are redrawn every other frame
+
+  (function frame(now) {
     requestAnimationFrame(frame);
+    now = now || performance.now();
+    trackRefresh(now);
     if (!visible || !warm.compiled) return;                        // nothing is drawn until the programs are ready
+    if (dyn.locked && now - lastDrawn < 1000 / 30 - dyn.refresh * 0.5) return;   // steady 30: skip every other refresh
+    lastDrawn = now;
     const T0 = performance.now();
     const dt = Math.min(clock.getDelta(), 0.05);
     if (!reduced) t += dt;
@@ -591,23 +676,30 @@ function start() {
 
     // The shadow area follows you down the trail, in whole steps so the shadows don't shimmer.
     const sx = Math.round(camera.position.x / 2) * 2, sz = Math.round((cz - 16) / 2) * 2;
+    const sunMoved = shadowAt !== sx * 1000 + sz;
+    shadowAt = sx * 1000 + sz;
     sun.target.position.set(sx, 0, sz);
     sun.position.set(sx + SUN.x, SUN.y, sz + SUN.z);
     sun.target.updateMatrixWorld();
 
     // Litter a few steps ahead lifts off the ground, spins and is gone by the time you reach it.
-    for (let i = 0; i < pieces.length; i++) {
-      const p = pieces[i];
-      const lift = walk < 0.002 ? 0 : sm(9, 2.5, cz - p.z);
-      p.lifting = lift > 0.02;                                    // tells the volunteers this one is already on its way
-      pos.set(p.x + p.drift * lift * 1.2, p.y + lift * lift * 5.5 + Math.sin(t * 2 + p.spin) * 0.06 * lift, p.z);
-      eul.set(p.rot.x + lift * p.spin, p.rot.y + lift * p.spin * 0.7, p.rot.z, 'YXZ');
-      quat.setFromEuler(eul);
-      const s = p.taken ? 0 : p.size * (1 - sm(0.55, 1, lift));    // taken: a volunteer has bagged it
-      scl.set(s, s, s * p.crush);
-      meshes[p.type].setMatrixAt(p.slot, m4.compose(pos, quat, scl));
+    // Only redone when the walk has moved, a piece is in the air, or a volunteer has bagged one.
+    if (Math.abs(walk - litterWalk) > 0.0002 || pieces.changed || pieces.airborne) {
+      litterWalk = walk; pieces.changed = false; pieces.airborne = false;
+      for (let i = 0; i < pieces.length; i++) {
+        const p = pieces[i];
+        const lift = walk < 0.002 ? 0 : sm(9, 2.5, cz - p.z);
+        p.lifting = lift > 0.02;                                    // tells the volunteers this one is already on its way
+        if (p.lifting && lift < 1) pieces.airborne = true;          // still bobbing: keep updating
+        pos.set(p.x + p.drift * lift * 1.2, p.y + lift * lift * 5.5 + Math.sin(t * 2 + p.spin) * 0.06 * lift, p.z);
+        eul.set(p.rot.x + lift * p.spin, p.rot.y + lift * p.spin * 0.7, p.rot.z, 'YXZ');
+        quat.setFromEuler(eul);
+        const s = p.taken ? 0 : p.size * (1 - sm(0.55, 1, lift));    // taken: a volunteer has bagged it
+        scl.set(s, s, s * p.crush);
+        meshes[p.type].setMatrixAt(p.slot, m4.compose(pos, quat, scl));
+      }
+      meshes.forEach((m) => { m.instanceMatrix.needsUpdate = true; });
     }
-    meshes.forEach((m) => { m.instanceMatrix.needsUpdate = true; });
 
     for (const ray of rays) ray.material.opacity = ray.userData.base * (0.65 + 0.35 * Math.sin(t * 0.4 + ray.userData.phase));
     for (const puff of mists) {
@@ -635,9 +727,19 @@ function start() {
     const T3 = performance.now();
     if (debug && debug.view) debug.view(camera);                  // ?debug: lets a test move the camera
 
+    farCamera.position.copy(camera.position); farCamera.quaternion.copy(camera.quaternion);
+    renderer.clear();
+    renderer.render(backdrop, farCamera);
+    const farCalls = renderer.info.render.calls, farTris = renderer.info.render.triangles;
+    renderer.clearDepth();
+    if (sunMoved || frameNo++ % SHADOW_EVERY === 0) renderer.shadowMap.needsUpdate = true;   // set after the backdrop pass, which would use it up
     renderer.render(scene, camera);
     if (!warmUp(performance.now())) return;
-    if (debug) { const T4 = performance.now(); debug.ms = { scene: T1 - T0, bear: T2 - T1, people: T3 - T2, draw: T4 - T3, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }; }
-    watchFrameRate(performance.now());
+    if (debug) {
+      const T4 = performance.now();
+      debug.ms = { scene: T1 - T0, bear: T2 - T1, people: T3 - T2, draw: T4 - T3, calls: renderer.info.render.calls + farCalls, triangles: renderer.info.render.triangles + farTris,
+        ratio: dyn.ratio, locked: dyn.locked, frame: Math.round(dyn.ema * 10) / 10, refresh: Math.round(dyn.refresh * 10) / 10 };
+    }
+    pace(now);
   })();
 }

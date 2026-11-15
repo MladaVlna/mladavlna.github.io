@@ -43,6 +43,13 @@
   <main>
     <section class="hero" id="top">
       <div class="hero__stage">
+        <!-- A still of the opening view: shows at once, and stays for visitors who get no 3D (less motion, data saver, slow connection). -->
+        <picture class="hero__poster" aria-hidden="true">
+          <source media="(max-aspect-ratio: 4/5)" type="image/avif" srcset="img/hero-poster-tall.avif">
+          <source media="(max-aspect-ratio: 4/5)" srcset="img/hero-poster-tall.jpg">
+          <source type="image/avif" srcset="img/hero-poster.avif">
+          <img src="img/hero-poster.jpg" alt="" fetchpriority="high">
+        </picture>
         <canvas class="hero__canvas" aria-hidden="true"></canvas>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__copy">

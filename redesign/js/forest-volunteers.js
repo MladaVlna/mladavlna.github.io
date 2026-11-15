@@ -3,35 +3,36 @@
 // Each one looks for a real piece of litter near the trail, walks to it, crouches, picks it up
 // with a grabber stick and drops it into the bag they carry. The litter they take disappears.
 import * as THREE from 'three';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 const rand = (a, b) => a + Math.random() * (b - a);
 const MODELS = 'models/';
-// hair: whether the character has a separate hair-and-lashes texture.
+// Each character is a compressed glTF file (mesh and skeleton only); all motion is in one shared file, anims.glb,
+// made from the Rocketbox motion files. hair: whether the character has a separate hair-and-lashes texture.
 const CAST = [
-  { file: 'Male_Adult_17', tex: 'm022', walk: 'm_walk_neutral', hair: false },   // blue and white hoodie
-  { file: 'Female_Adult_12', tex: 'f012', walk: 'f_walk_neutral', hair: true },  // dark hoodie, shorts, trainers
-  { file: 'Male_Adult_18', tex: 'm023', walk: 'm_walk_neutral', hair: false },   // grey hoodie
-  { file: 'Female_Adult_17', tex: 'f006', walk: 'f_walk_neutral', hair: true },  // green T-shirt, jeans
-  { file: 'Male_Adult_08', tex: 'm014', walk: 'm_walk_neutral', hair: true },    // blue shirt, jeans
+  { file: 'Male_Adult_17', tex: 'm022', walk: 'walk_m', hair: false },   // blue and white hoodie
+  { file: 'Female_Adult_12', tex: 'f012', walk: 'walk_f', hair: true },  // dark hoodie, shorts, trainers
+  { file: 'Male_Adult_18', tex: 'm023', walk: 'walk_m', hair: false },   // grey hoodie
+  { file: 'Female_Adult_17', tex: 'f006', walk: 'walk_f', hair: true },  // green T-shirt, jeans
+  { file: 'Male_Adult_08', tex: 'm014', walk: 'walk_m', hair: true },    // blue shirt, jeans
 ];
-const SHARED = { idle: 'f_idle_look_around_01', down: 'f_crouch_in', up: 'f_crouch_out' };
-const BLANK = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
 // Keeps only what carries over between bodies of different sizes: joint rotations, plus the hip height.
-// vertical is which axis of the hip position is "up"; inPlace removes the forward travel so the code can move the person.
-function fitClip(clip, name, vertical, heightScale, inPlace) {
+// vertical is which axis of the hip position is "up". heightScale turns the source rig's hip height into this
+// character's. pin, if given, holds the hip's other two axes at those values, so the code alone moves the person.
+function fitClip(clip, name, vertical, heightScale, pin) {
   const tracks = [];
   for (const track of clip.tracks) {
-    if (!track.name.startsWith('Bip01')) continue;                // helper objects in the motion files that the characters don't have
+    if (!track.name.startsWith('Bip01') || track.name.startsWith('Bip01_Footsteps')) continue;   // the footstep helper has no bone in the characters
     if (track.name.endsWith('.quaternion')) tracks.push(track.clone());
     else if (track.name === 'Bip01.position') {
       const t = track.clone(), v = t.values;
       for (let i = 0; i < v.length; i += 3) {
         for (let k = 0; k < 3; k++) {
           if (k === vertical) v[i + k] *= heightScale;
-          else if (inPlace) v[i + k] = v[k];
+          else if (pin) v[i + k] = pin[k];
         }
       }
       tracks.push(t);
@@ -40,37 +41,33 @@ function fitClip(clip, name, vertical, heightScale, inPlace) {
   return new THREE.AnimationClip(name, clip.duration, tracks);
 }
 
+const hipTrack = (clip) => clip.tracks.find((x) => x.name === 'Bip01.position');
+
 async function loadCast(howMany) {
-  const manager = new THREE.LoadingManager();
-  // The model files point at texture files we don't ship; ours are applied below.
-  manager.setURLModifier((url) => (/\.(tga|bmp|tif|tiff|png|jpg|jpeg)$/i.test(url) && !url.includes(MODELS) ? BLANK : url));
-  // Same reason: answer requests for the original TGA textures with an empty one, quietly.
-  manager.addHandler(/\.tga$/i, { setPath() { return this; }, load(url, onLoad) { const t = new THREE.Texture(); if (onLoad) onLoad(t); return t; } });
-  const fbx = new FBXLoader(manager);
+  const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const textures = new THREE.TextureLoader();
   const image = (name) => { const t = textures.load(MODELS + name); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+  const breathe = () => new Promise((resolve) => setTimeout(resolve, 30));   // lets a frame through between files
 
-  // Several characters share a walk; fetch and read each walk file only once.
-  const walks = new Map();
-  const walkFiles = (name) => { if (!walks.has(name)) walks.set(name, fbx.loadAsync(MODELS + name + '.fbx')); return walks.get(name); };
-  const shared = {};
-  const breathe = () => new Promise((resolve) => setTimeout(resolve, 30));   // lets a frame through between heavy files
-  for (const [key, file] of Object.entries(SHARED)) { shared[key] = (await fbx.loadAsync(MODELS + file + '.fbx')).animations[0]; await breathe(); }
+  const motion = await gltf.loadAsync(MODELS + 'anims.glb');
+  const clip = (name) => motion.animations.find((a) => a.name === name);
+  for (const a of motion.animations) a.tracks = a.tracks.filter((t) => !t.name.startsWith('Bip01_Footsteps'));   // a helper the characters don't have
+  const shared = { idle: clip('idle'), down: clip('down'), up: clip('up') };
 
   const cast = [];
   for (const who of CAST.slice(0, howMany)) { cast.push(await one(who)); await breathe(); }
   return cast;
 
   async function one(who) {
-    const [model, walkFile] = await Promise.all([fbx.loadAsync(MODELS + who.file + '.fbx'), walkFiles(who.walk)]);
+    const model = (await gltf.loadAsync(MODELS + who.file + '.glb')).scene;
     model.traverse((o) => {
       if (!o.isMesh) return;
       const fitted = [].concat(o.material).map((m) => {
         const n = m.name.toLowerCase();
         if (n.includes('opacity') && !who.hair) return new THREE.MeshBasicMaterial({ visible: false });
-        if (n.includes('opacity')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_opacity_color.png'), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.85, envMapIntensity: 0.25 });
-        if (n.includes('head')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_head_color.jpg'), roughness: 0.72, envMapIntensity: 0.25 });
-        return new THREE.MeshStandardMaterial({ map: image(who.tex + '_body_color.jpg'), roughness: 0.88, envMapIntensity: 0.25 });
+        if (n.includes('opacity')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_opacity_color.webp'), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.85, envMapIntensity: 0.25 });
+        if (n.includes('head')) return new THREE.MeshStandardMaterial({ map: image(who.tex + '_head_color.webp'), roughness: 0.72, envMapIntensity: 0.25 });
+        return new THREE.MeshStandardMaterial({ map: image(who.tex + '_body_color.webp'), roughness: 0.88, envMapIntensity: 0.25 });
       });
       o.material = Array.isArray(o.material) ? fitted : fitted[0];
       o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
@@ -84,11 +81,10 @@ async function loadCast(howMany) {
 
     const rest = hip.position.toArray();
     const vertical = [0, 1, 2].sort((a, b) => Math.abs(rest[b]) - Math.abs(rest[a]))[0];
-    const hipHeight = (clip) => { const t = clip.tracks.find((x) => x.name === 'Bip01.position'); return t ? Math.abs(t.values[vertical]) : Math.abs(rest[vertical]); };
+    const hipHeight = (c) => { const t = hipTrack(c); return t ? Math.abs(t.values[vertical]) : Math.abs(rest[vertical]); };
 
     // Play the walk once to find which way the character faces and how fast it really walks.
-    const walkRaw = walkFile.animations[0];
-    walkRaw.tracks = walkRaw.tracks.filter((track) => track.name.startsWith('Bip01'));   // drop helper objects the characters don't have
+    const walkRaw = clip(who.walk);
     const probe = new THREE.AnimationMixer(model);
     probe.clipAction(walkRaw).play();
     const a = new THREE.Vector3(), b = new THREE.Vector3();
@@ -102,17 +98,22 @@ async function loadCast(howMany) {
     const dx = b.x - a.x, dz = b.z - a.z, travelled = Math.hypot(dx, dz);
     const moves = travelled > 20;                                 // centimetres; otherwise the clip is already in place
 
-    const fit = (clip, name, inPlace) => fitClip(clip, name, vertical, Math.abs(rest[vertical]) / hipHeight(clip), inPlace);
+    // Idle, crouch down and stand up all come from one female rig. They share one height scale, taken from
+    // that rig standing (the idle's first frame). Each clip used to be scaled by its own first frame, and the
+    // stand-up clip starts crouched, so standing up threw people about 2.5 m into the air.
+    const stand = Math.abs(rest[vertical]) / hipHeight(shared.idle);
+    // Crouching and standing keep the hip over the same spot as the idle, so there is no slide between them.
+    const idleHip = hipTrack(shared.idle), pin = idleHip ? Array.from(idleHip.values.slice(0, 3)) : null;
     return {
       model,
       height: headTop - ground, floor: ground,
       facing: moves ? Math.atan2(dx, dz) : 0,                     // direction the character walks in its own space
       pace: moves ? travelled / (walkRaw.duration * 0.98) : 130,  // centimetres per second
       clips: {
-        walk: fitClip(walkRaw, 'walk', vertical, 1, true),
-        idle: fit(shared.idle, 'idle', false),
-        down: fit(shared.down, 'down', false),
-        up: fit(shared.up, 'up', false),
+        walk: fitClip(walkRaw, 'walk', vertical, 1, (() => { const t = hipTrack(walkRaw); return t ? Array.from(t.values.slice(0, 3)) : null; })()),
+        idle: fitClip(shared.idle, 'idle', vertical, stand, null),
+        down: fitClip(shared.down, 'down', vertical, stand, pin),
+        up: fitClip(shared.up, 'up', vertical, stand, pin),
       },
     };
   }
@@ -254,7 +255,7 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
         const downFor = p.clips.down.duration, upAt = downFor + 0.7;
         if (!p.grabbed && p.u > downFor * 0.9) {
           p.grabbed = true;
-          if (!p.target.lifting) { p.target.taken = true; p.found.material.color.setHex(p.target.color); p.found.visible = true; }
+          if (!p.target.lifting) { p.target.taken = true; pieces.changed = true; p.found.material.color.setHex(p.target.color); p.found.visible = true; }
         }
         if (p.u > upAt) play(p, 'up', 0.25);
         if (p.u > upAt + p.clips.up.duration * 0.55) p.found.visible = false;     // dropped into the bag
