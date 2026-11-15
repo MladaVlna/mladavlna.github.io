@@ -92,7 +92,13 @@ function wearGear(material, vestColor) {
 async function loadCast(howMany) {
   const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const textures = new THREE.TextureLoader();
-  const image = (name) => { const t = textures.load(MODELS + name); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+  let loading = [];                                                // textures still downloading for the current character
+  const image = (name) => {
+    let done; loading.push(new Promise((r) => { done = r; }));
+    const t = textures.load(MODELS + name, done, undefined, done);
+    t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return t;
+  };
   const breathe = () => new Promise((resolve) => setTimeout(resolve, 30));   // lets a frame through between files
 
   const motion = await gltf.loadAsync(MODELS + 'anims.glb');
@@ -121,6 +127,7 @@ async function loadCast(howMany) {
       o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
     });
 
+    await Promise.all(loading); loading = [];                     // so they can go to the graphics chip before the person appears
     model.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(model);
     const hip = model.getObjectByName('Bip01');
@@ -209,6 +216,15 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
     const tall = rand(1.64, 1.84), scale = tall / role.height;
     const root = new THREE.Group();                              // moved and turned by the code below
     const body = SkeletonUtils.clone(role.model);
+    // A generous fixed bounding sphere (the resting body's, enlarged for crouching and swinging arms) lets
+    // three.js skip people who are off screen or outside the shadow area, without re-measuring them each frame.
+    body.traverse((o) => {
+      if (!o.isSkinnedMesh) return;
+      if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+      o.boundingSphere = o.geometry.boundingSphere.clone();
+      o.boundingSphere.radius *= 1.3;
+      o.frustumCulled = true;
+    });
     body.scale.setScalar(scale);
     body.position.y = -role.floor * scale;
     body.rotation.y = -role.facing;                              // so the character's own "forward" is the group's +z

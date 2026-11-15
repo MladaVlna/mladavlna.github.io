@@ -48,6 +48,8 @@ Test switches on that address:
 - `?cold` makes every drawing program look new, to imitate a first-ever visit.
 - `?tier=low`, `?tier=medium`, `?tier=high` force a quality tier (otherwise it is picked from the graphics chip, memory, cores and screen width). `window.__forest.tier` and `.gpu` show what was picked.
 - `?ratio=1` pins the drawing resolution and turns off dynamic resolution (for screenshots).
+- `?seed=N` makes the random layout of the forest repeat exactly, so two versions can be compared picture by picture. `?people=N` sets how many volunteers load (0 to 5). `?pbr` puts back the physically based material on bark, needles, plants, moss and stone (for comparing with the cheaper default).
+- With `?debug`, `window.__forest.time = 12.5` freezes the wind and mist at that moment.
 - With `?debug`, setting `window.__forest.snap = true` makes the camera jump to the scroll position at once (no easing), for screenshots along the walk and the dive.
 - `?still` shows the poster only, as visitors with reduced motion, data saver or a 2G connection see it.
 - With `?debug`, `window.__forest.ms` also reports `ratio` (current resolution), `locked` (true when held at a steady 30 fps), `frame` (smoothed ms per frame) and `refresh` (the screen's pace).
@@ -58,7 +60,11 @@ Test switches on that address:
 - **Dynamic resolution** replaces the old one-off quality steps: the pixel ratio moves between 0.6 and the tier's maximum in small steps, with a ceiling that drops if a step up didn't hold. If even a reduced picture can't keep up, it locks to a steady 30 fps.
 - **Geometry:** spruces more than 13 m from the walk are about 300 triangles each (were about 1,900); those closer, and the last tree, use a finer shape (about 900) and are grouped in 12 m slices so slices behind you or outside the shadow area are skipped. Nothing is built more than 85 m from the walk (the mist hides it). Ferns and grass are sliced the same way.
 - **Two passes:** the sky and the mountain are drawn first with their own deep camera; the forest camera stops at 110 m.
-- **Shadows:** only trees, logs and people cast them; the shadow map is redrawn every other frame and when the sun area steps along (PCF, not soft PCF).
+- **Cheaper lighting on rough surfaces:** bark, needles, ferns, grass, moss, ground and stones use Lambert lighting instead of the physically based material, with the faint environment light they used to get added back in the shader. Picture by picture against `?pbr` the difference is about 2 to 4% in average colour. Litter, people and the mountain keep their materials.
+- **Shadows:** only trees, logs and people cast them; the shadow area is 68 m across (the mist hides shadows further out); the map is 2048 px on high, 1536 on medium, 1024 on low; it is redrawn every other frame and when the sun area steps along (PCF, not soft PCF).
+- **People are culled** when off screen or outside the shadow area (a fixed, generous bounding sphere per body).
+- **No forced layout per frame:** the hero's scroll length is measured on resize, and CSS variables are written only when they change.
+- **No hitch when the volunteers appear:** their textures finish downloading and are uploaded to the graphics chip, and their drawing programs compiled, before they join the scene.
 - **Litter** matrices are only recomputed when the walk moved, a piece is in the air, or a volunteer bagged one.
 - **Loading:** the poster shows at once; the forest fades in over it; the volunteers (about 1.5 MB) load only after the forest is on screen, and not at all on the low tier or a 3G connection.
 - **Measured in headless Chromium (software rendering, so no meaningful fps):** high tier about 0.55 million triangles and about 150 draw calls per frame, down from 1.71 million triangles. Hero download about 1.9 MB of local files (plus three.js from the CDN), down from about 14 MB.

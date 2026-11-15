@@ -11,6 +11,11 @@ const hero = document.querySelector('.hero');
 const stage = document.querySelector('.hero__stage');
 const canvas = document.querySelector('.hero__canvas');
 const params = new URLSearchParams(location.search);
+// ?seed=N makes the forest's random layout repeat exactly, so two builds can be compared picture by picture.
+if (params.has('seed')) {
+  let a = (parseInt(params.get('seed'), 10) || 1) >>> 0;
+  Math.random = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const net = navigator.connection || {};
 // Visitors who asked for less motion or less data, or who are on a very slow connection, get the still
@@ -21,7 +26,7 @@ const slowNet = net.effectiveType === '3g';                     // the forest, b
 // How much the device can draw, decided once before anything is built. ?tier=low|medium|high overrides it.
 const TIERS = {
   high: { trees: 1, ferns: 2200, grass: 3600, litter: 1150, stones: 70, shadow: 2048, ratio: 1.5, people: 5, paint: 1, aa: true, mists: 16, rays: 11, pollen: 1100, needles: 260, lock30: false },
-  medium: { trees: 0.85, ferns: 1700, grass: 2600, litter: 900, stones: 60, shadow: 2048, ratio: 1.25, people: 5, paint: 1, aa: true, mists: 14, rays: 10, pollen: 800, needles: 200, lock30: false },
+  medium: { trees: 0.85, ferns: 1700, grass: 2600, litter: 900, stones: 60, shadow: 1536, ratio: 1.25, people: 5, paint: 1, aa: true, mists: 14, rays: 10, pollen: 800, needles: 200, lock30: false },
   low: { trees: 0.6, ferns: 700, grass: 900, litter: 480, stones: 40, shadow: 1024, ratio: 1, people: 0, paint: 0.4, aa: false, mists: 9, rays: 7, pollen: 400, needles: 100, lock30: true },
 };
 function gpuName() {
@@ -67,6 +72,7 @@ function start() {
       shadow: 1024, ratio: Math.min(tier.ratio, 1.25), people: Math.min(tier.people, 3), pollen: Math.min(tier.pollen, 500), needles: Math.min(tier.needles, 120) });
   }
   if (slowNet) tier.people = 0;
+  if (params.has('people')) tier.people = Math.max(0, Math.min(5, parseInt(params.get('people'), 10) || 0));   // ?people=N (tests)
   const fixedRatio = parseFloat(params.get('ratio'));              // ?ratio=1 pins the resolution (tests, screenshots)
   renderer.setPixelRatio(fixedRatio > 0 ? fixedRatio : Math.min(window.devicePixelRatio, tier.ratio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -91,7 +97,8 @@ function start() {
   const sun = new THREE.DirectionalLight(0xfff0c2, 3.0);
   sun.castShadow = true;
   sun.shadow.mapSize.set(tier.shadow, tier.shadow);
-  Object.assign(sun.shadow.camera, { left: -42, right: 42, top: 42, bottom: -42, near: 1, far: 150 });
+  // 68 m across: past that the mist hides the shadows anyway, and a smaller area means fewer trees drawn into the map.
+  Object.assign(sun.shadow.camera, { left: -34, right: 34, top: 34, bottom: -34, near: 1, far: 150 });
   sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.35;
   scene.add(sun, sun.target);
 
@@ -111,6 +118,21 @@ function start() {
   const uTime = { value: 0 };
   const m4 = new THREE.Matrix4(), pos = new THREE.Vector3(), quat = new THREE.Quaternion(), scl = new THREE.Vector3(), eul = new THREE.Euler();
   const tint = new THREE.Color();
+  // Bark, needles, ferns, moss and stone are fully rough, so the simpler Lambert lighting looks the same as the
+  // physically based one at a fraction of the cost per pixel, and these surfaces fill most of the screen.
+  // The faint environment light the rough materials got is folded into the colour. ?pbr restores the old ones.
+  const pbr = params.has('pbr');
+  function matte({ envMapIntensity = 0.1, roughness, ...rest }) {
+    if (pbr) return new THREE.MeshStandardMaterial({ ...rest, roughness: 1, envMapIntensity });
+    const m = new THREE.MeshLambertMaterial({ ...rest });
+    const env = envMapIntensity.toFixed(4);                       // matched against ?pbr picture by picture
+    m.customProgramCacheKey = () => 'matte:' + env;
+    m.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
+        irradiance += vec3(${env}) * 3.14159265;   // the soft room light the rough materials used to get`);
+    };
+    return m;
+  }
 
   function draw(w, h, fn) {
     const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -120,7 +142,13 @@ function start() {
   }
   // Makes a material's plants bend in the wind. bendBy is a GLSL expression for how much a vertex moves (0 at the root).
   function addWind(material, bendBy, strength) {
-    material.onBeforeCompile = (shader) => {
+    const before = material.onBeforeCompile;
+    // Each wind setting is its own drawing program: without this key, three.js would reuse one material's
+    // program for another (it can't see the different expression inside the shader text).
+    const key = material.customProgramCacheKey.call(material);
+    material.customProgramCacheKey = () => key + '|wind:' + bendBy + ':' + strength;
+    material.onBeforeCompile = (shader, r) => {
+      before.call(material, shader, r);
       shader.uniforms.uTime = uTime;
       shader.vertexShader = 'uniform float uTime;\n' + shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
         float windPhase = instanceMatrix[3].x * 0.31 + instanceMatrix[3].z * 0.23;
@@ -233,7 +261,7 @@ function start() {
   }
   groundGeo.setAttribute('color', new THREE.BufferAttribute(gcol, 3));
   groundGeo.computeVertexNormals();
-  const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({ map: floorTex, bumpMap: floorTex, bumpScale: 1.2, vertexColors: true, roughness: 1, envMapIntensity: 0.12 }));
+  const ground = new THREE.Mesh(groundGeo, matte({ map: floorTex, bumpMap: floorTex, bumpScale: 1.2, vertexColors: true, envMapIntensity: 0.12 }));
   ground.receiveShadow = true;
   scene.add(ground);
 
@@ -292,7 +320,7 @@ function start() {
     }
     return mergeGeometries(parts);
   }
-  const treeMat = new THREE.MeshStandardMaterial({ map: treeTex, alphaTest: 0.5, roughness: 1, side: THREE.DoubleSide, envMapIntensity: 0.1 });
+  const treeMat = matte({ map: treeTex, alphaTest: 0.5, side: THREE.DoubleSide, envMapIntensity: 0.1 });
   addWind(treeMat, 'pow(max(position.y, 0.0) / 12.0, 2.0)', '0.16');
   const treeDepth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: treeTex, alphaTest: 0.5 });
   // Instances are grouped into slices along the trail, so the graphics chip skips the slices behind
@@ -355,7 +383,7 @@ function start() {
     });
     bark.wrapS = bark.wrapT = THREE.RepeatWrapping; bark.repeat.set(2, 9);
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * S * 1.04, 0.3 * S * 1.04, 12.4 * S, 28, 1, true),
-      new THREE.MeshStandardMaterial({ map: bark, bumpMap: bark, bumpScale: 2.5, roughness: 1, envMapIntensity: 0.1 }));
+      matte({ map: bark, bumpMap: bark, bumpScale: 2.5, envMapIntensity: 0.1 }));
     trunk.position.set(END_TREE.x, y0 + 6.2 * S, END_TREE.z);
     trunk.castShadow = true; trunk.receiveShadow = true;
     scene.add(trunk);
@@ -398,7 +426,7 @@ function start() {
     return mergeGeometries([a, b]);
   }
   function plants(tex, count, minS, maxS, reach, lightness) {
-    const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 1, envMapIntensity: 0.15 });
+    const mat = matte({ map: tex, alphaTest: 0.4, side: THREE.DoubleSide, envMapIntensity: 0.15 });
     addWind(mat, 'uv.y * uv.y', '0.07');
     const items = [], geo = tuft();
     for (let i = 0; i < count; i++) {
@@ -416,7 +444,7 @@ function start() {
 
   // Mossy boulders and fallen logs.
   const stone = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.6, 2),
-    new THREE.MeshStandardMaterial({ map: floorTex, color: 0x9fb09a, roughness: 1, envMapIntensity: 0.15 }), tier.stones);
+    matte({ map: floorTex, color: 0x9fb09a, envMapIntensity: 0.15 }), tier.stones);
   for (let i = 0; i < tier.stones; i++) {
     let x, z;
     do { x = rand(-26, 26); z = rand(-60, 16); } while (Math.abs(x - path(z)) < 2.2);
@@ -428,7 +456,7 @@ function start() {
   scene.add(stone);
   const barkTex = treeTex.clone(); barkTex.repeat.set(0.49, 1); barkTex.needsUpdate = true;
   const logs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.27, 5, 12),
-    new THREE.MeshStandardMaterial({ map: barkTex, roughness: 1, envMapIntensity: 0.1 }), 14);
+    matte({ map: barkTex, envMapIntensity: 0.1 }), 14);
   for (let i = 0; i < 14; i++) {
     const z = rand(END_Z - 20, START_Z - 2), x = path(z) + (Math.random() < 0.5 ? -1 : 1) * rand(4.5, 15);
     quat.setFromEuler(eul.set(Math.PI / 2 + rand(-0.06, 0.06), 0, rand(0, 3.14), 'ZXY'));
@@ -594,8 +622,12 @@ function start() {
 
 
   // ---------- layout and input ----------
-  let baseFov = 55;
+  let baseFov = 55, heroSpan = 0;
+  // CSS variables are only written when they change, so a still page doesn't restyle the stage every frame.
+  const cssVars = {};
+  const setVar = (name, value) => { if (cssVars[name] !== value) { cssVars[name] = value; stage.style.setProperty(name, value); } };
   function resize() {
+    heroSpan = hero.offsetHeight - window.innerHeight;
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = farCamera.aspect = w / h;
@@ -604,6 +636,7 @@ function start() {
   }
   resize();
   window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(() => { heroSpan = hero.offsetHeight - window.innerHeight; }).observe(hero);
 
   let px = 0, py = 0, lx = 0, ly = 0;
   if (!reduced) {
@@ -633,7 +666,11 @@ function start() {
     return warm.compiled;
   }
   // New objects (the volunteers) get the same treatment before they join the scene.
-  const prepare = (object) => (renderer.compileAsync ? renderer.compileAsync(object, camera, scene).catch(() => {}) : Promise.resolve());
+  // Their textures are sent to the graphics chip at the same time, so they don't stall the frame they first appear in.
+  const prepare = (object) => {
+    object.traverse((o) => { for (const m of [].concat(o.material || [])) for (const k of ['map', 'alphaMap', 'bumpMap']) if (m[k] && m[k].image) renderer.initTexture(m[k]); });
+    return renderer.compileAsync ? renderer.compileAsync(object, camera, scene).catch(() => {}) : Promise.resolve();
+  };
 
   // ---------- keeping it smooth ----------
   // Dynamic resolution: a smoothed frame time is compared with the screen's own pace. When frames run late
@@ -694,16 +731,17 @@ function start() {
     const T0 = performance.now();
     const dt = Math.min(clock.getDelta(), 0.05);
     if (!reduced) t += dt;
+    if (debug && debug.time !== undefined) t = debug.time;        // ?debug: tests can freeze the wind and mist
     uTime.value = t;
 
     // Scroll position through the pinned hero, 0 to 1, eased so the walk feels smooth.
-    const span = hero.offsetHeight - window.innerHeight;
+    const span = heroSpan;                                         // measured on resize: reading layout here would force it every frame
     const target = span > 0 ? Math.min(1, Math.max(0, window.scrollY / span)) : 0;
     const before = walk;
     walk += (target - walk) * 0.08;
     if (debug && debug.snap) walk = target;                       // ?debug: tests can skip the easing
     stride += Math.abs(walk - before) * 70;                       // footsteps only while moving
-    stage.style.setProperty('--p', walk.toFixed(4));
+    setVar('--p', walk.toFixed(4));
 
     const along = Math.min(1, walk / WALK_END);                    // down the trail
     const dive = Math.max(0, (walk - WALK_END) / (1 - WALK_END));  // then into the last tree
@@ -725,7 +763,7 @@ function start() {
     const fov = baseFov - sm(0.7, 1, dive) * baseFov * 0.3;
     if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = farCamera.fov = fov; camera.updateProjectionMatrix(); farCamera.updateProjectionMatrix(); }
     const dark = sm(0.74, 0.98, dive);
-    stage.style.setProperty('--dark', dark.toFixed(3));
+    setVar('--dark', dark.toFixed(3));
     if (dark > 0.995 && warm.shown) return;                        // all black: nothing to draw until you scroll back
 
     // The shadow area follows you down the trail, in whole steps so the shadows don't shimmer.
