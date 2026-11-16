@@ -1,14 +1,14 @@
 # Mladá Vlna redesign: where things stand
 
-Working notes for whoever continues this redesign. Last updated 15 November 2026 (performance and loading pass).
+Working notes for whoever continues this redesign. Last updated 16 November 2026 (the new design moved to the site root).
 
 ## What this is
 
-A redesign of mladavlna.github.io, the site of Mladá Vlna, a Slovak civic association that runs Erasmus+ youth exchanges. The old site (Bootstrap 3 template) is untouched in the repository root. All new work is in `redesign/`, on the branch `redesign`. It is plain HTML, CSS and JavaScript with no build step; three.js loads from a CDN.
+A redesign of mladavlna.github.io, the site of Mladá Vlna, a Slovak civic association that runs Erasmus+ youth exchanges. Since 16 November 2026 the new design is the site itself, at the repository root (it was built in `redesign/` on the branch `redesign`). The old site's pages are forwarding pages now (see Old addresses below); its other files (Bootstrap css, fonts, flags, language, uploads, style.css, js/all.js, js/custom.js, js/hoverdir.js, contact.php) are no longer used by any page and can be removed. It is plain HTML, CSS and JavaScript with no build step; three.js loads from a CDN.
 
 ## The approved direction
 
-`redesign/home2.html` is the page to keep building. The owner said of it: "we are finally on a good path".
+`index.html` (it was `redesign/home2.html`) is the homepage. The owner said of it: "we are finally on a good path".
 
 - **Hero:** a scroll-driven 3D scene of a sunny Slovak spruce forest full of litter (clear blue sky, warm low sun, only a light haze; made sunnier and less foggy on 15 November 2026 at the owner's request, posters re-captured to match), with a snow-capped mountain behind. Scrolling walks the visitor down a trail and the litter ahead lifts away, leaving the forest clean.
 - **Walk length (16 November 2026):** the owner wanted a shorter scene at the old scrolling speed. The trail is now 22 m (`START_Z` 12 to `END_Z` -10 in `js/hero-forest.js`, was -26), the last tree moved with it, and the hero is 255vh tall (was 330vh) with `WALK_END` 0.672, which keeps about 21 m of trail per screen of scrolling and the dive's old length (half a screen). Litter and plants are scaled down with the trail, so it is as dense as before. The poster images still show the old opening view and should be re-rendered (see Known weak spots).
@@ -21,13 +21,13 @@ A redesign of mladavlna.github.io, the site of Mladá Vlna, a Slovak civic assoc
 - **The 3D printer** (`js/printer.js`): a printer built in three.js prints the real Mladá Vlna logo (traced from `images/logos/logo.png` by `tools/trace-logo.py` into `models/logo-shape.json`) layer by layer: the bed steps down, the blue head traces each layer's outline, the fan spins and the spool turns, a little screen counts the percentage. When done the head parks, the bed lowers, the logo stands up and turns once, then it prints again in the next colour (blue, green, orange, dark). It is built in an idle moment once the section is within about 1,400 px, drawn only while on screen, still for reduced motion, and replaced by the flat logo if WebGL is missing.
 - **Smooth scrolling:** Lenis 1.1.13 from unpkg (wheel only, off for reduced motion); in-page links glide to their section.
 
-`redesign/index.html` is an older, rejected first homepage. Leave it unless asked.
+The older, rejected first homepage (`redesign/index.html`, with `css/main.css`, `js/hero.js`, `js/site.js` and three images) was removed when the design moved to the root; it is in the git history.
 
 ## Files
 
 | File | What it does |
 |---|---|
-| `home2.html`, `css/home2.css`, `js/home2.js` | The page (litter drawings and trail marker are inline SVG symbols at the top of the body), its styles, and the SK/EN switch, Lenis smooth scroll, top bar state, phone menu, litter pick-up and scroll reveals |
+| `index.html`, `css/home2.css`, `js/home2.js` | The page (litter drawings and trail marker are inline SVG symbols at the top of the body), its styles, and the SK/EN switch, Lenis smooth scroll, top bar state, phone menu, litter pick-up and scroll reveals |
 | `js/hero-forest.js` | The forest scene: sky, mountain, ground, trees, plants, light, litter, scroll walk, quality control |
 | `js/forest-volunteers.js` | Realistic rigged characters and their walk, idle and crouch behaviour (loads glTF with GLTFLoader + MeshoptDecoder) |
 | `js/printer.js`, `models/logo-shape.json`, `tools/trace-logo.py` | The 3D printer in the digital skills section, the traced logo outline it prints, and the script that traces it (needs Pillow and NumPy) |
@@ -47,7 +47,7 @@ Module scripts need a web server. From the repository root:
 python -m http.server 8123
 ```
 
-Then open `http://localhost:8123/redesign/home2.html`.
+Then open `http://localhost:8123/`.
 
 Test switches on that address:
 
@@ -101,7 +101,7 @@ Test switches on that address:
 - **The poster is a single random moment** (people placement differs per load; re-rendered 16 November 2026 after the walk was shortened). Re-render it after changing the scene with Playwright: load `?debug&tier=high&ratio=1` with the page overlays and `.hero__poster` hidden, screenshot `.hero__stage` at 1600×900 and 720×1280, then save AVIF and JPG under 100 KB with Pillow.
 - **All Slovak and English wording was written during the redesign** and needs a native check. The stats (5 exchanges, 9 countries) were counted from the old site and need confirming.
 - **Photos are the original large files** from `Projekty/`.
-- **Blog and documents pages** still use the old design. The project pages are redone (below).
+- **Blog and documents pages:** the old blog forwards to the projects page (the posts were folded into the project pages) and the old documents page to the documents section of About us.
 
 ## What the owner has asked for and rejected
 
@@ -112,11 +112,11 @@ Test switches on that address:
 ## Project pages (15 November 2026)
 
 - `projects/index.html` lists every Erasmus+ exchange (photo-led rows, newest first); `projects/<slug>.html` is one page per project: full-screen cover photo, a short lead with the facts (dates, place, countries, participants, venue), then the photo gallery (opens full screen: arrows, keys, swipe), an **All materials of the project** button to the project's Google Drive folder where there is one, the info pack, a short "How it went" story, and links to the previous and next project.
-- **Generated:** the pages are built by `tools/build-projects.py` from the content in that file (Slovak and English side by side). Edit the content there and run `python tools/build-projects.py` from the `redesign` folder; it also makes web-sized, upright copies of the photos in `img/projects/<slug>/` (42 MB of originals down to 9.7 MB, and a page loads only the 900 px versions). Styles are in `css/pages.css`, the photo viewer in `js/gallery.js`.
+- **Generated:** the pages are built by `tools/build-projects.py` from the content in that file (Slovak and English side by side). Edit the content there and run `python tools/build-projects.py` from the repository root; it also makes web-sized, upright copies of the photos in `img/projects/<slug>/` (42 MB of originals down to 9.7 MB, and a page loads only the 900 px versions). Styles are in `css/pages.css`, the photo viewer in `js/gallery.js`.
 - **Content:** taken from the old project pages (Slovak) and blog posts (two Slovak, two English), condensed into a lead and 2–4 short chapters so the photos lead. Both languages need a native check.
 - **Confirmed:** CTRL + ALT + RIGHTS ran 14–21 June 2025 (the old blog's "July" was wrong).
 - **Confirmed:** Smart & Sustainable ran 27 December 2025 – 4 January 2026: seven days of programme plus two travel days, so its page says "seven days" with those dates. The travel days are deliberately not mentioned.
-- **To confirm with the owner:** CTRL + ALT + RIGHTS countries (the old page says 4 in one place and 6 in another; the page uses the 4 named: Bulgaria, Romania, Poland, Slovakia). Only ReToy and Smart & Sustainable have a Drive folder; Populism 101 and The Masters of Puppets show just the info pack. CTRL + ALT + RIGHTS shows no info pack: the owner said it should not be public (16 November 2026).
+- **To confirm with the owner:** CTRL + ALT + RIGHTS countries (the old page says 4 in one place and 6 in another; the page uses the 4 named: Bulgaria, Romania, Poland, Slovakia; the owner confirmed 4 on 16 November 2026). Only ReToy and Smart & Sustainable have a Drive folder; Populism 101 and The Masters of Puppets show just the info pack. CTRL + ALT + RIGHTS shows no info pack: the owner said it should not be public (16 November 2026).
 - **EU emblem (owner, 16 November 2026):** the "Co-funded by the European Union" emblem goes only on the pages of the projects themselves: each `projects/<slug>.html` shows it under the facts (`img/eu-cofunded.png`, a 640 px copy of `images/eu.png`). Not on the homepage, the projects list or the old site's main pages (removed there on 15 November 2026 on purpose; the old pages in `Projekty/` keep theirs).
 - **Countries as flags (16 November 2026):** the Countries fact shows flags instead of names: flat inline SVGs drawn in `tools/build-projects.py` (`FLAGS`, `FLAG_CODE`; add a country there before using it in a project), with the country name as each flag's accessible label. The glossy PNGs in `flags/` were too small and dated.
 - **Info packs:** only Populism 101 has one. The other four (CTRL + ALT + RIGHTS, Smart & Sustainable, The Masters of Puppets, ReToy) were deleted from the repository on 16 November 2026 at the owner's request, together with the links to them on the old project pages in `Projekty/`; they remain in git history (owner, 16 November 2026).
@@ -139,12 +139,17 @@ Test switches on that address:
 - **They sometimes never loaded:** their loading waited for an idle moment with no deadline, and with the forest, the smooth scroll and the printer all drawing, that moment could fail to come. It now has a 1.5 s deadline (`whenIdle` in `js/hero-forest.js`).
 - **They vanished at the edge of the picture:** the compressed models' own bounds are a 2 cm dot at the feet, so a person was skipped as soon as their feet left the frame or the shadow area. They are now drawn always until posed, then measured with their bones and given a sphere 1.45 times the body's (`fitBounds` in `js/forest-volunteers.js`).
 
+## Old addresses and link previews (16 November 2026)
+
+- **Old addresses keep working:** `tools/make-redirects.py` turns each old page into a tiny forwarding page (sent on at once, with `noindex` and a canonical link for search engines): `about-us.html` to About us, `projects.html` and `blog.html` to Projects, `contact.html` to Contact, `documents.html` to the documents section of About us, the old template's `features.html` and `testimonials.html` to the homepage, and each project's two old pages under `Projekty/` (the page and its blog post) to its new project page. The mapping is at the top of that script. `Projekty/` still holds the original photos (the build makes the web copies from them) and the Populism 101 info pack; `Documents/` holds the PDFs linked from About us.
+- **Link previews:** every page has a canonical address and Open Graph tags (title, description, a 1200 x 630 picture, `sk_SK` with `en_GB`), so a shared link shows a card. The pictures are in `img/share/`, cut by `tools/build-projects.py` (`share_image`, `preview_tags`): the forest for the homepage and Contact, the ReToy sharing circle for About us, the ReToy smart-city model for Projects, and each project's cover photo. The homepage's tags are written by hand in `index.html`. The site address is `SITE_URL` (https://mladavlna.github.io/); change it there and in `index.html` if the site gets its own domain.
+
 ## Before release
 
-- **Link check:** `python3 redesign/tools/check-links.py` (from the repository root) crawls the new pages from `home2.html` and reports any missing file, missing #section or link to an old page. It reported no problems on 16 November 2026; run it again before merging.
+- **Link check:** `python3 tools/check-links.py` (from the repository root) crawls the new pages from `index.html` and reports any missing file, missing #section or link to an old page. It reported no problems on 16 November 2026; run it again before merging.
 - **Scroll cue:** the hero shows a ringed arrow that nudges downwards on every screen size (`.hero__hint`, `.hero__arrow`): bottom right with the text and progress bar on wide screens, centred under the hero text with the text on phones and tablets, and just the arrow in the corner on short landscape screens. It fades as the walk goes dark.
 - **Phone top bar:** below 981 px the EN / SK switch sits in the bar beside the burger (it is outside `<nav>`, in `.top__end`), and the burger shows only its lines; the word "Menu" stays for screen readers. While the menu is open the bar has no backdrop filter, which otherwise shrank the menu sheet to the bar's height.
-- **Default language: Slovak** (confirmed by the organisation). `DEFAULT_LANG = 'sk'` in `js/home2.js`, `<html lang="sk">` in `home2.html` and the generated pages. A visitor's choice of English is kept for the rest of the visit.
+- **Default language: Slovak** (confirmed by the organisation). `DEFAULT_LANG = 'sk'` in `js/home2.js`, `<html lang="sk">` in `index.html` and the generated pages. A visitor's choice of English is kept for the rest of the visit.
 - Have the Slovak and English wording checked, especially the new mission and focus-area text. The environment photo is from an exchange in Rymanów, Poland; swap in a photo from a Košice or Prešov clean-up when there is one. The "How to join" steps still describe exchanges only.
 
 ## Rules agreed with the owner

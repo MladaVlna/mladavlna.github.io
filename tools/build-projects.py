@@ -3,13 +3,13 @@
 #
 # Content comes from the original site's project pages and blog posts (Projekty/*), condensed so the photos
 # lead. Slovak is the text in the HTML; English goes into window.PAGE_EN for the language switch.
-# Run from the redesign folder:   python tools/build-projects.py      (needs Pillow)
+# Run from the repository root:   python tools/build-projects.py      (needs Pillow)
 import html, json, os, sys
 from PIL import Image, ImageOps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SITE = os.path.dirname(HERE)                 # redesign/
-ROOT = os.path.dirname(SITE)                 # repository root, with Projekty/
+SITE = os.path.dirname(HERE)                 # the repository root: the site itself
+ROOT = SITE                                  # Projekty/ and Documents/ are there too
 OUT = os.path.join(SITE, 'projects')
 
 # ---------------------------------------------------------------------------------------------------------
@@ -218,12 +218,41 @@ def make_photos(p):
     return result
 
 # ---------------------------------------------------------------------------------------------------------
+# Link previews: when a page is shared (WhatsApp, Instagram, Facebook, ...) the app shows its title,
+# description and a 1200 x 630 picture. The pictures are cut from a photo into img/share/.
+SITE_URL = 'https://mladavlna.github.io/'
+def share_image(src, name):
+    out = os.path.join(SITE, 'img', 'share', name + '.jpg')
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    if not (os.path.exists(out) and os.path.getmtime(out) > os.path.getmtime(src)):
+        im = ImageOps.exif_transpose(Image.open(src)).convert('RGB')
+        ImageOps.fit(im, (1200, 630), Image.LANCZOS, centering=(0.5, 0.45)).save(out, quality=82, optimize=True, progressive=True)
+    return f'img/share/{name}.jpg'
+
+def preview_tags(title, desc, path, image, alt):
+    url = SITE_URL + path.replace('index.html', '')
+    return f'''  <link rel="canonical" href="{e(url)}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Mladá Vlna">
+  <meta property="og:title" content="{e(title)}">
+  <meta property="og:description" content="{e(desc)}">
+  <meta property="og:url" content="{e(url)}">
+  <meta property="og:image" content="{e(SITE_URL + image)}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{e(alt)}">
+  <meta property="og:locale" content="sk_SK">
+  <meta property="og:locale:alternate" content="en_GB">
+  <meta name="twitter:card" content="summary_large_image">
+'''
+
+# ---------------------------------------------------------------------------------------------------------
 # Shared parts. `en` collects the English text of the page for window.PAGE_EN.
 def t(en, key, pair):
     en[key] = pair[1]
     return f'data-i18n="{key}">{e(pair[0])}'
 
-def head(title_sk, desc, projects='index.html'):
+def head(title_sk, desc, projects='index.html', path='', image='img/share/home.jpg', alt='Les, ktorým sa začína stránka Mladej Vlny'):
     return f'''<!DOCTYPE html>
 <!-- Built by tools/build-projects.py: edit the content there and run it again, not this file. -->
 <!-- Opens in Slovak (DEFAULT_LANG in js/home2.js); the EN button switches to English. -->
@@ -234,7 +263,7 @@ def head(title_sk, desc, projects='index.html'):
   <title>{e(title_sk)} – Mladá Vlna</title>
   <meta name="description" content="{e(desc)}">
   <meta name="theme-color" content="#0e1f26">
-  <link rel="icon" href="../../images/logos/logo_small.png">
+{preview_tags(f"{title_sk} – Mladá Vlna", desc, path, image, alt)}  <link rel="icon" href="../images/logos/logo_small.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
@@ -245,14 +274,14 @@ def head(title_sk, desc, projects='index.html'):
 <body>
   <a class="skip" href="#main" data-i18n="skip">Preskočiť na obsah</a>
   <header class="top">
-    <a class="brand" href="../home2.html">
+    <a class="brand" href="../index.html">
       <img src="../img/logo-mark.png" alt="" width="46" height="46">
       <span>Mladá Vlna</span>
     </a>
     <nav class="nav" id="nav" aria-label="Hlavná navigácia" data-lenis-prevent>
       <a href="../about/index.html" data-i18n="nav_about">O nás</a>
       <a href="{projects}" data-i18n="nav_projects">Projekty</a>
-      <a href="../home2.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
+      <a href="../index.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
       <a href="../contact/index.html" data-i18n="nav_contact">Kontakt</a>
     </nav>
     <!-- The language switch sits outside the menu, so on phones it stays in the top bar beside the menu button. -->
@@ -392,7 +421,7 @@ def project_page(i, p, photos):
     if p.get('drive'):
         mats += f'<a class="btn btn--dark" href="{e(p["drive"])}" target="_blank" rel="noopener noreferrer"><span {t(en, "materials", UI["materials"])}</span><span class="btn__arrow" aria-hidden="true">↗</span></a>\n          '
     if p.get('infopack'):
-        mats += f'<a class="link" href="../../Projekty/{e(p["folder"])}/{e(p["infopack"])}" target="_blank" rel="noopener"><span {t(en, "infopack", UI["infopack"])}</span> <span aria-hidden="true">↗</span></a>'
+        mats += f'<a class="link" href="../Projekty/{e(p["folder"])}/{e(p["infopack"])}" target="_blank" rel="noopener"><span {t(en, "infopack", UI["infopack"])}</span> <span aria-hidden="true">↗</span></a>'
 
     def nav_link(q, cls, label_key):
         qp = make_photos(q)[q['cover']]
@@ -466,7 +495,8 @@ def project_page(i, p, photos):
   </dialog>'''
     en['lb_close'], en['lb_prev'], en['lb_next'] = UI['lb_close'][1], UI['lb_prev'][1], UI['lb_next'][1]
     desc = p['lead'][0]
-    page = head(p['title'], desc) + body + foot(en, '\n  <script src="../js/gallery.js" defer></script>').replace('  </main>\n', '  </main>\n' + lightbox + '\n', 1)
+    shot = share_image(os.path.join(ROOT, 'Projekty', p['folder'], p['photos'][p['cover']]), p['slug'])
+    page = head(p['title'], desc, path=f"projects/{p['slug']}.html", image=shot, alt=p['title']) + body + foot(en, '\n  <script src="../js/gallery.js" defer></script>').replace('  </main>\n', '  </main>\n' + lightbox + '\n', 1)
     with open(os.path.join(OUT, p['slug'] + '.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
@@ -518,7 +548,8 @@ def overview(all_photos):
       </div>
     </section>
 '''
-    page = head('Projekty', 'Mládežnícke výmeny Erasmus+, na ktorých sa zúčastnili mladí z Mladej Vlny.') + body + foot(en)
+    shot = share_image(os.path.join(ROOT, 'Projekty', 'Retoy', PROJECTS[[q['slug'] for q in PROJECTS].index('retoy')]['photos'][1]), 'projects')
+    page = head('Projekty', 'Mládežnícke výmeny Erasmus+, na ktorých sa zúčastnili mladí z Mladej Vlny.', path='projects/index.html', image=shot, alt='Účastníci výmeny ReToy v Košiciach') + body + foot(en)
     with open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
@@ -621,7 +652,7 @@ def about():
         + '</li>'
         for i, (a, b, link) in enumerate(ABOUT_STORY))
     docs_html = '\n'.join(
-        f'            <li><a class="link" href="../../Documents/{f}" target="_blank" rel="noopener"><span {t(en, f"doc{i}", label)}</span> <span class="docs__type">PDF</span></a></li>'
+        f'            <li><a class="link" href="../Documents/{f}" target="_blank" rel="noopener"><span {t(en, f"doc{i}", label)}</span> <span class="docs__type">PDF</span></a></li>'
         for i, (f, label) in enumerate(ABOUT_DOCS))
     values_html = '\n'.join(
         f'          <li class="reveal"><span class="values__no">0{i + 1}</span><h3 {t(en, f"av{i}t", a)}</h3><p {t(en, f"av{i}p", b)}</p></li>'
@@ -723,7 +754,8 @@ def about():
     </section>
 """
     os.makedirs(os.path.join(SITE, 'about'), exist_ok=True)
-    page = head('O nás', 'Mladá Vlna je mládežnícke občianske združenie z Prešova, ktoré pomáha mladým byť aktívni vo vlastnej komunite.', '../projects/index.html') + body + foot(en)
+    shot = share_image(os.path.join(ROOT, 'Projekty', 'Retoy', PROJECTS[[q['slug'] for q in PROJECTS].index('retoy')]['photos'][17]), 'about')   # the sharing circle
+    page = head('O nás', 'Mladá Vlna je mládežnícke občianske združenie z Prešova, ktoré pomáha mladým byť aktívni vo vlastnej komunite.', '../projects/index.html', path='about/index.html', image=shot, alt='Mladí ľudia sedia v kruhu a rozprávajú sa') + body + foot(en)
     with open(os.path.join(SITE, 'about', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
@@ -822,12 +854,13 @@ def contact():
     a = foot_html.index('    <section class="cta" id="contact">'); b = foot_html.index('  </main>')
     foot_html = foot_html[:a] + foot_html[b:]
     foot_html = foot_html.replace('<footer class="foot">', '<footer class="foot foot--trees">\n    ' + TREELINE, 1)
-    page = head('Kontakt', 'Sleduj Mladú Vlnu na Instagrame @mladavlna alebo nám napíš na contact@mladavlna.org.', '../projects/index.html') + body + foot_html
+    page = head('Kontakt', 'Sleduj Mladú Vlnu na Instagrame @mladavlna alebo nám napíš na contact@mladavlna.org.', '../projects/index.html', path='contact/index.html') + body + foot_html
     with open(os.path.join(SITE, 'contact', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
+    share_image(os.path.join(SITE, 'img', 'hero-poster.jpg'), 'home')   # the homepage's (index.html) and Contact's link preview
     all_photos = {}
     for p in PROJECTS:
         all_photos[p['slug']] = make_photos(p)

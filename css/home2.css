@@ -19,8 +19,8 @@ html, body { background: var(--paper); }
   --print: #fdfdfa;         /* the white border of photo prints */
   --contour: rgba(34, 92, 146, 0.1);
   --moss: #2e6a48;
-  /* The film-grain texture over the page. Off for now (the owner is trying the page without it);
-     to bring it back, set this to url("../img/grain.png"). */
+  /* The film-grain texture over the page: switched off at the owner's request. The image was removed
+     with the first draft (redesign/img/grain.png in the git history). */
   --grain: none;
   --accent: #225c92;        /* the blue of the Mladá Vlna logo: the one accent */
   --accent-light: #7fb0e0;  /* the same blue, lightened for text and lines on dark backgrounds */
@@ -30,7 +30,7 @@ html, body { background: var(--paper); }
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* The earlier palette, for comparison: home2.html?palette=warm */
+/* The earlier palette, for comparison: index.html?palette=warm */
 html[data-palette="warm"] {
   --forest: #10261f; --night: #040a08; --dark-mid: #0b1d17; --ink: #18241f; --paper: #f1ede2; --paper-deep: #e6e1d2;
   --muted: #5a665f; --line: rgba(24, 36, 31, 0.16); --on-dark: #b9cbc1; --on-dark-faint: #7c9c8c;
@@ -200,7 +200,7 @@ h1 .soft { color: #cfe3cf; }
 .printer__status { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; font-family: var(--sans); font-size: 0.8rem; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
 .printer__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(34, 92, 146, 0.18); }
 .printer.is-done .printer__dot { background: var(--moss); box-shadow: 0 0 0 4px rgba(46, 106, 72, 0.18); }
-.printer.no-3d { background: url("../../images/logos/logo.png") center / min(60%, 320px) no-repeat; }
+.printer.no-3d { background: url("../images/logos/logo.png") center / min(60%, 320px) no-repeat; }
 .printer.no-3d .printer__canvas, .printer.no-3d .printer__status { display: none; }
 .printer__pct { color: var(--ink); min-width: 4ch; text-align: right; font-variant-numeric: tabular-nums; }
 

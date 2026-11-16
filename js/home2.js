@@ -140,7 +140,7 @@
     }, lenis ? 1900 : 900);
   }
 
-  // Arriving from another page with a section in the address (home2.html#join): go to it once the page
+  // Arriving from another page with a section in the address (index.html#join): go to it once the page
   // has its final height, under the top bar.
   if (location.hash.length > 1) {
     window.addEventListener('load', function () {

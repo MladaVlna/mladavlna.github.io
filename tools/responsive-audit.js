@@ -1,4 +1,4 @@
-// Responsive layout check for home2.html. In the browser console at any window size:
+// Responsive layout check for the homepage (index.html). In the browser console at any window size:
 //   await (new (async () => {}).constructor(await (await fetch("tools/responsive-audit.js", { cache: "reload" })).text()))()
 await new Promise((r) => setTimeout(r, 2500));
 const W = innerWidth, H = innerHeight, out = { size: W + 'x' + H };
