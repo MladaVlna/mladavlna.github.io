@@ -62,7 +62,6 @@ h3 { font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.12; font-weight
 .label { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
 .label--light { color: var(--accent-light); }
 .label--rule { margin-top: clamp(70px, 9vw, 120px); padding-top: 18px; border-top: 1px solid var(--line); }
-.label--light 
 /* ---------- buttons ---------- */
 /* Primary: a plain, solid paper button; secondary: an underlined text link. No pills, no glow. */
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; }
