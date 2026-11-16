@@ -7,7 +7,7 @@
   // Slovak is the text in the HTML. Only English lives here.
   var en = {
     skip: 'Skip to content', menu: 'Menu',
-    nav_about: 'About', nav_focus: 'What we do', nav_projects: 'Projects', nav_join: 'How to join', nav_contact: 'Contact',
+    nav_about: 'About Us', nav_focus: 'What we do', nav_projects: 'Projects', nav_join: 'How to join', nav_contact: 'Contact',
     hero_lead: "Together we're making eastern Slovakia a better place. For everyone, but especially for young people.",
     hero_hint: "Scroll · we'll clean the forest",
     mission_label: 'Our mission',
