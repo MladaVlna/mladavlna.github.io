@@ -108,7 +108,8 @@ PROJECTS = [
        ('Uvážlivejší výber oblečenia, dlhšie nosenie, organizovanie swapov či rozhovory s rodinou a priateľmi sa môžu zdať ako malé kroky, no keď sa opakujú v celých komunitách, ich vplyv rastie. Účastníci odchádzali s vedomím, že nie sú len spotrebitelia, ale aktívni občania, a že zmena sa môže začať niečím takým obyčajným, ako je oblečenie, ktoré si vyberáme.',
         'Choosing clothes more carefully, wearing them longer, organising swaps and talking to friends and family can look like small steps, but repeated across communities they add up. Participants left seeing themselves not just as consumers but as active citizens, knowing that change can start with something as ordinary as the clothes we choose to wear.')),
     ],
-    photos=['image4.jpg', 'image1.jpg', 'image2.jpg', 'image3.jpg', 'image5.jpg', 'image6.jpg', 'image8.jpg', 'image9.jpg', 'image10.jpg', 'image7.jpg', 'image11.jpg'], cover=0,
+    # swap1-5: the clothes swap on 2 January 2026, in the order they were taken (owner, 16 November 2026).
+    photos=['image4.jpg', 'image1.jpg', 'image2.jpg', 'image3.jpg', 'image5.jpg', 'image6.jpg', 'image8.jpg', 'image9.jpg', 'image10.jpg', 'image7.jpg', 'image11.jpg', 'swap1.jpg', 'swap2.jpg', 'swap3.jpg', 'swap4.jpg', 'swap5.jpg'], cover=0,
     infopack='infopack.pdf', drive='https://drive.google.com/drive/u/1/folders/10iM9XoiMdyGh3-rM8H0AdbNKT35-HJ4l',
   ),
   dict(
