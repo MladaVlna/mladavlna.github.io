@@ -439,15 +439,15 @@ def overview(all_photos):
 
 # ---------------------------------------------------------------------------------------------------------
 # The About page (about/index.html). Facts from the old about-us.html, the statutes (Documents/) and the
-# homepage; the team is the one on the old site (to be confirmed by the owner). Each text is (Slovak, English).
+# homepage; the team is the one on the old site, first names only and no roles (owner, 16 November 2026). Each text is (Slovak, English).
 TEAM = [
-  dict(name='Lukáš Tomaščík', photo='lukas', role=('Predseda', 'Chair'),
+  dict(name='Lukáš', photo='lukas',
        bio=('Vyštudoval informatiku a pedagogiku na Technickej univerzite v Košiciach, kde je dnes doktorandom a skúma optimalizáciu algoritmov pomocou umelej inteligencie. Prešiel mnohými mládežníckymi výmenami a kurzami Erasmus+ a priniesol si z nich kontakty z celej Európy.',
             'He studied computer science and education at the Technical University of Košice, where he is now a PhD student researching how to optimise algorithms with AI. He has taken part in many Erasmus+ youth exchanges and courses, and brought back contacts from all over Europe.')),
-  dict(name='Nikola Tomaščíková', photo='nika', role=('Manažérka digitalizácie', 'Digital manager'),
-       bio=('Vyštudovala informatiku a pedagogiku na Technickej univerzite v Košiciach a ako doktorandka sa venuje matematike, konkrétne extremálnym algebrám. V združení je manažérkou digitalizácie a má na starosti web a všetko digitálne. Vo voľnom čase bicykluje, lyžuje a hrá stolný tenis.',
-            'She studied computer science and education at the Technical University of Košice, and as a PhD student researches mathematics, specifically extremal algebras. In the association she is the digital manager, looking after the website and everything digital. In her free time she cycles, skis and plays table tennis.')),
-  dict(name='Adam Hudák', photo='adam', role=('Ekológia a udržateľnosť', 'Ecology and sustainability'),
+  dict(name='Nikola', photo='nika',
+       bio=('Vyštudovala informatiku a pedagogiku na Technickej univerzite v Košiciach a ako doktorandka sa venuje matematike, konkrétne extremálnym algebrám. Vo voľnom čase bicykluje, lyžuje a hrá stolný tenis.',
+            'She studied computer science and education at the Technical University of Košice, and as a PhD student researches mathematics, specifically extremal algebras. In her free time she cycles, skis and plays table tennis.')),
+  dict(name='Adam', photo='adam',
        bio=('Vyštudoval lesníctvo a ochranu prírody. Rozumie environmentálnej vede, ochrane biodiverzity a udržateľnému hospodáreniu s prírodnými zdrojmi. Venuje sa ekologickej výchove, environmentálnej politike a udržateľným postupom, a preto je oporou našich zelených projektov.',
             'He studied forestry and nature conservation, and knows environmental science, biodiversity protection and sustainable resource management. His fields are ecological education, environmental policy and sustainable practice, which makes him the backbone of our green projects.')),
 ]
@@ -536,7 +536,6 @@ def about():
         '          <li class="reveal">\n'
         f'            <img src="../img/team/{m["photo"]}.webp" alt="{e(m["name"])}" width="720" height="900" loading="lazy" decoding="async">\n'
         f'            <h3>{e(m["name"])}</h3>\n'
-        f'            <p class="team__role" {t(en, f"tr{i}", m["role"])}</p>\n'
         f'            <p {t(en, f"tb{i}", m["bio"])}</p>\n'
         '          </li>'
         for i, m in enumerate(TEAM))
