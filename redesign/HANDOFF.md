@@ -111,7 +111,8 @@ Test switches on that address:
 
 - `about/index.html`, built by `tools/build-projects.py` (`about()`, texts in `TEAM`, `ABOUT_FOCUS`, `ABOUT_VALUES`, `ABOUT_TEXT`): who we are, what we do (the three focus areas plus Erasmus+), how we work, the team, and the association's details. "About" in every top bar now opens it (it used to scroll to the mission).
 - Content comes from the old `about-us.html`, the old homepage FAQ, the statutes in `Documents/` and the new homepage. Team photos are cropped from `images/Nika.jpg`, `Lukas.jpg`, `Adam.jpg` into `img/team/` (Adam's number plate cropped out).
-- **To confirm with the owner:** whether the team (Lukáš, Nika, Adam) is current and complete, their roles (Adam had none on the old site; "Ecology and sustainability" describes his background), the IČO and founding year (not on the page yet).
+- More context from the owner (16 November 2026, text from an Erasmus+ application): the TrashCan volunteer clean-up, ReToy as our own exchange, the partner network, intercultural dialogue and inclusion, full names of the team.
+- **To confirm with the owner:** whether the team is current and complete; Lukáš's role (the old site says chair, the application text gives him Nikola's role of digital manager; the page says chair); Adam's role ("Ecology and sustainability" describes his background); the IČO and founding year (not on the page yet).
 
 ## Fixed: volunteers disappearing (15 November 2026)
 

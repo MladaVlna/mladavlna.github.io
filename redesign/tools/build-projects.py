@@ -441,26 +441,39 @@ def overview(all_photos):
 # The About page (about/index.html). Facts from the old about-us.html, the statutes (Documents/) and the
 # homepage; the team is the one on the old site (to be confirmed by the owner). Each text is (Slovak, English).
 TEAM = [
-  dict(name='Lukáš', photo='lukas', role=('Predseda', 'Chair'),
+  dict(name='Lukáš Tomaščík', photo='lukas', role=('Predseda', 'Chair'),
        bio=('Vyštudoval informatiku a pedagogiku na Technickej univerzite v Košiciach, kde je dnes doktorandom a skúma optimalizáciu algoritmov pomocou umelej inteligencie. Prešiel mnohými mládežníckymi výmenami a kurzami Erasmus+ a priniesol si z nich kontakty z celej Európy.',
             'He studied computer science and education at the Technical University of Košice, where he is now a PhD student researching how to optimise algorithms with AI. He has taken part in many Erasmus+ youth exchanges and courses, and brought back contacts from all over Europe.')),
-  dict(name='Nika', photo='nika', role=('Manažérka digitalizácie', 'Digital manager'),
-       bio=('Vyštudovala informatiku a pedagogiku na Technickej univerzite v Košiciach a ako doktorandka sa venuje matematike, konkrétne extremálnym algebrám. V združení má na starosti web a všetko digitálne. Vo voľnom čase bicykluje, lyžuje a hrá stolný tenis.',
-            'She studied computer science and education at the Technical University of Košice, and as a PhD student researches mathematics, specifically extremal algebras. In the association she looks after the website and everything digital. In her free time she cycles, skis and plays table tennis.')),
-  dict(name='Adam', photo='adam', role=('Ekológia a udržateľnosť', 'Ecology and sustainability'),
-       bio=('Vyštudoval lesníctvo a ochranu prírody. Rozumie environmentálnej vede, ochrane biodiverzity a udržateľnému hospodáreniu s prírodnými zdrojmi, a preto je oporou našich zelených projektov a environmentálneho vzdelávania.',
-            'He studied forestry and nature conservation. He knows environmental science, biodiversity protection and sustainable resource management, which makes him the backbone of our green projects and environmental education.')),
+  dict(name='Nikola Tomaščíková', photo='nika', role=('Manažérka digitalizácie', 'Digital manager'),
+       bio=('Vyštudovala informatiku a pedagogiku na Technickej univerzite v Košiciach a ako doktorandka sa venuje matematike, konkrétne extremálnym algebrám. V združení je manažérkou digitalizácie a má na starosti web a všetko digitálne. Vo voľnom čase bicykluje, lyžuje a hrá stolný tenis.',
+            'She studied computer science and education at the Technical University of Košice, and as a PhD student researches mathematics, specifically extremal algebras. In the association she is the digital manager, looking after the website and everything digital. In her free time she cycles, skis and plays table tennis.')),
+  dict(name='Adam Hudák', photo='adam', role=('Ekológia a udržateľnosť', 'Ecology and sustainability'),
+       bio=('Vyštudoval lesníctvo a ochranu prírody. Rozumie environmentálnej vede, ochrane biodiverzity a udržateľnému hospodáreniu s prírodnými zdrojmi. Venuje sa ekologickej výchove, environmentálnej politike a udržateľným postupom, a preto je oporou našich zelených projektov.',
+            'He studied forestry and nature conservation, and knows environmental science, biodiversity protection and sustainable resource management. His fields are ecological education, environmental policy and sustainable practice, which makes him the backbone of our green projects.')),
 ]
 
 ABOUT_FOCUS = [
   (('Životné prostredie', 'Environment'),
-   ('Upratovacie akcie v Košiciach a Prešove a projekty, v ktorých odpad dostane druhý život.', 'Clean-up actions in Košice and Prešov, and projects that give rubbish a second life.')),
+   ('Upratovacie akcie, environmentálna výchova a projekty o zelených iniciatívach, udržateľnom rozvoji a zodpovednej spotrebe.', 'Clean-ups, environmental education, and projects on green initiatives, sustainable development and responsible consumption.')),
   (('Digitálne zručnosti', 'Digital skills'),
    ('AI, vibe coding a 3D tlač ako nástroje učenia a tvorby pre mladých s menšími príležitosťami.', 'AI, vibe coding and 3D printing as tools for learning and making, for young people with fewer opportunities.')),
   (('Duševné zdravie', 'Mental health'),
    ('Bezpečný priestor, kde sa mladí prepájajú, zdieľajú, čím prechádzajú, a zvládajú výzvy spolu.', 'Safe spaces where young people connect, share what they are going through and face challenges together.')),
+  (('Medzikultúrny dialóg a začlenenie', 'Intercultural dialogue and inclusion'),
+   ('Priestor, kde si mladí z rôznych prostredí vymieňajú nápady a pracujú spolu.', 'Spaces where young people from different backgrounds exchange ideas and work together.')),
   (('Výmeny a školenia Erasmus+', 'Erasmus+ exchanges and training'),
    ('Mládežnícke výmeny pre 13- až 30-ročných a tréningové kurzy pre pracovníkov s mládežou, pedagógov a dobrovoľníkov.', 'Youth exchanges for 13 to 30 year olds, and training courses for youth workers, teachers and volunteers.')),
+]
+ABOUT_STORY = [
+  (('TrashCan', 'TrashCan'),
+   ('Lukáš a Nikola dali dokopy skupinu dobrovoľníkov a zorganizovali zber odpadu v jednej slovenskej obci. Z tohto nápadu vyrástla naša environmentálna práca.',
+    'Lukáš and Nikola brought together a group of volunteers and organised a litter collection in a Slovak village. Our environmental work grew out of that idea.'), None),
+  (('ReToy, naša vlastná výmena', 'ReToy, our own exchange'),
+   ('Zorganizovali sme mládežnícku výmenu, na ktorej mladí zo šiestich krajín upratali Košice a z odpadu postavili model inteligentného mesta s hračkami z 3D tlačiarne. Model sme darovali CVČ Domino, kde stojí na hlavnej chodbe.',
+    'We organised a youth exchange where young people from six countries cleaned up Košice and built a model smart city from the rubbish, with toys from a 3D printer. We donated the model to the CVČ Domino youth centre, where it stands in the main corridor.'), '../projects/retoy.html'),
+  (('Sieť partnerov po Európe', 'Partners across Europe'),
+   ('Naši členovia prešli mnohými výmenami, tréningovými kurzami a strategickými partnerstvami Erasmus+. Získali sme sieť európskych partnerov, skúsenosti s riadením projektov a overený spôsob, ako aktivity pripraviť aj vyhodnotiť.',
+    'Our members have taken part in many Erasmus+ exchanges, training courses and strategic partnerships. That gave us a network of European partners, experience in managing projects and a tried way of preparing and evaluating activities.'), '../projects/index.html'),
 ]
 ABOUT_VALUES = [
   (('Učíme sa robením', 'We learn by doing'),
@@ -474,18 +487,23 @@ ABOUT_TEXT = {
   'ab_label': ('O nás', 'About us'),
   'ab_title': ('Mladí ľudia, ktorí menia východné Slovensko.', 'Young people changing eastern Slovakia.'),
   'ab_lead': ('Mladá Vlna je mládežnícke občianske združenie so sídlom v Prešove. Pomáhame mladým ľuďom byť aktívni vo vlastnej komunite, v Košiciach, Prešove aj v ich okolí.',
-              'Mladá Vlna is a youth-led civic association based in Prešov. We help young people become active in their own community, in Košice, Prešov and the towns around them.'),
+              'Mladá Vlna (Youth Wave) is a youth-led civic association based in Prešov. We help young people become active in their own community, in Košice, Prešov and the towns around them.'),
   'who_label': ('Kto sme', 'Who we are'),
   'who_title': ('Zmena začína tam, kde žiješ.', 'Change starts where you live.'),
   'who_p1': ('Preto pracujeme s mladými ľuďmi na východnom Slovensku: staráme sa o miesto, kde žijeme, učíme sa spolu nové zručnosti a sme tu jeden pre druhého.',
              'That is why we work with young people in eastern Slovakia: we look after the place we live in, learn new skills together and are there for each other.'),
   'who_p2': ('Niektoré aktivity robíme vlastnými silami, iné s podporou programu Erasmus+, vždy spolu s partnermi doma aj v zahraničí. Spájame mladých z rôznych miest a krajín, aby sa navzájom inšpirovali.',
              'Some of our activities we run on our own, others with the support of Erasmus+, always together with partners at home and abroad. We bring together young people from different towns and countries so they can inspire each other.'),
+  'who_p2b': ('Vytvárame príležitosti pre mladých, študentov, pracovníkov s mládežou aj širokú verejnosť zapojiť sa do medzinárodných projektov, výmen a školení. Veríme v silu vzdelávania a medzikultúrnej spolupráce: účastníci si rozvíjajú kľúčové kompetencie, kreatívne myslenie a jazykové zručnosti a nachádzajú priateľov aj pracovné kontakty po celej Európe.',
+              'We create opportunities for young people, students, youth workers and the wider public to take part in international projects, exchanges and training. We believe in the power of education and intercultural cooperation: participants build key competences, creative thinking and language skills, and make friends and professional contacts across Europe.'),
   'who_p3': ('Prednosť dávame mladým ľuďom s menšími príležitosťami: tým, ktorí sa nedostanú často cestovať, vyskúšať nové technológie či byť vypočutí.',
              'We give priority to young people with fewer opportunities: those who rarely get the chance to travel, try new technology or have their voice heard.'),
   'wd_label': ('Čo robíme', 'What we do'),
-  'wd_title': ('Štyri cesty, jeden cieľ.', 'Four paths, one goal.'),
+  'wd_title': ('Päť ciest, jeden cieľ.', 'Five paths, one goal.'),
   'wd_link': ('Naše projekty', 'Our projects'),
+  'st_label': ('Čo sme už urobili', 'What we have done'),
+  'st_title': ('Od jednej dediny po celú Európu.', 'From one village to all of Europe.'),
+  'st_more': ('Viac', 'More'),
   'vl_label': ('Čomu veríme', 'What we believe in'),
   'vl_title': ('Ako pracujeme.', 'How we work.'),
   'tm_label': ('Náš tím', 'Our team'),
@@ -506,6 +524,11 @@ def about():
     focus_html = '\n'.join(
         f'          <li class="reveal"><strong {t(en, f"af{i}t", a)}</strong><span {t(en, f"af{i}p", b)}</span></li>'
         for i, (a, b) in enumerate(ABOUT_FOCUS))
+    story_html = '\n'.join(
+        f'          <li class="reveal"><span class="values__no">0{i + 1}</span><h3 {t(en, f"as{i}t", a)}</h3><p {t(en, f"as{i}p", b)}</p>'
+        + (f'<p class="values__more"><a class="link" href="{link}"><span {T("st_more")}</span> <span aria-hidden="true">→</span></a></p>' if link else '')
+        + '</li>'
+        for i, (a, b, link) in enumerate(ABOUT_STORY))
     values_html = '\n'.join(
         f'          <li class="reveal"><span class="values__no">0{i + 1}</span><h3 {t(en, f"av{i}t", a)}</h3><p {t(en, f"av{i}p", b)}</p></li>'
         for i, (a, b) in enumerate(ABOUT_VALUES))
@@ -536,6 +559,7 @@ def about():
         <div class="about__text">
           <p class="body" {T("who_p1")}</p>
           <p class="body" {T("who_p2")}</p>
+          <p class="body" {T("who_p2b")}</p>
           <p class="body" {T("who_p3")}</p>
         </div>
       </div>
@@ -556,6 +580,16 @@ def about():
 
     <section class="section paper">
       <div class="wrap">
+        <p class="label"><span {T("st_label")}</span></p>
+        <h2 {T("st_title")}</h2>
+        <ol class="values">
+{story_html}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section paper paper--deep">
+      <div class="wrap">
         <p class="label"><span {T("vl_label")}</span></p>
         <h2 {T("vl_title")}</h2>
         <ol class="values">
@@ -564,7 +598,7 @@ def about():
       </div>
     </section>
 
-    <section class="section paper paper--deep" id="team">
+    <section class="section paper" id="team">
       <div class="wrap">
         <p class="label"><span {T("tm_label")}</span></p>
         <h2 {T("tm_title")}</h2>
@@ -574,7 +608,7 @@ def about():
       </div>
     </section>
 
-    <section class="section paper pnext-wrap">
+    <section class="section paper paper--deep pnext-wrap">
       <div class="wrap pintro__grid">
         <div>
           <p class="label"><span {T("fx_label")}</span></p>
