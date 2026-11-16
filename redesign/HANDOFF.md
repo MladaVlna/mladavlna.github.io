@@ -11,6 +11,7 @@ A redesign of mladavlna.github.io, the site of Mladá Vlna, a Slovak civic assoc
 `redesign/home2.html` is the page to keep building. The owner said of it: "we are finally on a good path".
 
 - **Hero:** a scroll-driven 3D scene of a sunny Slovak spruce forest full of litter (clear blue sky, warm low sun, only a light haze; made sunnier and less foggy on 15 November 2026 at the owner's request, posters re-captured to match), with a snow-capped mountain behind. Scrolling walks the visitor down a trail and the litter ahead lifts away, leaving the forest clean.
+- **Walk length (16 November 2026):** the hero is 220vh tall (was 330vh), so the walk and the dive into the tree take 1.2 screens of scrolling instead of 2.3; the black pause before the mission text is 12vh shorter. The owner wanted to reach the tree faster. Change `.hero { height }` in `css/home2.css` to tune it; the 3D reads the length from the page.
 - **People:** five realistic volunteers walk to real litter pieces, crouch, pick them up with grabber sticks and carry rubbish bags.
 - **The walk ends inside a tree:** the last fifth of the scroll turns you to a big spruce beside the end of the trail and walks you into its trunk, with a slight push in; the screen goes black, and the mission section below starts in that same black (an earlier tree-ring transition was rejected by the owner and removed).
 - **Volunteers wear hi-vis vests** (mostly yellow, one orange) with two reflective bands, **and dark work gloves.**

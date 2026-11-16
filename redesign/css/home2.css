@@ -107,7 +107,7 @@ h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight
 /* ---------- hero ---------- */
 /* The hero is taller than the screen; its stage stays pinned while the scroll walks the camera down the trail,
    then into the trunk of the last tree, where the stage goes dark (--dark, 0 to 1) and hands over to the page. */
-.hero { position: relative; height: 330vh; }
+.hero { position: relative; height: 220vh; }   /* 1.2 screens of scrolling for the walk and the dive (was 2.3; owner, 16 November 2026: get to the tree faster) */
 .hero__stage {
   --p: 0;
   --dark: 0;
@@ -162,7 +162,7 @@ h1 .soft { color: #cfe3cf; }
 .print.reveal.is-in { transform: rotate(1.6deg); }
 
 /* ---------- mission: starts in the black of the trunk ---------- */
-.mission { background: var(--grain), linear-gradient(var(--night) 0%, var(--night) 26%, var(--dark-mid) 60%, var(--forest) 100%); color: #fff; padding-top: calc(clamp(120px, 16vw, 200px) + 22vh); }   /* a longer stretch of black after the tree before the mission text */
+.mission { background: var(--grain), linear-gradient(var(--night) 0%, var(--night) 26%, var(--dark-mid) 60%, var(--forest) 100%); color: #fff; padding-top: calc(clamp(120px, 16vw, 200px) + 12vh); }   /* a longer stretch of black after the tree before the mission text */
 .mission__title { font-size: clamp(2.6rem, 7.4vw, 6.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; max-width: 11em; }
 .mission__body { max-width: 40rem; margin-top: clamp(30px, 4vw, 54px); }
 .mission__body .body { margin-top: 0; font-size: clamp(1.08rem, 1.4vw, 1.25rem); }
