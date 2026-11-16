@@ -25,6 +25,8 @@
 .facts div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
 .facts dt { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); padding-top: 2px; }
 .facts dd { margin: 0; color: var(--ink); line-height: 1.45; }
+/* The EU emblem: required on the pages of EU-funded projects, so only there (not on the homepage). */
+.eu-funded { display: block; width: min(260px, 70%); height: auto; margin-top: 26px; }
 .facts a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
 
 /* ---------- gallery ---------- */

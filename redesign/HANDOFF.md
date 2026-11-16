@@ -104,6 +104,7 @@ Test switches on that address:
 - **Content:** taken from the old project pages (Slovak) and blog posts (two Slovak, two English), condensed into a lead and 2–4 short chapters so the photos lead. Both languages need a native check.
 - **Confirmed:** CTRL + ALT + RIGHTS ran 14–21 June 2025 (the old blog's "July" was wrong).
 - **To confirm with the owner:** CTRL + ALT + RIGHTS countries (the old page says 4 in one place and 6 in another; the page uses the 4 named: Bulgaria, Romania, Poland, Slovakia). Only ReToy and Smart & Sustainable have a Drive folder; the other three show just the info pack.
+- **EU emblem (owner, 16 November 2026):** the "Co-funded by the European Union" emblem goes only on the pages of the projects themselves: each `projects/<slug>.html` shows it under the facts (`img/eu-cofunded.png`, a 640 px copy of `images/eu.png`). Not on the homepage, the projects list or the old site's main pages (removed there on 15 November 2026 on purpose; the old pages in `Projekty/` keep theirs).
 - The language choice now carries from page to page within a visit (`sessionStorage`), still opening in English by default.
 
 ## Fixed: volunteers disappearing (15 November 2026)

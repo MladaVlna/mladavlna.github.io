@@ -323,7 +323,10 @@ def project_page(i, p, photos):
     <section class="paper pintro" data-paper-start>
       <div class="wrap pintro__grid">
         <p class="plead" {t(en, "lead", p["lead"])}</p>
-        {facts(en, p)}
+        <div>
+          {facts(en, p)}
+          <img class="eu-funded" src="../img/eu-cofunded.png" alt="Co-funded by the European Union" width="320" height="68" loading="lazy">
+        </div>
       </div>
     </section>
 
