@@ -1,0 +1,330 @@
+/* Second homepage. The 3D forest hero ends in black; the mission starts in that black, then the page turns to warm
+   paper like a field notebook. */
+html, body { background: var(--paper); }
+:root {
+  /* Palette (15 November 2026): cool off-white paper and deep blue-green ink, so the logo blue belongs on both.
+     The earlier warm cream and green-black palette is kept below as html[data-palette="warm"] (?palette=warm). */
+  --forest: #0e1f26;        /* deep blue-green ink: mission, closing section, footer */
+  --night: #04090b;         /* inside the tree trunk, where the hero walk ends, and where the mission starts */
+  --dark-mid: #0a161c;      /* halfway from the black to the dark sections */
+  --ink: #15212a;
+  --paper: #f5f4ef;         /* clean off-white with a hint of warmth */
+  --paper-deep: #eae9e3;
+  --muted: #56636b;
+  --line: rgba(21, 33, 42, 0.15);
+  --on-dark: #b8c7cf;       /* body text on the dark sections */
+  --on-dark-faint: #7d929c;
+  --paper-glass: rgba(245, 244, 239, 0.94);
+  --night-glass: rgba(4, 10, 13, 0.86);
+  --print: #fdfdfa;         /* the white border of photo prints */
+  --contour: rgba(34, 92, 146, 0.1);
+  --moss: #2e6a48;
+  /* The film-grain texture over the page: switched off at the owner's request. The image was removed
+     with the first draft (redesign/img/grain.png in the git history). */
+  --grain: none;
+  --accent: #225c92;        /* the blue of the Mladá Vlna logo: the one accent */
+  --accent-light: #7fb0e0;  /* the same blue, lightened for text and lines on dark backgrounds */
+  --display: "Schibsted Grotesk", "Inter Tight", system-ui, sans-serif;   /* chosen 16 November 2026: clearer than Bricolage Grotesque */
+  --sans: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gutter: clamp(20px, 5vw, 72px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The earlier palette, for comparison: index.html?palette=warm */
+html[data-palette="warm"] {
+  --forest: #10261f; --night: #040a08; --dark-mid: #0b1d17; --ink: #18241f; --paper: #f1ede2; --paper-deep: #e6e1d2;
+  --muted: #5a665f; --line: rgba(24, 36, 31, 0.16); --on-dark: #b9cbc1; --on-dark-faint: #7c9c8c;
+  --paper-glass: rgba(241, 237, 226, 0.94); --night-glass: rgba(4, 12, 9, 0.86); --print: #fbfaf5; --contour: rgba(46, 106, 72, 0.13);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: 84px; }
+html:not(.lenis) { scroll-behavior: smooth; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+body { margin: 0; color: var(--ink); font-family: var(--sans); font-size: 1.0625rem; line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: clip; }
+::selection { background: rgba(34, 92, 146, 0.28); color: var(--ink); }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 4px; }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 50; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; }
+.skip:focus { top: 16px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter); position: relative; }
+
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(2.3rem, 5.4vw, 4.6rem); max-width: 15em; }
+h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight: 600; }
+.body { max-width: 34em; color: var(--muted); margin: 24px 0 0; font-size: 1.12rem; }
+.body--light { color: var(--on-dark); }
+
+/* Labels: a few tracked words above each heading. */
+.label { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.label--light { color: var(--accent-light); }
+.label--rule { margin-top: clamp(70px, 9vw, 120px); padding-top: 18px; border-top: 1px solid var(--line); }
+/* ---------- buttons ---------- */
+/* Primary: a plain, solid paper button; secondary: an underlined text link. No pills, no glow. */
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; }
+.btn { display: inline-flex; align-items: center; gap: 14px; min-height: 54px; padding: 0 10px 0 24px; border-radius: 10px; background: var(--paper); color: var(--ink); font-weight: 600; text-decoration: none; transition: background 0.25s ease, transform 0.25s var(--ease); }
+.btn__arrow { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 7px; background: var(--ink); color: var(--paper); transition: transform 0.3s var(--ease); }
+.btn:hover { background: var(--accent); color: #fff; }
+.btn:hover .btn__arrow { background: #fff; color: var(--accent); }
+.btn:hover .btn__arrow { transform: translateX(3px); }
+.btn:active { transform: scale(0.98); }
+.link { position: relative; display: inline-flex; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0; }
+.link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: var(--accent); transform-origin: left; transition: transform 0.35s var(--ease); }
+.link:hover::after { transform: scaleX(0.35); }
+.link--light { color: #fff; }
+.link--light::after { background: var(--accent-light); }
+
+/* ---------- top bar ---------- */
+/* Over the forest it is just the mark, a wordmark and words. Once the page turns to paper it becomes a
+   full-width paper strip with a hairline under it. */
+.top { position: fixed; z-index: 30; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px var(--gutter); color: #fff; transition: background 0.35s ease, color 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease; }
+.top a, .top button { text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35); }
+.brand { display: flex; align-items: center; gap: 11px; text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 1.12rem; letter-spacing: -0.02em; }
+.brand img { width: 46px; height: 46px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 10px rgba(0, 0, 0, 0.18); }
+.nav { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 32px); margin-left: auto; }
+.top__end { display: flex; align-items: center; gap: 14px; }
+.nav > a { position: relative; text-decoration: none; font-size: 0.95rem; font-weight: 500; padding: 6px 0; }
+.nav > a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 1px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease); }
+.nav > a:hover::after { transform: scaleX(1); }
+.lang { display: flex; align-items: center; gap: 4px; margin-left: clamp(0px, 0.8vw, 12px); padding-left: clamp(14px, 2vw, 26px); border-left: 1px solid currentColor; border-color: rgba(255, 255, 255, 0.35); font-size: 0.8rem; opacity: 0.95; }
+.lang > span { opacity: 0.45; }
+.lang button { font: 600 0.8rem var(--sans); letter-spacing: 0.08em; color: inherit; background: none; border: 0; padding: 4px 3px; cursor: pointer; opacity: 0.55; }
+.lang button[aria-pressed="true"] { opacity: 1; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+.menu-btn { display: none; align-items: center; gap: 10px; font: 600 0.95rem var(--sans); color: inherit; background: none; border: 0; padding: 8px 0; cursor: pointer; }
+.menu-btn i { position: relative; width: 22px; height: 10px; }
+.menu-btn i::before, .menu-btn i::after { content: ""; position: absolute; left: 0; right: 0; height: 1.5px; background: currentColor; transition: transform 0.35s var(--ease), top 0.35s var(--ease); }
+.menu-btn i::before { top: 0; }
+.menu-btn i::after { top: 8.5px; }
+.on-paper .top { background: var(--paper-glass); color: var(--ink); padding-top: 12px; padding-bottom: 12px; box-shadow: 0 1px 0 var(--line); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.on-paper .top a, .on-paper .top button { text-shadow: none; }
+/* Over the dark mission, a dark strip of the same kind. */
+.on-dark:not(.on-paper) .top { background: var(--night-glass); padding-top: 12px; padding-bottom: 12px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.on-paper .lang { border-color: var(--line); }
+.on-paper .brand img { box-shadow: 0 0 0 1px var(--line); }
+
+/* ---------- hero ---------- */
+/* The hero is taller than the screen; its stage stays pinned while the scroll walks the camera down the trail,
+   then into the trunk of the last tree, where the stage goes dark (--dark, 0 to 1) and hands over to the page. */
+.hero { position: relative; height: 255vh; }   /* the old scrolling speed on a shorter walk (22 m, was 38 m); see START_Z, END_Z and WALK_END in js/hero-forest.js */
+.hero__stage {
+  --p: 0;
+  --dark: 0;
+  position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 320px; overflow: hidden; color: #fff;
+  background: linear-gradient(#7fbbe6 0%, #dde6d3 48%, #4f7a45 62%, #1d3a24 100%);
+}
+/* The poster sits behind the canvas; the canvas fades in over it once the forest is drawing smoothly. */
+.hero__poster, .hero__poster img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.4s ease; }
+.hero__canvas.is-ready { opacity: 1; }
+/* The 3D could not run well here: the poster underneath stays (see fallBack in js/hero-forest.js). */
+.hero-fallback .hero__canvas { opacity: 0 !important; }
+/* A lens vignette and fine film grain over the 3D scene. Both are plain images with ordinary blending:
+   an SVG noise filter with a blend mode here made the browser redraw the whole stage slowly. */
+.hero__stage::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: var(--grain), radial-gradient(130% 100% at 55% 40%, transparent 60%, rgba(10, 24, 14, 0.38) 100%);
+}
+.hero__shade {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(0deg, rgba(8, 26, 16, 0.78) 0%, rgba(8, 26, 16, 0.4) 26%, transparent 52%),
+    linear-gradient(90deg, rgba(8, 26, 16, 0.32) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(8, 26, 16, 0.3) 0%, transparent 18%);
+}
+/* The same grain on the same black as the top of the mission section, so the hand-over has no seam. */
+.hero__dark { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--grain), var(--night); opacity: var(--dark); }
+.hero__copy, .hero__hint { opacity: calc(1 - var(--dark) * 1.6); }
+/* Visitors who get the still picture instead of the 3D have nothing to scroll through. */
+.hero-still .hero { height: auto; }
+.hero__copy { position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: clamp(56px, 13vh, 150px); max-width: 780px; }
+h1 { font-size: clamp(3.4rem, min(11.5vw, 17vh), 10.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; text-shadow: 0 16px 38px rgba(0, 0, 0, 0.28); }
+h1 .soft { color: #cfe3cf; }
+.hero__lead { margin: clamp(14px, 2.6vh, 24px) 0 0; max-width: 30em; font-size: clamp(1rem, 1.35vw, 1.22rem); color: #e6f0ea; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42); }
+.hero__hint { position: absolute; z-index: 2; right: var(--gutter); bottom: 34px; margin: 0; color: #d3e8dd; display: flex; align-items: center; gap: 14px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5); pointer-events: none; }
+/* The scroll cue, on every screen size: a ringed arrow that keeps nudging downwards. */
+.hero__arrow { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 50%; background: rgba(6, 14, 18, 0.18); }
+.hero__arrow svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: nudge 1.8s var(--ease) infinite; }
+@keyframes nudge { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(4px); } }
+/* A thin bar that fills as you walk through the forest. */
+.hero__bar { position: relative; width: 120px; height: 2px; background: rgba(255, 255, 255, 0.25); overflow: hidden; }
+.hero__bar::after { content: ""; position: absolute; inset: 0; background: var(--accent-light); transform-origin: left; transform: scaleX(var(--p)); }
+
+/* ---------- paper sections ---------- */
+.section { position: relative; padding: clamp(90px, 12vw, 160px) 0; }
+/* Paper: a faint fibre texture from the same grain tile, on warm cream. */
+.paper { background: var(--grain), var(--paper); }
+.paper--deep { background: var(--grain), var(--paper-deep); }
+.contours { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--contour); pointer-events: none; }
+
+/* A printed photo taped onto the page. */
+.print { position: relative; margin: 0; padding: 12px 12px 0; background: var(--print); box-shadow: 0 1px 2px rgba(24, 36, 31, 0.12), 0 18px 40px rgba(24, 36, 31, 0.14); transform: rotate(1.6deg); }
+.print img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.print figcaption { padding: 12px 2px 14px; font-size: 0.82rem; color: var(--muted); }
+.print::before, .print::after { content: ""; position: absolute; width: 110px; height: 30px; background: rgba(226, 216, 180, 0.72); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+.print::before { top: -12px; left: 18%; transform: rotate(-4deg); }
+.print::after { bottom: 40px; right: -34px; transform: rotate(78deg); }
+.print.reveal.is-in { transform: rotate(1.6deg); }
+
+/* ---------- mission: starts in the black of the trunk ---------- */
+.mission { background: var(--grain), linear-gradient(var(--night) 0%, var(--night) 26%, var(--dark-mid) 60%, var(--forest) 100%); color: #fff; padding-top: calc(clamp(120px, 16vw, 200px) + 12vh); }   /* a longer stretch of black after the tree before the mission text */
+.mission__title { font-size: clamp(2.6rem, 7.4vw, 6.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; max-width: 11em; }
+.mission__body { max-width: 40rem; margin-top: clamp(30px, 4vw, 54px); }
+.mission__body .body { margin-top: 0; font-size: clamp(1.08rem, 1.4vw, 1.25rem); }
+.pillars { list-style: none; margin: clamp(70px, 9vw, 120px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255, 255, 255, 0.18); }
+.pillars a { display: grid; gap: 8px; height: 100%; padding: 26px clamp(18px, 2.6vw, 36px) 6px 0; text-decoration: none; color: var(--on-dark); }
+.pillars li + li a { padding-left: clamp(18px, 2.6vw, 36px); border-left: 1px solid rgba(255, 255, 255, 0.14); }
+.pillars__no { font-family: var(--display); font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: var(--accent-light); }
+.pillars strong { font-family: var(--display); font-size: clamp(1.4rem, 2.2vw, 1.9rem); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; color: #fff; }
+.pillars strong::after { content: " →"; display: inline-block; color: var(--accent-light); opacity: 0; transform: translateX(-6px); transition: opacity 0.3s ease, transform 0.35s var(--ease); }
+.pillars a:hover strong::after { opacity: 1; transform: none; }
+
+/* ---------- the three focus areas ---------- */
+.focus { overflow: hidden; }
+.focus__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: clamp(40px, 7vw, 110px); align-items: center; }
+.focus__grid--flip { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
+.focus__text .body + .body { margin-top: 14px; }
+.print--tilt, .print--tilt.reveal.is-in { transform: rotate(-1.8deg); }
+.print--tilt img { aspect-ratio: 4 / 3; }
+.tools { list-style: none; margin: 34px 0 0; padding: 0; border-top: 1.5px solid var(--ink); }
+.tools li { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: 6px 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.tools strong { font-family: var(--display); font-weight: 600; font-size: 1.15rem; letter-spacing: -0.02em; }
+.tools span { color: var(--muted); }
+
+/* The 3D printer stage: a soft pool of light on the paper, a little status read-out under the machine. */
+.printer { position: relative; margin: 0; min-height: clamp(420px, 46vw, 640px); height: 100%; }
+.printer::before { content: ""; position: absolute; left: 8%; right: 8%; bottom: 8%; height: 18%; border-radius: 50%; background: radial-gradient(closest-side, rgba(24, 36, 31, 0.16), transparent); }
+.printer__canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); display: block; }
+.printer__status { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; font-family: var(--sans); font-size: 0.8rem; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.printer__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(34, 92, 146, 0.18); }
+.printer.is-done .printer__dot { background: var(--moss); box-shadow: 0 0 0 4px rgba(46, 106, 72, 0.18); }
+.printer.no-3d { background: url("../images/logos/logo.png") center / min(60%, 320px) no-repeat; }
+.printer.no-3d .printer__canvas, .printer.no-3d .printer__status { display: none; }
+.printer__pct { color: var(--ink); min-width: 4ch; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- projects ---------- */
+#projects .body { margin-top: 20px; }
+.proj-all { margin: 16px 0 0; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(36px, 4vw, 56px) clamp(20px, 2.6vw, 36px); margin-top: clamp(40px, 6vw, 72px); }
+.proj { position: relative; display: block; text-decoration: none; }
+.proj__img { display: block; overflow: hidden; border-radius: 6px; background: var(--paper); }
+.proj__img img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.9s var(--ease); }
+a.proj:hover .proj__img img { transform: scale(1.045); }
+.proj__tag { display: flex; width: fit-content; align-items: center; gap: 8px; margin-top: 18px; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.proj h3 { margin: 8px 0 6px; }
+a.proj h3 { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; display: inline; transition: background-size 0.4s var(--ease); }
+a.proj:hover h3 { background-size: 100% 1.5px; }
+.proj p { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
+.proj--next { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 100%; padding: clamp(26px, 3vw, 40px); border: 1.5px dashed rgba(24, 36, 31, 0.35); border-radius: 6px; }
+.proj--next .proj__tag { margin-top: 0; }
+.proj--next h3 { margin: 18px 0 10px; font-size: 1.7rem; }
+.proj--next p { margin: 0 0 18px; max-width: 28ch; }
+
+/* ---------- moving photo strip: prints along a line ---------- */
+.strip { overflow: hidden; padding: 44px 0 56px; background: var(--grain), var(--paper); }
+.strip__row { display: flex; gap: 28px; width: max-content; animation: slide 60s linear infinite; }
+.strip img { height: clamp(150px, 20vw, 240px); width: auto; aspect-ratio: 4 / 3; object-fit: cover; padding: 8px; background: var(--print); box-shadow: 0 1px 2px rgba(24, 36, 31, 0.12), 0 12px 26px rgba(24, 36, 31, 0.12); }
+.strip img:nth-child(odd) { transform: rotate(-1.4deg); }
+.strip img:nth-child(even) { transform: rotate(1.2deg) translateY(10px); }
+@keyframes slide { to { transform: translateX(calc(-50% - 14px)); } }
+
+/* ---------- steps along a dotted trail ---------- */
+.trail { position: relative; margin-top: clamp(50px, 7vw, 90px); }
+.trail__path { position: absolute; left: 0; right: 0; top: 0; width: 100%; height: 40px; overflow: visible; }
+.trail__path path { fill: none; stroke: rgba(24, 36, 31, 0.4); stroke-width: 1.5; stroke-dasharray: 0.006 0.008; vector-effect: non-scaling-stroke; }
+.steps { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 3vw, 44px); }
+.steps { padding-top: 58px; }                                    /* room for the dotted trail line above */
+.step__no { display: block; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.step p { margin: 10px 0 0; color: var(--muted); max-width: 28ch; }
+
+/* ---------- closing call and footer ---------- */
+.cta { position: relative; background: var(--grain), var(--forest); color: #fff; padding: clamp(110px, 14vw, 180px) 0 clamp(90px, 12vw, 150px); }
+.treeline { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: clamp(50px, 7vw, 110px); transform: translateY(-99%); fill: var(--forest); }
+.cta h2 { margin-bottom: 40px; max-width: 14em; }
+.foot { background: var(--forest); color: var(--on-dark); padding: 0 0 34px; }
+.foot__in { display: flex; flex-wrap: wrap; gap: clamp(28px, 6vw, 90px); align-items: flex-start; padding-top: 44px; padding-bottom: 30px; border-top: 1px solid rgba(255, 255, 255, 0.14); }
+.foot p { margin: 0; }
+.foot strong { color: #fff; }
+.foot a { text-decoration: none; }
+.foot a:hover { color: #fff; text-decoration: underline; }
+.foot__note { color: var(--on-dark-faint); font-size: 0.85rem; }
+
+/* ---------- reveal ---------- */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+.reveal.is-in { opacity: 1; transform: none; }
+.trail__path path { stroke-dashoffset: 1; transition: stroke-dashoffset 2.2s var(--ease); }
+.trail.is-in .trail__path path { stroke-dashoffset: 0; }
+main, .foot { transition: opacity 0.3s ease; }
+.is-swapping main, .is-swapping .foot { opacity: 0; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 980px) {
+  .menu-btn { display: inline-flex; }
+  /* The menu sheet: the list starts under the top bar, words are sized by both the width and the height of the
+     screen so five links and the language switch always fit, and the sheet scrolls if a screen is tinier still. */
+  .nav { position: fixed; inset: 0; z-index: -1; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 0; padding: calc(78px + 3vh) var(--gutter) max(32px, env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: var(--grain), var(--paper); color: var(--ink); opacity: 0; visibility: hidden; transform: translateY(-12px); transition: opacity 0.35s ease, transform 0.45s var(--ease), visibility 0s linear 0.45s; }
+  .nav > a { width: 100%; padding: clamp(6px, 1.4vh, 12px) 0; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: clamp(1.45rem, min(6.4vw, 5.6vh), 2.4rem); line-height: 1.12; font-weight: 700; letter-spacing: -0.03em; text-shadow: none !important; }
+  .nav > a::after { display: none; }
+  /* Phones: the language switch stays in the bar beside the burger, which shows only its three lines
+     (the word "Menu" is kept for screen readers). The buttons get a finger-sized tap area. */
+  .top__end { gap: 6px; }
+  .lang { margin: 0; padding: 0 12px 0 0; border-left: 0; border-right: 1px solid rgba(255, 255, 255, 0.35); font-size: 0.9rem; }
+  .on-paper .lang, .menu-open .lang { border-color: var(--line); }
+  .lang button { font-size: 0.9rem; padding: 12px 6px; min-width: 40px; }
+  .menu-btn { padding: 12px 4px 12px 10px; }
+  .menu-btn__word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .menu-open .nav { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  /* No frosted glass while the menu is open: a backdrop filter makes the bar the frame for the fixed menu sheet,
+     which then shrank to the bar's height when the menu was opened after scrolling down. */
+  .menu-open .top { color: var(--ink); background: var(--paper); box-shadow: 0 1px 0 var(--line); -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .menu-open .top a, .menu-open .top button { text-shadow: none; }
+  .menu-open .menu-btn i::before { top: 4.25px; transform: rotate(45deg); }
+  .menu-open .menu-btn i::after { top: 4.25px; transform: rotate(-45deg); }
+  .hero__copy { bottom: calc(clamp(44px, 9vh, 88px) + 34px); }
+  /* The cue sits centred under the hero text; the progress bar is left out to keep it short. */
+  .hero__hint { left: 0; right: 0; bottom: max(18px, env(safe-area-inset-bottom)); justify-content: center; gap: 10px; font-size: 0.72rem; }
+  .hero__bar { display: none; }
+  .focus__grid, .focus__grid--flip { grid-template-columns: 1fr; }
+  .focus__grid--flip .printer { order: 0; }
+  .pillars { grid-template-columns: 1fr; }
+  .pillars li + li a { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.14); padding-left: 0; }
+  .pillars a { padding: 22px 0; }
+  .printer { min-height: 0; aspect-ratio: 1 / 1; max-height: 82svh; width: 100%; }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; row-gap: 48px; }
+  .trail__path { display: none; }
+  .steps { padding-top: 0; }
+  .print { max-width: 520px; }
+  .print img { aspect-ratio: 4 / 3; }
+}
+@media (max-width: 620px) {
+  .brand img { width: 40px; height: 40px; }
+  .grid, .steps { grid-template-columns: 1fr; }
+  .actions .btn { width: 100%; justify-content: space-between; }
+  .tools li { grid-template-columns: 1fr; }                      /* name above its line: two columns leave long words no room */
+}
+/* The smallest phones: the name, the language switch and the burger share one line. */
+@media (max-width: 380px) {
+  .top { gap: 8px; }
+  .brand { gap: 9px; font-size: 1rem; white-space: nowrap; }
+  .lang { padding-right: 8px; }
+  .lang button { min-width: 34px; padding-left: 4px; padding-right: 4px; }
+}
+/* Short screens (phones turned sideways, small laptop windows): tighter hero and sections. */
+@media (max-height: 520px) {
+  .hero__copy { bottom: 22px; right: calc(var(--gutter) + 52px); }
+  .hero__lead { font-size: 0.95rem; line-height: 1.45; max-width: 44em; }
+  /* Little height: just the arrow, in the corner beside the text. */
+  .hero__hint { left: auto; right: var(--gutter); bottom: 22px; }
+  .hero__hint > span:not(.hero__arrow) { display: none; }
+  .top { padding-top: 12px; padding-bottom: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .trail__path path { stroke-dashoffset: 0; transition: none; }
+  .strip__row { animation: none; }
+  .hero__arrow svg { animation: none; }
+  .btn, .proj__img img, main, .foot, .nav { transition: none; }
+}
