@@ -30,7 +30,7 @@
     mh_p1: "Every activity we run is also a place where young people meet, talk and feel they belong. Whether we're cleaning up, 3D printing or travelling, that's what it's really about.",
     mh_p2: "We create safe spaces where young people connect, share what they're going through and face together the challenges that would be hard to carry alone.",
     mh_cap: 'Sharing circle · ReToy',
-    proj_label: 'Erasmus+ projects', proj_all: 'All projects and photos', proj_title: 'Where we have been.',
+    proj_label: 'Erasmus+ projects', proj_all: 'All projects and photos', proj_title: 'Our activities.',
     proj_p: 'Erasmus+ exchanges are one part of what we do. For a week they bring together young people from across Europe, who come home with ideas for their own community.',
     tag_demo: 'Democracy', tag_eco: 'Environment', tag_rights: 'Human rights', tag_next: 'Next call',
     p1_place: 'Orahovica, Croatia', p2_place: 'Rymanów, Poland', p3_place: 'Košice, Slovakia', p5_place: 'Stara Zagora, Bulgaria',
