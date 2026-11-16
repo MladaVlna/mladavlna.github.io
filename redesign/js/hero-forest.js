@@ -21,12 +21,13 @@ const net = navigator.connection || {};
 // Visitors who asked for less motion or less data, or who are on a very slow connection, get the still
 // picture (the poster in the page) and no 3D at all. ?still in the address shows that version.
 const still = reduced || net.saveData || /^(slow-2g|2g)$/.test(net.effectiveType || '') || params.has('still');
-const slowNet = net.effectiveType === '3g';                     // the forest, but not the 1.5 MB of people
+// The forest, but not the people's files, on a 3G-class or measurably slow connection.
+const slowNet = net.effectiveType === '3g' || (net.downlink > 0 && net.downlink < 1.5);
 
 // How much the device can draw, decided once before anything is built. ?tier=low|medium|high overrides it.
 const TIERS = {
-  high: { trees: 1, ferns: 2200, grass: 3600, litter: 1150, stones: 70, shadow: 2048, ratio: 1.5, people: 5, paint: 1, aa: true, mists: 16, rays: 11, pollen: 1100, needles: 260, lock30: false },
-  medium: { trees: 0.85, ferns: 1700, grass: 2600, litter: 900, stones: 60, shadow: 1536, ratio: 1.25, people: 5, paint: 1, aa: true, mists: 14, rays: 10, pollen: 800, needles: 200, lock30: false },
+  high: { trees: 1, ferns: 2200, grass: 3600, litter: 1150, stones: 70, shadow: 2048, ratio: 1.5, people: 4, paint: 1, aa: true, mists: 16, rays: 11, pollen: 1100, needles: 260, lock30: false },
+  medium: { trees: 0.85, ferns: 1700, grass: 2600, litter: 900, stones: 60, shadow: 1536, ratio: 1.25, people: 3, paint: 1, aa: true, mists: 14, rays: 10, pollen: 800, needles: 200, lock30: false },
   low: { trees: 0.6, ferns: 700, grass: 900, litter: 480, stones: 40, shadow: 1024, ratio: 1, people: 0, paint: 0.4, aa: false, mists: 9, rays: 7, pollen: 400, needles: 100, lock30: true },
 };
 function gpuName() {
@@ -52,17 +53,38 @@ function pickTier(gpu) {
   return tier;
 }
 
-let renderer, tierName, gpu;
+let renderer, tierName, gpu, stopped = false;
+// If the 3D cannot run well (an error, a lost graphics context, or a device too slow even at the lowest
+// resolution), the still poster underneath takes over: the canvas fades out and nothing more is drawn.
+function fallBack(reason) {
+  if (stopped) return;
+  stopped = true;
+  document.documentElement.classList.add('hero-fallback');
+  if (params.has('debug')) console.warn('Forest replaced by the still picture:', reason);
+  try { if (renderer) renderer.dispose(); } catch (e) {}
+}
+// The scene is built in steps with a pause between them (breathe), so the page keeps scrolling and answering
+// taps while the forest is prepared behind the poster, instead of freezing for the whole build.
+const breathe = (step) => {
+  if (params.has('debug')) performance.mark('forest:' + step);   // ?debug: tests can time each step of the build
+  return window.scheduler && window.scheduler.yield ? window.scheduler.yield() : new Promise((r) => setTimeout(r, 0));
+};
+
 if (still) document.documentElement.classList.add('hero-still');
 else {
   gpu = gpuName();
   tierName = pickTier(gpu);
+  await breathe('gpu');                                          // the test context and the real one, in separate moments
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias: TIERS[tierName].aa, powerPreference: 'high-performance' }); }
   catch (e) { document.documentElement.classList.add('no-webgl'); }
 }
-if (renderer) start();
+if (renderer) {
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); fallBack('graphics context lost'); });
+  start().catch((err) => { console.warn('Forest unavailable, showing the still picture.', err); fallBack('error'); });
+}
 
-function start() {
+async function start() {
+  if (params.has('debug')) performance.mark('forest:start');
   // ?cold in the address makes every drawing program look new, to test a first-ever visit.
   if (params.has('cold')) THREE.ShaderChunk.common += '\n// cold ' + Date.now() + '\n';
   const small = window.innerWidth < 800;
@@ -186,6 +208,7 @@ function start() {
     });
   }
 
+  await breathe('sky');
   // ---------- the mountains: a Tatra-like massif rising behind the forest ----------
   {
     const hash = (x, z) => { const n = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return n - Math.floor(n); };
@@ -235,6 +258,7 @@ function start() {
     backdrop.add(mountain);
   }
 
+  await breathe('mountains');
   // ---------- forest floor: moss, fallen needles and a worn trail ----------
   const floorTex = draw(512, 512, (g, w, h) => {
     g.fillStyle = '#5c7a52'; g.fillRect(0, 0, w, h);
@@ -270,6 +294,7 @@ function start() {
   ground.receiveShadow = true;
   scene.add(ground);
 
+  await breathe('floor');
   // ---------- spruce trees ----------
   // One texture holds bark (left half) and a spray of needles with a ragged lower edge (right half).
   const treeTex = draw(512, 256, (g) => {
@@ -367,6 +392,7 @@ function start() {
     sliced(spruce(tiers, spread, 1), treeMat, close, treeSetup);
   });
 
+  await breathe('trees');
   // ---------- the last tree: the walk ends by stepping into its trunk ----------
   {
     const S = 1.4, y0 = heightAt(END_TREE.x, END_TREE.z) - 0.25;
@@ -395,6 +421,7 @@ function start() {
     END_TREE.radius = (0.3 - 0.23 * (1.9 / 12.4)) * S * 1.04;     // trunk radius at eye height
   }
 
+  await breathe('last-tree');
   // ---------- ferns and grass ----------
   const fernTex = draw(256, 256, (g) => {
     for (let f = 0; f < 9; f++) {
@@ -471,6 +498,7 @@ function start() {
   logs.castShadow = true; logs.receiveShadow = true;
   scene.add(logs);
 
+  await breathe('plants');
   // ---------- shafts of light, ground mist, pollen and falling needles ----------
   const rayTex = draw(64, 256, (g) => {
     const across = g.createLinearGradient(0, 0, 64, 0);
@@ -524,6 +552,7 @@ function start() {
   const pollen = cloud(tier.pollen, 0.09, 0xf6ffd9, 0.75, THREE.AdditiveBlending);
   const needles = cloud(tier.needles, 0.07, 0x7a5a30, 0.9, THREE.NormalBlending);
 
+  await breathe('light');
   // ---------- litter on the forest floor ----------
   const profile = [[0, -0.5], [0.15, -0.5], [0.17, -0.45], [0.17, -0.3], [0.17, -0.15], [0.17, 0], [0.17, 0.1], [0.15, 0.2], [0.075, 0.33], [0.06, 0.36], [0.06, 0.4], [0.072, 0.4], [0.072, 0.47], [0, 0.47]];
   const bottle = new THREE.LatheGeometry(profile.map(([x, y]) => new THREE.Vector2(x, y)), 12);
@@ -610,6 +639,8 @@ function start() {
   pieces.forEach((p) => { p.slot = slot[p.type]++; meshes[p.type].setColorAt(p.slot, tint.setHex(p.color)); });
   meshes.forEach((m) => { m.instanceColor.needsUpdate = true; });
 
+  await breathe('litter');
+  if (stopped) return;
   // ---------- volunteers cleaning up ----------
   // With ?debug in the address, tests can read the litter state and move the camera.
   const debug = params.has('debug') ? (window.__forest = { pieces, people: [], view: null, scene, backdrop, renderer, sun, tier: tierName, gpu, settings: tier }) : null;
@@ -656,16 +687,21 @@ function start() {
   // the first time. Drawing while that is going on makes the whole page crawl, so the programs are
   // prepared in the background first; then a few hidden frames run until the pace is steady, and only
   // then does the forest fade in over the still backdrop.
-  const warm = { compiled: false, shown: false, steady: 0, last: 0, since: performance.now() };
+  const warm = { compiled: false, shown: false, steady: 0, last: 0, avg: 0, since: performance.now() };
   const compiled = () => { warm.compiled = true; warm.since = performance.now(); };
   if (renderer.compileAsync) Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(backdrop, farCamera)]).then(compiled, compiled); else compiled();
   setTimeout(compiled, 25000);                                   // never wait forever
   function warmUp(now) {                                         // true once the forest is on screen
     if (warm.shown) return true;
     if (!warm.compiled) return false;
-    warm.steady = warm.last && now - warm.last < 55 ? warm.steady + 1 : 0;
+    const gap = warm.last ? now - warm.last : 0;
+    warm.steady = gap && gap < 55 ? warm.steady + 1 : 0;
+    if (gap) warm.avg = warm.avg ? warm.avg * 0.7 + gap * 0.3 : gap;
     warm.last = now;
     if (warm.steady >= 4 || now - warm.since > 8000) {
+      // Never steady, and still under 7 frames a second after 8 s: this device can't run the forest well, so the
+      // poster simply stays (?ratio pins the resolution for tests and skips this).
+      if (warm.steady < 4 && warm.avg > 150 && !(fixedRatio > 0)) { fallBack('too slow to start'); return false; }
       warm.shown = true;
       canvas.classList.add('is-ready');
       dyn.cool = now + 2500;                                       // let the fade-in finish before judging the pace
@@ -687,7 +723,7 @@ function start() {
   // doesn't see-saw. If even a reduced picture can't keep up, the scene settles on a steady 30 frames a
   // second (every other screen refresh) instead of a jittery 40 to 55. Weak devices start there.
   const dyn = { ratio: renderer.getPixelRatio(), max: renderer.getPixelRatio(), ceiling: renderer.getPixelRatio(), min: Math.min(0.6, renderer.getPixelRatio()),
-    ema: 0, refresh: 16.7, raf: 0, lastRaf: 0, last: 0, slow: 0, calm: 0, cool: 0, raisedAt: -1e9, locked: tier.lock30 };
+    ema: 0, refresh: 16.7, raf: 0, lastRaf: 0, last: 0, slow: 0, calm: 0, cool: 0, raisedAt: -1e9, locked: tier.lock30, crawl: 0 };
   const setRatio = (r) => { dyn.ratio = Math.round(r * 100) / 100; renderer.setPixelRatio(dyn.ratio); resize(); };
   function trackRefresh(now) {                                    // the screen's pace, from the quickest steady rAF rhythm seen
     const d = now - dyn.lastRaf; dyn.lastRaf = now;
@@ -698,13 +734,23 @@ function start() {
   const budget = () => (dyn.locked ? 1000 / 30 : Math.max(dyn.refresh, 1000 / 60));
   function pace(now) {                                            // called after each drawn frame
     if (fixedRatio > 0) return;
-    const d = now - dyn.last; dyn.last = now;
-    if (document.hidden || d > 250) { dyn.ema = 0; return; }
+    const gap = dyn.last ? now - dyn.last : 0; dyn.last = now;
+    if (!gap || document.hidden) { dyn.ema = 0; dyn.crawl = 0; return; }   // the first frame after a pause
+    const d = Math.min(gap, 250);                                  // a very slow frame counts as slow, not as a pause
+    dyn.crawl = dyn.locked && dyn.ratio <= dyn.min + 0.001 && dyn.ema > 1000 / 12 ? dyn.crawl + Math.min(gap, 1000) : 0;   // real time, so a few very long frames count fully
+    if (dyn.crawl > 4000) { fallBack('too slow for this device'); return; }   // under 12 frames a second for 4 s at the lowest resolution
     dyn.ema = dyn.ema ? dyn.ema * 0.9 + d * 0.1 : d;
     if (now < dyn.cool) { dyn.slow = dyn.calm = 0; return; }
     const b = budget();
     dyn.slow = dyn.ema > b * 1.2 ? dyn.slow + d : 0;
     dyn.calm = dyn.ema < b * 1.06 ? dyn.calm + d : 0;
+    // Far too slow (about 3 times over budget for half a second): straight to the lowest resolution at a steady
+    // 30, rather than many small steps that would stutter for a minute on a weak device.
+    if (dyn.ema > b * 3 && dyn.slow > 500 && (!dyn.locked || dyn.ratio > dyn.min + 0.001)) {
+      dyn.locked = true; setRatio(dyn.min);
+      dyn.slow = dyn.calm = 0; dyn.cool = now + 1500;
+      return;
+    }
     if (dyn.slow > 1000) {
       if (now - dyn.raisedAt < 4000) dyn.ceiling = Math.max(dyn.min, dyn.ratio - 0.05);   // that last step up was too much
       if (!dyn.locked && dyn.ratio <= dyn.max * 0.75 + 0.001) { dyn.locked = true; setRatio(Math.min(dyn.ceiling, dyn.max * 0.9)); }
@@ -730,10 +776,11 @@ function start() {
   const SHADOW_EVERY = 2;                                          // the people move: their shadows are redrawn every other frame
 
   (function frame(now) {
+    if (stopped) return;                                           // the poster has taken over for good
     requestAnimationFrame(frame);
     now = now || performance.now();
     trackRefresh(now);
-    if (!visible || !warm.compiled) return;                        // nothing is drawn until the programs are ready
+    if (!visible || !warm.compiled) { dyn.last = 0; return; }       // nothing is drawn until the programs are ready
     if (dyn.locked && now - lastDrawn < 1000 / 30 - dyn.refresh * 0.5) return;   // steady 30: skip every other refresh
     lastDrawn = now;
     const T0 = performance.now();
@@ -772,7 +819,7 @@ function start() {
     if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = farCamera.fov = fov; camera.updateProjectionMatrix(); farCamera.updateProjectionMatrix(); }
     const dark = sm(0.74, 0.98, dive);
     setVar('--dark', dark.toFixed(3));
-    if (dark > 0.995 && warm.shown) return;                        // all black: nothing to draw until you scroll back
+    if (dark > 0.995 && warm.shown) { dyn.last = 0; return; }       // all black: nothing to draw until you scroll back
 
     // The shadow area follows you down the trail, in whole steps so the shadows don't shimmer.
     const sx = Math.round(camera.position.x / 2) * 2, sz = Math.round((cz - 16) / 2) * 2;

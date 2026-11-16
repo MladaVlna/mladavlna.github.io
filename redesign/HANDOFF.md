@@ -77,6 +77,17 @@ Test switches on that address:
 - **Loading:** the poster shows at once; the forest fades in over it; the volunteers (about 1.5 MB) load only after the forest is on screen, and not at all on the low tier or a 3G connection.
 - **Measured in headless Chromium (software rendering, so no meaningful fps):** high tier about 0.55 million triangles and about 150 draw calls per frame, down from 1.71 million triangles. Hero download about 1.9 MB of local files (plus three.js from the CDN), down from about 14 MB.
 
+## Slow devices and networks (16 November 2026)
+
+- **People:** 4 on the high tier, 3 on medium and on phones, none on the low tier, on 3G or when the connection reports under 1.5 Mbit/s. Only the people shown are downloaded (the first entries of `CAST` in `js/forest-volunteers.js`).
+- **three.js:** the page loads `three.module.min.js` (about half the size of the unminified file it used before), with a `modulepreload` and a `preconnect` so it downloads alongside the stylesheet.
+- **No freeze while building:** `start()` is async and pauses (`breathe`) between its steps, and between the graphics check and creating the renderer, so the page keeps scrolling while the forest is prepared behind the poster. With `?debug`, each step leaves a `forest:<step>` performance mark.
+- **The poster takes over when the 3D can't run well** (`fallBack` in `js/hero-forest.js`, class `hero-fallback`): an error while building, a lost graphics context, a device that never gets steady while warming up (under about 7 fps after 8 s), or one still under 12 fps for 4 s at the lowest resolution and a steady 30. `?ratio` pins the resolution and switches these checks off (for tests).
+- **Dynamic resolution reacts faster:** frames over 250 ms used to be ignored as pauses, so the slowest devices never adapted; now they count, and frames about three times over budget drop straight to the lowest resolution at a steady 30 instead of stepping down for a minute.
+- **3D printer:** weak devices (2 GB or less, 2 cores or less), data saver and 2G get the flat logo instead of a second 3D scene; a lost graphics context also switches to the logo.
+- **Posters re-rendered** for the shorter walk (1280×720 and 720×1280; AVIF 48 and 59 KB, JPG 88 and 92 KB).
+- **How this was tested in the cloud:** three 0.160.0 from npm (downloaded with the owner's approval) served in place of the CDN with Playwright, on SwiftShader software rendering. Frame times there are not meaningful (no graphics chip), but errors, downloads, tiers, people, main-thread blocking and the fallbacks are. Still worth a check on a real slow phone.
+
 ## Known weak spots
 
 - **The vest and gloves are painted in the shader** from which bones move each part of the body (chest and shoulders: vest; hands: gloves), so their edges follow the mesh, not a sewn seam. The hood of a hoodie partly turns vest-coloured. A modelled vest would be cleaner.
@@ -87,7 +98,7 @@ Test switches on that address:
 - **Texture painting (floor, bark, needles, ferns) still runs on the main thread** at start-up; the low tier paints 40% of the strokes. Moving it to a worker with OffscreenCanvas was not done.
 - **Intermittent collapses to 2 or 3 frames per second were seen during development** and could not be reproduced on demand. The scene now prepares its graphics in the background before showing, and overlay effects were lightened, but the original trigger was never proven.
 - **Loading over a real network is still untested;** only the sizes were measured. The FBX files and original PNG/JPG textures were removed (they are in git history, commit 1de0b27).
-- **The poster is a single random moment** (people placement differs per load). Re-render it after changing the scene with Playwright: load `?debug&tier=high&ratio=1` with the page overlays and `.hero__poster` hidden, screenshot `.hero__stage` at 1600×900 and 720×1280, then save AVIF and JPG under 100 KB with Pillow.
+- **The poster is a single random moment** (people placement differs per load; re-rendered 16 November 2026 after the walk was shortened). Re-render it after changing the scene with Playwright: load `?debug&tier=high&ratio=1` with the page overlays and `.hero__poster` hidden, screenshot `.hero__stage` at 1600×900 and 720×1280, then save AVIF and JPG under 100 KB with Pillow.
 - **All Slovak and English wording was written during the redesign** and needs a native check. The stats (5 exchanges, 9 countries) were counted from the old site and need confirming.
 - **Photos are the original large files** from `Projekty/`.
 - **Blog and documents pages** still use the old design. The project pages are redone (below).

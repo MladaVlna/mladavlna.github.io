@@ -12,6 +12,7 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const MODELS = 'models/';
 // Each character is a compressed glTF file (mesh and skeleton only); all motion is in one shared file, anims.glb,
 // made from the Rocketbox motion files. hair: whether the character has a separate hair-and-lashes texture.
+// The first entries are used first: four on strong devices, three on mid-range devices and phones.
 const CAST = [
   { file: 'Male_Adult_17', tex: 'm022', walk: 'walk_m', hair: false },   // blue and white hoodie
   { file: 'Female_Adult_12', tex: 'f012', walk: 'walk_f', hair: true },  // dark hoodie, shorts, trainers

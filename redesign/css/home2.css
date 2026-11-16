@@ -118,6 +118,8 @@ h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight
 .hero__poster, .hero__poster img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
 .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.4s ease; }
 .hero__canvas.is-ready { opacity: 1; }
+/* The 3D could not run well here: the poster underneath stays (see fallBack in js/hero-forest.js). */
+.hero-fallback .hero__canvas { opacity: 0 !important; }
 /* A lens vignette and fine film grain over the 3D scene. Both are plain images with ordinary blending:
    an SVG noise filter with a blend mode here made the browser redraw the whole stage slowly. */
 .hero__stage::before {

@@ -12,7 +12,13 @@ const canvas = figure && figure.querySelector('.printer__canvas');
 const pctEl = figure && figure.querySelector('.printer__pct');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-if (canvas) {
+// Weak devices and slow or metered connections get the flat logo (.no-3d), not a second 3D scene.
+const net = navigator.connection || {};
+const weak = (navigator.deviceMemory && navigator.deviceMemory <= 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
+  || net.saveData || /^(slow-2g|2g)$/.test(net.effectiveType || '');
+if (canvas && weak) figure.classList.add('no-3d');
+else if (canvas) {
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); figure.classList.add('no-3d'); });
   const near = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     near.disconnect();
