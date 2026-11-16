@@ -138,19 +138,30 @@
 .mail { display: inline-block; max-width: 100%; font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 7.4vw, 6rem); line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0 3px no-repeat; transition: background-size 0.5s var(--ease); padding-bottom: 6px; }
 .mail:hover { background-size: 100% 3px; }
 .mail__at { color: var(--accent); }
-.mailbox .actions { margin-top: clamp(26px, 3.4vw, 40px); }
-.copy { font: inherit; font-weight: 600; color: var(--ink); background: none; border: 0; cursor: pointer; }
-.copy__done { display: none; }
-.copy.is-copied .copy__idle { display: none; }
-.copy.is-copied .copy__done { display: inline; color: var(--moss); }
-.copy.is-copied::after { background: var(--moss); }
+.mailbox .actions { margin-top: clamp(26px, 3.4vw, 40px); flex-wrap: nowrap; gap: 12px; }
+.mailbox .actions .copy { flex: none; }
+.mailbox__lead { margin: 0 0 clamp(18px, 2.4vw, 28px); }
+/* Copy address: just an icon, which turns into a green tick for a moment once copied. */
+.copy { display: grid; place-items: center; width: 54px; height: 54px; padding: 0; border: 1.5px solid var(--ink); border-radius: 10px; background: none; color: var(--ink); cursor: pointer; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease; }
+.copy:hover { background: var(--ink); color: var(--paper); }
+.copy svg { grid-area: 1 / 1; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: opacity 0.2s ease, transform 0.3s var(--ease); }
+.copy__tick { opacity: 0; transform: scale(0.6); }
+.copy.is-copied { border-color: var(--moss); background: var(--moss); color: #fff; }
+.copy.is-copied .copy__icon { opacity: 0; transform: scale(0.6); }
+.copy.is-copied .copy__tick { opacity: 1; transform: none; }
+.copy__done { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .mailbox__more { margin-top: clamp(60px, 8vw, 100px); max-width: 560px; }
 .mailbox__more .facts a { color: var(--ink); }
 
 /* ---------- Instagram: a phone with the profile and a slowly scrolling feed ---------- */
 .ig { position: relative; overflow-x: clip; background: var(--grain), var(--forest); color: #fff; padding: clamp(100px, 12vw, 160px) 0 clamp(90px, 11vw, 150px); }
 .ig__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 340px); gap: clamp(40px, 7vw, 110px); align-items: center; }
-.ig__text h2 { color: #fff; }
+.ig__text h1, .ig__text h2 { color: #fff; }
+/* At the top of the page, under the top bar. */
+.ig--top { padding-top: clamp(130px, 15vw, 190px); }
+.ig--top h1 { font-size: clamp(2.6rem, 6.4vw, 5.6rem); line-height: 1; letter-spacing: -0.025em; }
+/* The forest's treeline sits on the footer here, since the page has no closing band. */
+.foot--trees { position: relative; margin-top: clamp(50px, 7vw, 110px); }
 .ig__text .actions { margin-top: 34px; }
 .ig__phone { position: relative; display: block; aspect-ratio: 9 / 18; border-radius: 42px; padding: 11px; background: linear-gradient(145deg, #1d2b31, #070d10); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5), inset 0 0 0 1.5px rgba(255, 255, 255, 0.12); transform: rotate(-5deg); transition: transform 0.7s var(--ease); text-decoration: none; color: var(--ink); }
 .ig__phone:hover, .ig__phone:focus-visible { transform: rotate(-1.5deg) translateY(-8px); }
@@ -198,6 +209,7 @@
   .pmeta { flex-direction: column; gap: 2px; }
   .pmeta span + span::before { display: none; }
   .photos, .photos--few { columns: 1; }
+  .mailbox .actions .btn { width: auto; flex: 1; }               /* the copy icon stays beside it */
   .team { grid-template-columns: 1fr; }
   .pnext { grid-template-columns: 1fr; }
   .pnext a + a { border-left: 0; border-top: 1px solid var(--line); }

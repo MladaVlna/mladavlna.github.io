@@ -120,7 +120,7 @@ Test switches on that address:
 
 ## Contact page (16 November 2026)
 
-- `contact/index.html`, built by `tools/build-projects.py` (`contact()`, texts in `CONTACT_TEXT`, feed photos in `IG_FEED`). No form, at the owner's request: the email address is the headline (tap to write, or "Copy address", `js/contact.js`), then phone, address and Instagram as facts. Instagram is a tilted phone showing the profile, a slowly scrolling feed of real project photos and floating hearts; the whole phone links to the account. Motion stops for reduced motion. "Contact" in every top bar now opens this page.
+- `contact/index.html`, built by `tools/build-projects.py` (`contact()`, texts in `CONTACT_TEXT`, feed photos in `IG_FEED`). No form, at the owner's request. Instagram comes first (the page header), then the email address in big letters (tap to write, or the copy icon, `js/contact.js`, which turns into a tick), then phone, address and Instagram as facts. Instagram is a tilted phone showing the profile, a slowly scrolling feed of real project photos and floating hearts; the whole phone links to the account. Motion stops for reduced motion. "Contact" in every top bar now opens this page.
 
 ## Fixed: volunteers disappearing (15 November 2026)
 

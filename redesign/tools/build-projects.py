@@ -759,41 +759,17 @@ def contact():
     en = {}
     T = lambda key: t(en, key, CONTACT_TEXT[key])
     tiles = ''.join(f'<img src="../img/projects/{x}-sm.webp" alt="" loading="lazy" decoding="async">' for x in IG_FEED)
+    copy_icon = ('<svg class="copy__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/>'
+                 '<path d="M15.5 5.5v-.5a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h.5"/></svg>'
+                 '<svg class="copy__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>')
+    # Instagram first (owner, 16 November 2026), then the email address.
     body = f"""
   <main id="main">
-    <section class="phead" data-dark-start>
-      <div class="wrap">
-        <p class="label label--light"><span {T("ct_label")}</span></p>
-        <h1 {T("ct_title")}</h1>
-        <p class="body body--light" {T("ct_lead")}</p>
-      </div>
-    </section>
-
-    <section class="section paper" data-paper-start>
-      <div class="wrap mailbox">
-        <p class="label"><span {T("ct_mail_label")}</span></p>
-        <a class="mail" href="mailto:{EMAIL}"><span class="mail__user">contact</span><span class="mail__at">@</span><span>mladavlna.org</span></a>
-        <div class="actions">
-          <a class="btn btn--dark" href="mailto:{EMAIL}"><span {T("ct_write")}</span><span class="btn__arrow" aria-hidden="true">→</span></a>
-          <button class="copy link" type="button" data-copy="{EMAIL}"><span class="copy__idle" {T("ct_copy")}</span><span class="copy__done" aria-live="polite" {T("ct_copied")}</span></button>
-        </div>
-        <div class="mailbox__more">
-          <p class="label"><span {T("ct_other")}</span></p>
-          <dl class="facts">
-            <div><dt {T("ct_phone")}</dt><dd><a href="tel:+421918208346">+421 918 208 346</a></dd></div>
-            <div><dt {T("ct_addr")}</dt><dd {T("ct_addr_v")}</dd></div>
-            <div><dt>Instagram</dt><dd><a href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer">@mladavlna</a></dd></div>
-          </dl>
-        </div>
-      </div>
-    </section>
-
-    <section class="ig" id="instagram">
-      {TREELINE}
+    <section class="ig ig--top" id="instagram" data-dark-start>
       <div class="wrap ig__grid">
         <div class="ig__text">
-          <p class="label label--light"><span {T("ct_ig_label")}</span></p>
-          <h2 {T("ct_ig_title")}</h2>
+          <p class="label label--light"><span {T("ct_label")}</span> · <span>Instagram</span></p>
+          <h1 {T("ct_ig_title")}</h1>
           <p class="body body--light" {T("ct_ig_p")}</p>
           <div class="actions">
             <a class="btn" href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer"><span {T("ct_ig_btn")}</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
@@ -815,13 +791,35 @@ def contact():
         </a>
       </div>
     </section>
+
+    <section class="section paper" data-paper-start>
+      <div class="wrap mailbox">
+        <p class="label"><span {T("ct_mail_label")}</span></p>
+        <p class="body mailbox__lead" {T("ct_lead")}</p>
+        <a class="mail" href="mailto:{EMAIL}"><span class="mail__user">contact</span><span class="mail__at">@</span><span>mladavlna.org</span></a>
+        <div class="actions">
+          <a class="btn btn--dark" href="mailto:{EMAIL}"><span {T("ct_write")}</span><span class="btn__arrow" aria-hidden="true">→</span></a>
+          <button class="copy" type="button" data-copy="{EMAIL}" aria-label="{e(CONTACT_TEXT['ct_copy'][0])}" title="{e(CONTACT_TEXT['ct_copy'][0])}" data-i18n-aria="ct_copy">{copy_icon}<span class="copy__done" aria-live="polite" {T("ct_copied")}</span></button>
+        </div>
+        <div class="mailbox__more">
+          <p class="label"><span {T("ct_other")}</span></p>
+          <dl class="facts">
+            <div><dt {T("ct_phone")}</dt><dd><a href="tel:+421918208346">+421 918 208 346</a></dd></div>
+            <div><dt {T("ct_addr")}</dt><dd {T("ct_addr_v")}</dd></div>
+            <div><dt>Instagram</dt><dd><a href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer">@mladavlna</a></dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
 """
     os.makedirs(os.path.join(SITE, 'contact'), exist_ok=True)
     foot_html = foot(en, '\n  <script src="../js/contact.js" defer></script>')
-    # This page is the contact: the closing "get in touch" band of the other pages is left out.
+    # This page is the contact: the closing "get in touch" band of the other pages is left out, and its
+    # treeline moves onto the footer.
     a = foot_html.index('    <section class="cta" id="contact">'); b = foot_html.index('  </main>')
     foot_html = foot_html[:a] + foot_html[b:]
-    page = head('Kontakt', 'Napíš Mladej Vlne na contact@mladavlna.org alebo nás sleduj na Instagrame @mladavlna.', '../projects/index.html') + body + foot_html
+    foot_html = foot_html.replace('<footer class="foot">', '<footer class="foot foot--trees">\n    ' + TREELINE, 1)
+    page = head('Kontakt', 'Sleduj Mladú Vlnu na Instagrame @mladavlna alebo nám napíš na contact@mladavlna.org.', '../projects/index.html') + body + foot_html
     with open(os.path.join(SITE, 'contact', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
