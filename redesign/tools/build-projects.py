@@ -145,7 +145,8 @@ PROJECTS = [
        ('Každé ráno začalo raňajkami v duchu jednej z krajín a večery patrili kultúrnym programom. Spolu sme si prezreli pamiatky Starej Zagory a týždeň sme uzavreli reflexiou o tom, čo sme sa naučili, a certifikátmi Youthpass.',
         'Every morning began with a breakfast themed on one of the countries, and the evenings were cultural nights. We explored Stara Zagora\'s heritage sites together, and closed the week by reflecting on what we had learned for our Youthpass certificates.')),
     ],
-    photos=['photo1.jpg', 'photo2.jpg', 'photo3.jpg'], cover=0,
+    # photo4-6 (forum theatre, the Slovak team's evening, Youthpass certificates): added by the owner on 16 November 2026.
+    photos=['photo1.jpg', 'photo2.jpg', 'photo3.jpg', 'photo4.jpg', 'photo5.jpg', 'photo6.jpg'], cover=0,
     infopack=None, drive=None,   # the info pack is not public (owner, 16 November 2026)
   ),
 ]
