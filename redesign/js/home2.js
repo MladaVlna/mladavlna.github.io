@@ -40,7 +40,7 @@
     s2_t: 'Fill in the form', s2_p: 'You need to be 13 to 30.<br>Write us a great motivation: why you want to go, and what you would bring with you.',
     s3_t: 'We get in touch', s3_p: "Once we have considered every application, we contact you. We give priority to young people with fewer opportunities.",
     s4_t: 'Pack and go', s4_p: 'Accommodation and meals are covered by an EU grant. Travel is reimbursed after the project.',
-    cta_label: 'Contact', cta_title: 'Want to change something where you live? Get in touch.',
+    cta_label: 'Contact', cta_title: 'Want to change something where you live? Get in touch.', cta_btn: 'Contact us',
     docs: 'Documents', other: 'First version of the site'
   };
   // Other pages (the project pages) add their own English text in window.PAGE_EN, set before this script.
