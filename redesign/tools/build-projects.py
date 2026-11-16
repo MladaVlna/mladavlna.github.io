@@ -63,7 +63,7 @@ PROJECTS = [
         'We also learned to use digital tools and AI to spread environmental ideas, and tasted food from every country at the intercultural night.')),
     ],
     photos=['image2.jpg', 'image3.jpg', 'image1.jpeg'], cover=0,
-    infopack='The Masters of Puppets infopack.pdf', drive=None,
+    infopack=None, drive=None,   # info pack link removed (owner, 16 November 2026)
   ),
   dict(
     slug='smart-sustainable', title='Smart & Sustainable', subtitle='Youth vs. Fast Fashion', folder='Smart&Sustainable',
