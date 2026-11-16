@@ -231,7 +231,6 @@ def head(title_sk, desc, projects='index.html'):
     </a>
     <nav class="nav" id="nav" aria-label="Hlavná navigácia" data-lenis-prevent>
       <a href="../about/index.html" data-i18n="nav_about">O nás</a>
-      <a href="../home2.html#environment" data-i18n="nav_focus">Čo robíme</a>
       <a href="{projects}" data-i18n="nav_projects">Projekty</a>
       <a href="../home2.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
       <a href="#contact" data-i18n="nav_contact">Kontakt</a>
