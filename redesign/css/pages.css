@@ -11,7 +11,7 @@
 /* Over a photo the small labels are white with a soft shadow, so they read on bright pictures too. */
 .pcover .label { color: #fff; opacity: 0.9; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55); }
 .pcover h1 { text-shadow: 0 10px 34px rgba(0, 0, 0, 0.35); }
-.pcover h1 { font-size: clamp(2.6rem, min(8vw, 12vh), 7rem); line-height: 0.9; letter-spacing: -0.045em; text-wrap: balance; }
+.pcover h1 { font-size: clamp(2.5rem, min(7.4vw, 11vh), 6.4rem); line-height: 1; letter-spacing: -0.025em; text-wrap: balance; }
 .pmeta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 22px 0 0; font-size: clamp(0.98rem, 1.3vw, 1.15rem); color: #e8f0f2; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4); }
 .pmeta span + span::before { content: "·"; margin-right: 22px; color: var(--accent-light); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
@@ -20,11 +20,11 @@
 /* ---------- lead and facts ---------- */
 .pintro { padding: clamp(60px, 8vw, 110px) 0 clamp(40px, 5vw, 70px); }
 .pintro__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); gap: clamp(36px, 6vw, 100px); align-items: start; }
-.plead { margin: 0; font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.3rem); font-weight: 600; line-height: 1.18; letter-spacing: -0.025em; text-wrap: pretty; }
+.plead { margin: 0; font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.3rem); font-weight: 600; line-height: 1.22; letter-spacing: -0.01em; text-wrap: pretty; }
 .facts { margin: 0; border-top: 1.5px solid var(--ink); }
 .facts div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
 .facts dt { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); padding-top: 2px; }
-.facts dd { margin: 0; color: var(--ink); line-height: 1.45; }
+.facts dd { margin: 0; color: var(--ink); line-height: 1.45; overflow-wrap: anywhere; }
 /* The EU emblem: required on the pages of EU-funded projects, so only there (not on the homepage). */
 .eu-funded { display: block; width: min(260px, 70%); height: auto; margin-top: 26px; }
 .facts a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
@@ -84,7 +84,7 @@
 
 /* ---------- projects overview ---------- */
 .phead { background: var(--forest); color: #fff; padding: clamp(130px, 18vw, 210px) 0 clamp(60px, 8vw, 100px); }
-.phead h1 { font-size: clamp(2.8rem, 8vw, 7rem); line-height: 0.92; letter-spacing: -0.05em; }
+.phead h1 { font-size: clamp(2.6rem, 7.4vw, 6.4rem); line-height: 1; letter-spacing: -0.025em; }
 .phead .body { max-width: 36rem; margin-top: 26px; }
 .plist { display: grid; gap: clamp(60px, 9vw, 130px); }
 .prow { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr); gap: clamp(28px, 5vw, 70px); align-items: center; text-decoration: none; }

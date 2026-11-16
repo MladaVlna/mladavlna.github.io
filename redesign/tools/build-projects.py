@@ -217,7 +217,7 @@ def head(title_sk, desc, projects='index.html'):
   <link rel="icon" href="../../images/logos/logo_small.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/home2.css">
   <link rel="stylesheet" href="../css/pages.css">
   <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>

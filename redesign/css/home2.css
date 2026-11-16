@@ -24,7 +24,7 @@ html, body { background: var(--paper); }
   --grain: none;
   --accent: #225c92;        /* the blue of the Mladá Vlna logo: the one accent */
   --accent-light: #7fb0e0;  /* the same blue, lightened for text and lines on dark backgrounds */
-  --display: "Bricolage Grotesque", "Inter Tight", system-ui, sans-serif;
+  --display: "Schibsted Grotesk", "Inter Tight", system-ui, sans-serif;   /* chosen 16 November 2026: clearer than Bricolage Grotesque */
   --sans: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
   --gutter: clamp(20px, 5vw, 72px);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -52,9 +52,9 @@ a { color: inherit; }
 .skip:focus { top: 16px; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter); position: relative; }
 
-h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.035em; line-height: 0.98; margin: 0; text-wrap: balance; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 0; text-wrap: balance; }
 h2 { font-size: clamp(2.3rem, 5.4vw, 4.6rem); max-width: 15em; }
-h3 { font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.12; font-weight: 600; }
+h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight: 600; }
 .body { max-width: 34em; color: var(--muted); margin: 24px 0 0; font-size: 1.12rem; }
 .body--light { color: var(--on-dark); }
 
@@ -137,7 +137,7 @@ h3 { font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.12; font-weight
 /* Visitors who get the still picture instead of the 3D have nothing to scroll through. */
 .hero-still .hero { height: auto; }
 .hero__copy { position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: clamp(56px, 13vh, 150px); max-width: 780px; }
-h1 { font-size: clamp(3.4rem, min(11.5vw, 17vh), 10.5rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.84; text-shadow: 0 16px 38px rgba(0, 0, 0, 0.28); }
+h1 { font-size: clamp(3.4rem, min(11.5vw, 17vh), 10.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; text-shadow: 0 16px 38px rgba(0, 0, 0, 0.28); }
 h1 .soft { color: #cfe3cf; }
 .hero__lead { margin: clamp(14px, 2.6vh, 24px) 0 0; max-width: 30em; font-size: clamp(1rem, 1.35vw, 1.22rem); color: #e6f0ea; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42); }
 .hero__hint { position: absolute; z-index: 2; right: var(--gutter); bottom: 34px; margin: 0; color: #d3e8dd; display: flex; align-items: center; gap: 14px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -163,14 +163,14 @@ h1 .soft { color: #cfe3cf; }
 
 /* ---------- mission: starts in the black of the trunk ---------- */
 .mission { background: var(--grain), linear-gradient(var(--night) 0%, var(--night) 26%, var(--dark-mid) 60%, var(--forest) 100%); color: #fff; padding-top: calc(clamp(120px, 16vw, 200px) + 22vh); }   /* a longer stretch of black after the tree before the mission text */
-.mission__title { font-size: clamp(2.8rem, 8vw, 7.4rem); font-weight: 800; letter-spacing: -0.05em; line-height: 0.92; max-width: 11em; }
+.mission__title { font-size: clamp(2.6rem, 7.4vw, 6.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; max-width: 11em; }
 .mission__body { max-width: 40rem; margin-top: clamp(30px, 4vw, 54px); }
 .mission__body .body { margin-top: 0; font-size: clamp(1.08rem, 1.4vw, 1.25rem); }
 .pillars { list-style: none; margin: clamp(70px, 9vw, 120px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255, 255, 255, 0.18); }
 .pillars a { display: grid; gap: 8px; height: 100%; padding: 26px clamp(18px, 2.6vw, 36px) 6px 0; text-decoration: none; color: var(--on-dark); }
 .pillars li + li a { padding-left: clamp(18px, 2.6vw, 36px); border-left: 1px solid rgba(255, 255, 255, 0.14); }
 .pillars__no { font-family: var(--display); font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: var(--accent-light); }
-.pillars strong { font-family: var(--display); font-size: clamp(1.4rem, 2.2vw, 1.9rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; color: #fff; }
+.pillars strong { font-family: var(--display); font-size: clamp(1.4rem, 2.2vw, 1.9rem); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; color: #fff; }
 .pillars strong::after { content: " →"; display: inline-block; color: var(--accent-light); opacity: 0; transform: translateX(-6px); transition: opacity 0.3s ease, transform 0.35s var(--ease); }
 .pillars a:hover strong::after { opacity: 1; transform: none; }
 
@@ -286,6 +286,7 @@ main, .foot { transition: opacity 0.3s ease; }
   .brand img { width: 40px; height: 40px; }
   .grid, .steps { grid-template-columns: 1fr; }
   .actions .btn { width: 100%; justify-content: space-between; }
+  .tools li { grid-template-columns: 1fr; }                      /* name above its line: two columns leave long words no room */
 }
 /* Short screens (phones turned sideways, small laptop windows): tighter hero and sections. */
 @media (max-height: 520px) {
