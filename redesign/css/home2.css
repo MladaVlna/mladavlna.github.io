@@ -107,7 +107,7 @@ h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight
 /* ---------- hero ---------- */
 /* The hero is taller than the screen; its stage stays pinned while the scroll walks the camera down the trail,
    then into the trunk of the last tree, where the stage goes dark (--dark, 0 to 1) and hands over to the page. */
-.hero { position: relative; height: 220vh; }   /* 1.2 screens of scrolling for the walk and the dive (was 2.3; owner, 16 November 2026: get to the tree faster) */
+.hero { position: relative; height: 255vh; }   /* the old scrolling speed on a shorter walk (22 m, was 38 m); see START_Z, END_Z and WALK_END in js/hero-forest.js */
 .hero__stage {
   --p: 0;
   --dark: 0;

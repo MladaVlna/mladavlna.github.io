@@ -107,10 +107,15 @@ function start() {
   const rand = (a, b) => a + Math.random() * (b - a);
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const path = (z) => Math.sin(z * 0.07) * 2.6;                 // the trail winds a little
-  const START_Z = 12, END_Z = -26;
+  // The walk is 22 m of trail (it was 38 m until 16 November 2026, when the owner asked for a shorter scene at the
+  // same scrolling speed). The hero's height in css/home2.css is matched to it: 255vh keeps the old metres per
+  // screen of scrolling for the walk, and the old length for the dive. LENGTH_WAS scales the litter and plants
+  // so the forest is as dense as before.
+  const START_Z = 12, END_Z = -10, LENGTH_WAS = 38;
+  const shorter = (START_Z - END_Z) / LENGTH_WAS;
   // The walk takes the first WALK_END of the scroll; the rest turns you to this tree beside the end of the
   // trail and walks you into its trunk, and the screen goes dark into the section below.
-  const WALK_END = 0.78;
+  const WALK_END = 0.672;                                        // 1.04 screens of walking, then 0.51 screens of the dive
   const END_TREE = { x: path(END_Z - 7) + 0.9, z: END_Z - 7, radius: 0.4 };
   const REACH = 85;                                               // nothing is built further than this from the walk: the mist hides it all
   const fromWalk = (x, z) => { const wz = Math.min(START_Z, Math.max(END_Z, z)); return Math.hypot(x - path(wz), z - wz); };
@@ -439,8 +444,9 @@ function start() {
     }
     return sliced(geo, mat, items, (mesh) => { mesh.receiveShadow = true; });   // low plants cast no shadow
   }
-  plants(fernTex, tier.ferns, 0.5, 1.25, 20, 0.75);
-  plants(grassTex, tier.grass, 0.18, 0.5, 14, 0.8);
+  const plantShare = (START_Z + 4 - (END_Z - 30)) / (LENGTH_WAS + 34);   // the strip they grow in got shorter too
+  plants(fernTex, Math.round(tier.ferns * plantShare), 0.5, 1.25, 20, 0.75);
+  plants(grassTex, Math.round(tier.grass * plantShare), 0.18, 0.5, 14, 0.8);
 
   // Mossy boulders and fallen logs.
   const stone = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.6, 2),
@@ -580,7 +586,7 @@ function start() {
   ];
   const REST = [0.105, 0.075, 0.028, 0.065, 0.07, 0.1, 0.23];                // how high each kind sits when lying on the ground
   const pieces = [];
-  const LITTER = tier.litter;
+  const LITTER = Math.round(tier.litter * shorter);              // as dense as before on the shorter trail
   for (let i = 0; i < LITTER; i++) {
     const z = rand(END_Z - 2, START_Z - 2);                       // none beyond the end of the walk, so the forest ends up clean
     const x = path(z) + (Math.random() < 0.5 ? -1 : 1) * (Math.pow(Math.random(), 1.6) * 9 + 0.2);   // most lies close to the trail
