@@ -263,7 +263,7 @@ def foot(en, extra_scripts=''):
   <footer class="foot">
     <div class="wrap foot__in">
       <p><strong>Mladá Vlna, o. z.</strong><br>Tomášikova 22, 080 01 Prešov<br><a href="tel:+421918208346">+421 918 208 346</a></p>
-      <p><a href="../../documents.html" data-i18n="docs">Dokumenty</a><br><a href="../../blog.html">Blog</a><br><a href="../index.html" data-i18n="other">Prvá verzia stránky</a></p>
+      <p><a href="../about/index.html#documents" data-i18n="docs">Dokumenty</a><br><a href="../projects/index.html" data-i18n="nav_projects">Projekty</a></p>
     </div>
     <p class="wrap foot__note">© 2026 Mladá Vlna</p>
   </footer>
@@ -475,6 +475,12 @@ ABOUT_STORY = [
    ('Naši členovia prešli mnohými výmenami, tréningovými kurzami a strategickými partnerstvami Erasmus+. Získali sme sieť európskych partnerov, skúsenosti s riadením projektov a overený spôsob, ako aktivity pripraviť aj vyhodnotiť.',
     'Our members have taken part in many Erasmus+ exchanges, training courses and strategic partnerships. That gave us a network of European partners, experience in managing projects and a tried way of preparing and evaluating activities.'), '../projects/index.html'),
 ]
+# Documents/ in the repository root, linked from the About page (they used to be on the old documents.html).
+ABOUT_DOCS = [
+  ('LT_Stanovy_20250120.pdf', ('Stanovy občianskeho združenia Mladá Vlna', 'Statutes of Mladá Vlna')),
+  ('pozvanka_04_2026.pdf', ('Pozvánka pre členov združenia 04/2026', 'Invitation for members 04/2026')),
+  ('pozvanka_04_2025.pdf', ('Pozvánka pre členov združenia 04/2025', 'Invitation for members 04/2025')),
+]
 ABOUT_VALUES = [
   (('Učíme sa robením', 'We learn by doing'),
    ('Workshopy, hry, simulácie, debaty a práca rukami. Neformálne vzdelávanie, pri ktorom sa učíš skúsenosťou a od ostatných.', 'Workshops, games, simulations, debates and hands-on work. Non-formal education, where you learn from experience and from each other.')),
@@ -509,7 +515,7 @@ ABOUT_TEXT = {
   'tm_label': ('Náš tím', 'Our team'),
   'tm_title': ('Ľudia za Mladou Vlnou.', 'The people behind Mladá Vlna.'),
   'fx_label': ('Združenie v skratke', 'The association at a glance'),
-  'fx_lead': ('Všetky oficiálne dokumenty, vrátane stanov, nájdeš v sekcii Dokumenty.', 'All our official documents, including the statutes, are on the Documents page.'),
+  'fx_lead': ('Oficiálne dokumenty združenia na stiahnutie.', "The association's official documents, to download. They are in Slovak."),
   'fx_docs': ('Dokumenty', 'Documents'),
   'fx_n': ('Názov', 'Name'),
   'fx_f': ('Forma', 'Legal form'), 'fx_fv': ('Občianske združenie', 'Civic association'),
@@ -529,6 +535,9 @@ def about():
         + (f'<p class="values__more"><a class="link" href="{link}"><span {T("st_more")}</span> <span aria-hidden="true">→</span></a></p>' if link else '')
         + '</li>'
         for i, (a, b, link) in enumerate(ABOUT_STORY))
+    docs_html = '\n'.join(
+        f'            <li><a class="link" href="../../Documents/{f}" target="_blank" rel="noopener"><span {t(en, f"doc{i}", label)}</span> <span class="docs__type">PDF</span></a></li>'
+        for i, (f, label) in enumerate(ABOUT_DOCS))
     values_html = '\n'.join(
         f'          <li class="reveal"><span class="values__no">0{i + 1}</span><h3 {t(en, f"av{i}t", a)}</h3><p {t(en, f"av{i}p", b)}</p></li>'
         for i, (a, b) in enumerate(ABOUT_VALUES))
@@ -607,12 +616,15 @@ def about():
       </div>
     </section>
 
-    <section class="section paper paper--deep pnext-wrap">
+    <section class="section paper paper--deep pnext-wrap" id="documents">
       <div class="wrap pintro__grid">
         <div>
           <p class="label"><span {T("fx_label")}</span></p>
-          <p class="plead" {T("fx_lead")}</p>
-          <p class="proj-all"><a class="link" href="../../documents.html"><span {T("fx_docs")}</span> <span aria-hidden="true">→</span></a></p>
+          <h2 class="docs__title" {T("fx_docs")}</h2>
+          <p class="body" {T("fx_lead")}</p>
+          <ul class="docs">
+{docs_html}
+          </ul>
         </div>
         <dl class="facts">
           <div><dt {T("fx_n")}</dt><dd>Mladá Vlna, o. z.</dd></div>
