@@ -405,7 +405,7 @@ def overview(all_photos):
       <div class="wrap">
         <p class="label label--light"><span {t(en, "ov_label", ("Projekty", "Projects"))}</span></p>
         <h1 {t(en, "ov_title", ("Kde sme už boli.", "Where we have been."))}</h1>
-        <p class="body body--light" {t(en, "ov_p", ("Výmeny Erasmus+, ktorých sme boli súčasťou, v Košiciach aj po Európe. Každá spojí na týždeň mladých ľudí z viacerých krajín: workshopy, spoločné projekty a nové priateľstvá.", "The Erasmus+ youth exchanges we have been part of, in Košice and across Europe. Each one brings young people from several countries together for a week of workshops, shared projects and new friendships."))}</p>
+        <p class="body body--light" {t(en, "ov_p", ("Cez aktivity, ktoré organizujeme s podporou Erasmus+ aj vlastnými silami a spolu s partnermi doma aj v zahraničí, spájame mladých ľudí: spolu sa učia, tvoria a nachádzajú priateľstvá cez hranice.", "Through the activities we organise, with Erasmus+ or on our own, and with partners at home and abroad, we bring young people together to learn, create and make friends across borders."))}</p>
       </div>
     </section>
 
