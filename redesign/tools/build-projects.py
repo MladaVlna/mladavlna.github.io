@@ -110,7 +110,7 @@ PROJECTS = [
     ],
     # swap1-5: the clothes swap on 2 January 2026, in the order they were taken (owner, 16 November 2026).
     photos=['image4.jpg', 'image1.jpg', 'image2.jpg', 'image3.jpg', 'image5.jpg', 'image6.jpg', 'image8.jpg', 'image9.jpg', 'image10.jpg', 'image7.jpg', 'image11.jpg', 'swap1.jpg', 'swap2.jpg', 'swap3.jpg', 'swap4.jpg', 'swap5.jpg'], cover=0,
-    infopack='infopack.pdf', drive='https://drive.google.com/drive/u/1/folders/10iM9XoiMdyGh3-rM8H0AdbNKT35-HJ4l',
+    infopack=None, drive='https://drive.google.com/drive/u/1/folders/10iM9XoiMdyGh3-rM8H0AdbNKT35-HJ4l',   # info pack link removed (owner, 16 November 2026)
   ),
   dict(
     slug='retoy', title='ReToy', folder='Retoy',
@@ -294,14 +294,77 @@ def foot(en, extra_scripts=''):
 </html>
 '''
 
-def facts(en, p, prefix=''):
+# ---------------------------------------------------------------------------------------------------------
+# Flags for the "Countries" fact (owner, 16 November 2026: flags instead of names). Flat, simplified flags
+# drawn as small inline SVGs (30 x 20), so they stay sharp on any screen. The country's name is the flag's
+# accessible label (Slovak in the HTML, English in window.PAGE_EN).
+import math
+
+def _star(cx, cy, r, rot=-90):
+    pts = []
+    for i in range(10):
+        a = math.radians(rot + i * 36)
+        rr = r if i % 2 == 0 else r * 0.4
+        pts.append(f'{cx + rr * math.cos(a):.2f},{cy + rr * math.sin(a):.2f}')
+    return ' '.join(pts)
+
+def _stripes(colors, vertical=False):
+    n = len(colors)
+    if vertical:
+        return ''.join(f'<rect x="{30 * i / n:.3f}" y="0" width="{30 / n + 0.02:.3f}" height="20" fill="{c}"/>' for i, c in enumerate(colors))
+    return ''.join(f'<rect x="0" y="{20 * i / n:.3f}" width="30" height="{20 / n + 0.02:.3f}" fill="{c}"/>' for i, c in enumerate(colors))
+
+def _checks():                                                     # Croatia's red and white chequy shield
+    out = []
+    for r in range(5):
+        for c in range(5):
+            out.append(f'<rect x="{12.5 + c}" y="{5.6 + r * 1.2:.2f}" width="1" height="1.2" fill="{"#ff0000" if (r + c) % 2 == 0 else "#fff"}"/>')
+    return ''.join(out)
+
+def _shield(x, y, w, h):
+    hw = w / 2
+    return f'M{x} {y}h{w}v{h * 0.55:.2f}c0 {h * 0.3:.2f} -{hw:.2f} {h * 0.45:.2f} -{hw:.2f} {h * 0.45:.2f}S{x} {y + h * 0.85:.2f} {x} {y + h * 0.55:.2f}Z'
+
+FLAGS = {
+  'sk': _stripes(['#fff', '#0b4ea2', '#ee1c25'])
+        + f'<clipPath id="fl-sk"><path d="{_shield(7, 4.4, 6.6, 11)}"/></clipPath>'
+        + f'<path d="{_shield(7, 4.4, 6.6, 11)}" fill="#ee1c25" stroke="#fff" stroke-width="0.7"/>'
+        + '<g clip-path="url(#fl-sk)"><path d="M6.5 15.6 Q8.6 11.6 10.3 13.4 Q12 11.6 14.1 15.6Z" fill="#0b4ea2"/></g>'
+        + '<path d="M10 6.2h0.6v6.6h-0.6Z M8.6 7.6h3.4v0.55h-3.4Z M8.1 9.2h4.4v0.6h-4.4Z" fill="#fff"/>',
+  'pl': _stripes(['#fff', '#dc143c']),
+  'hu': _stripes(['#cd2a3e', '#fff', '#436f4d']),
+  'ro': _stripes(['#002b7f', '#fcd116', '#ce1126'], vertical=True),
+  'bg': _stripes(['#fff', '#00966e', '#d62612']),
+  'nl': _stripes(['#ae1c28', '#fff', '#21468b']),
+  'hr': _stripes(['#ff0000', '#fff', '#171796'])
+        + f'<clipPath id="fl-hr"><path d="{_shield(12.5, 5.6, 5, 8)}"/></clipPath>'
+        + '<g clip-path="url(#fl-hr)">' + _checks() + '</g>'
+        + f'<path d="{_shield(12.5, 5.6, 5, 8)}" fill="none" stroke="#fff" stroke-width="0.5"/>',
+  'rs': _stripes(['#c6363c', '#0c4076', '#fff'])
+        + f'<path d="{_shield(7.2, 4.6, 5, 7.6)}" fill="#c6363c" stroke="#fff" stroke-width="0.6"/>'
+        + '<path d="M9.45 6.2h0.5v4.2h-0.5Z M8.2 7.6h3v0.5h-3Z" fill="#fff"/>'
+        + '<path d="M7.6 4.3l0.5-1.4 0.9 0.9 0.7-1.3 0.7 1.3 0.9-0.9 0.5 1.4Z" fill="#e7b416"/>',   # the crown sets it apart from Slovakia
+  'tr': '<rect width="30" height="20" fill="#e30a17"/><circle cx="11" cy="10" r="5" fill="#fff"/><circle cx="12.25" cy="10" r="4" fill="#e30a17"/>'
+        + f'<polygon points="{_star(16.6, 10, 2.05, rot=180)}" fill="#fff"/>',
+}
+FLAG_CODE = {'Slovakia': 'sk', 'Poland': 'pl', 'Hungary': 'hu', 'Romania': 'ro', 'Bulgaria': 'bg', 'Croatia': 'hr',
+             'the Netherlands': 'nl', 'Netherlands': 'nl', 'Serbia': 'rs', 'Turkey': 'tr'}
+
+def flags_html(en, p):
     c_sk, c_en = p['countries']
-    en['fc'] = join_list(c_en, 'and')
+    out = []
+    for sk, en_name in zip(c_sk, c_en):
+        code = FLAG_CODE[en_name]
+        en['fl_' + code] = en_name
+        out.append(f'<span class="flag" role="img" aria-label="{e(sk)}" data-i18n-aria="fl_{code}"><svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">{FLAGS[code]}</svg></span>')
+    return '<span class="flags">' + ''.join(out) + '</span>'
+
+def facts(en, p, prefix=''):
     venue = f'<a href="{e(p["venue_url"])}" target="_blank" rel="noopener noreferrer" {t(en, "fv", p["venue"])}</a>'
     return f'''<dl class="facts">
             <div><dt {t(en, "f_dates", UI["f_dates"])}</dt><dd {t(en, "fd", p["dates"])}</dd></div>
             <div><dt {t(en, "f_place", UI["f_place"])}</dt><dd {t(en, "fp", p["place"])}</dd></div>
-            <div><dt {t(en, "f_countries", UI["f_countries"])}</dt><dd data-i18n="fc">{e(join_list(c_sk, "a"))}</dd></div>
+            <div><dt {t(en, "f_countries", UI["f_countries"])}</dt><dd>{flags_html(en, p)}</dd></div>
             <div><dt {t(en, "f_who", UI["f_who"])}</dt><dd {t(en, "fw", p["who"])}</dd></div>
             <div><dt {t(en, "f_venue", UI["f_venue"])}</dt><dd>{venue}</dd></div>
           </dl>'''

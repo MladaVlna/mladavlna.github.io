@@ -27,6 +27,9 @@
 .facts dd { margin: 0; color: var(--ink); line-height: 1.45; overflow-wrap: anywhere; }
 /* The EU emblem: required on the pages of EU-funded projects, so only there (not on the homepage). */
 .eu-funded { display: block; width: min(260px, 70%); height: auto; margin-top: 26px; }
+/* Countries as flags (inline SVG, see FLAGS in tools/build-projects.py). */
+.flags { display: flex; flex-wrap: wrap; gap: 8px 10px; padding-top: 1px; }
+.flag svg { display: block; width: 30px; height: 20px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(21, 33, 42, 0.14), 0 1px 3px rgba(21, 33, 42, 0.12); }
 .facts a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
 
 /* ---------- gallery ---------- */
