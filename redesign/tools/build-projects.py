@@ -226,8 +226,8 @@ def t(en, key, pair):
 def head(title_sk, desc, projects='index.html'):
     return f'''<!DOCTYPE html>
 <!-- Built by tools/build-projects.py: edit the content there and run it again, not this file. -->
-<!-- Development: opens in English (DEFAULT_LANG in js/home2.js). Before release, switch it and this lang back to "sk". -->
-<html lang="en">
+<!-- Opens in Slovak (DEFAULT_LANG in js/home2.js); the EN button switches to English. -->
+<html lang="sk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -255,7 +255,7 @@ def head(title_sk, desc, projects='index.html'):
       <a href="../home2.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
       <a href="../contact/index.html" data-i18n="nav_contact">Kontakt</a>
       <span class="lang" role="group" aria-label="Jazyk / Language">
-        <button type="button" data-lang="en" aria-pressed="true">EN</button><span aria-hidden="true">/</span><button type="button" data-lang="sk" aria-pressed="false">SK</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button><span aria-hidden="true">/</span><button type="button" data-lang="sk" aria-pressed="true">SK</button>
       </span>
     </nav>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav"><span data-i18n="menu">Menu</span><i aria-hidden="true"></i></button>

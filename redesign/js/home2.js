@@ -1,8 +1,8 @@
 // Second homepage: language switch, smooth scrolling, the top bar, phone menu and scroll reveals.
 (function () {
   // DEVELOPMENT: the page always opens in English while it is being designed.
-  // BEFORE RELEASE: set this back to 'sk' (and <html lang="sk"> in home2.html).
-  var DEFAULT_LANG = 'en';
+  // The site opens in Slovak (confirmed by the organisation); visitors can switch to English.
+  var DEFAULT_LANG = 'sk';
 
   // Slovak is the text in the HTML. Only English lives here.
   var en = {

@@ -120,7 +120,7 @@ Test switches on that address:
 - **EU emblem (owner, 16 November 2026):** the "Co-funded by the European Union" emblem goes only on the pages of the projects themselves: each `projects/<slug>.html` shows it under the facts (`img/eu-cofunded.png`, a 640 px copy of `images/eu.png`). Not on the homepage, the projects list or the old site's main pages (removed there on 15 November 2026 on purpose; the old pages in `Projekty/` keep theirs).
 - **Countries as flags (16 November 2026):** the Countries fact shows flags instead of names: flat inline SVGs drawn in `tools/build-projects.py` (`FLAGS`, `FLAG_CODE`; add a country there before using it in a project), with the country name as each flag's accessible label. The glossy PNGs in `flags/` were too small and dated.
 - **Info packs:** only Populism 101 has one. The other four (CTRL + ALT + RIGHTS, Smart & Sustainable, The Masters of Puppets, ReToy) were deleted from the repository on 16 November 2026 at the owner's request, together with the links to them on the old project pages in `Projekty/`; they remain in git history (owner, 16 November 2026).
-- The language choice now carries from page to page within a visit (`sessionStorage`), still opening in English by default.
+- The language choice now carries from page to page within a visit (`sessionStorage`), opening in Slovak by default.
 
 ## About page (16 November 2026)
 
@@ -141,7 +141,7 @@ Test switches on that address:
 
 ## Before release
 
-- **Switch the default language back to Slovak:** `DEFAULT_LANG` in `js/home2.js` to `'sk'`, and `<html lang="sk">` in `home2.html`. During development the page always opens in English, as the owner asked.
+- **Default language: Slovak** (confirmed by the organisation). `DEFAULT_LANG = 'sk'` in `js/home2.js`, `<html lang="sk">` in `home2.html` and the generated pages. A visitor's choice of English is kept for the rest of the visit.
 - Have the Slovak and English wording checked, especially the new mission and focus-area text. The environment photo is from an exchange in Rymanów, Poland; swap in a photo from a Košice or Prešov clean-up when there is one. The "How to join" steps still describe exchanges only.
 
 ## Rules agreed with the owner
