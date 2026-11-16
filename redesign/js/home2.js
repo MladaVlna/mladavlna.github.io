@@ -53,6 +53,13 @@
   var nav0 = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
   if (location.hash && nav0 && nav0.type === 'reload') history.replaceState(null, '', location.pathname + location.search);   // a reload is a fresh start
   if (!location.hash) window.scrollTo(0, 0);
+  // Some in-app browsers put a newly opened page back at the old page's scroll position after this has run.
+  // Once everything has loaded, send it to the top again, unless the visitor has already scrolled themselves.
+  var touched = false;
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) { window.addEventListener(t, function () { touched = true; }, { once: true, passive: true }); });
+  function toTop() { if (!location.hash && !touched && window.scrollY > 0) window.scrollTo(0, 0); }
+  window.addEventListener('load', function () { toTop(); setTimeout(toTop, 120); });
+  window.addEventListener('pageshow', function (e) { if (!e.persisted) toTop(); });
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var nodes = document.querySelectorAll('[data-i18n]'), ariaNodes = document.querySelectorAll('[data-i18n-aria]');
   var sk = {}, skAria = {};
