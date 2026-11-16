@@ -107,7 +107,7 @@ Test switches on that address:
 - **To confirm with the owner:** CTRL + ALT + RIGHTS countries (the old page says 4 in one place and 6 in another; the page uses the 4 named: Bulgaria, Romania, Poland, Slovakia). Only ReToy and Smart & Sustainable have a Drive folder; Populism 101 and The Masters of Puppets show just the info pack. CTRL + ALT + RIGHTS shows no info pack: the owner said it should not be public (16 November 2026).
 - **EU emblem (owner, 16 November 2026):** the "Co-funded by the European Union" emblem goes only on the pages of the projects themselves: each `projects/<slug>.html` shows it under the facts (`img/eu-cofunded.png`, a 640 px copy of `images/eu.png`). Not on the homepage, the projects list or the old site's main pages (removed there on 15 November 2026 on purpose; the old pages in `Projekty/` keep theirs).
 - **Countries as flags (16 November 2026):** the Countries fact shows flags instead of names: flat inline SVGs drawn in `tools/build-projects.py` (`FLAGS`, `FLAG_CODE`; add a country there before using it in a project), with the country name as each flag's accessible label. The glossy PNGs in `flags/` were too small and dated.
-- **Info packs:** CTRL + ALT + RIGHTS, Smart & Sustainable and The Masters of Puppets show no info pack link (owner, 16 November 2026).
+- **Info packs:** only Populism 101 shows an info pack link; the others were removed (owner, 16 November 2026).
 - The language choice now carries from page to page within a visit (`sessionStorage`), still opening in English by default.
 
 ## About page (16 November 2026)

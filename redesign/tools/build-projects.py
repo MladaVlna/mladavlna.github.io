@@ -138,7 +138,7 @@ PROJECTS = [
     ],
     photos=['image2.jpg', 'image1.jpg', 'image3.jpg', 'image4.jpeg', 'image8.jpeg', 'image6.jpeg', 'image7.jpeg', 'image12.jpeg', 'image13.jpeg',
             'image14.jpeg', 'image15.jpeg', 'image16.jpeg', 'image17.jpeg', 'image18.jpeg', 'image9.jpeg', 'image10.jpeg', 'image11.jpeg', 'image5.jpeg'], cover=0,
-    infopack='Infopack.pdf', drive='https://drive.google.com/drive/folders/1d_O0zVyf4OAbiKIrzTeoK7Xpf97jQQ_i',
+    infopack=None, drive='https://drive.google.com/drive/folders/1d_O0zVyf4OAbiKIrzTeoK7Xpf97jQQ_i',   # info pack link removed (owner, 16 November 2026)
   ),
   dict(
     slug='ctrl-alt-rights', title='CTRL + ALT + RIGHTS', folder='CTRLBulgaria',
