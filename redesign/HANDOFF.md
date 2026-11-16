@@ -141,6 +141,7 @@ Test switches on that address:
 
 ## Before release
 
+- **Phone top bar:** below 981 px the EN / SK switch sits in the bar beside the burger (it is outside `<nav>`, in `.top__end`), and the burger shows only its lines; the word "Menu" stays for screen readers. While the menu is open the bar has no backdrop filter, which otherwise shrank the menu sheet to the bar's height.
 - **Default language: Slovak** (confirmed by the organisation). `DEFAULT_LANG = 'sk'` in `js/home2.js`, `<html lang="sk">` in `home2.html` and the generated pages. A visitor's choice of English is kept for the rest of the visit.
 - Have the Slovak and English wording checked, especially the new mission and focus-area text. The environment photo is from an exchange in Rymanów, Poland; swap in a photo from a Košice or Prešov clean-up when there is one. The "How to join" steps still describe exchanges only.
 
