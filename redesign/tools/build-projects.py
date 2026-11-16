@@ -411,7 +411,7 @@ def overview(all_photos):
     <section class="phead" data-dark-start>
       <div class="wrap">
         <p class="label label--light"><span {t(en, "ov_label", ("Projekty", "Projects"))}</span></p>
-        <h1 {t(en, "ov_title", ("Kde sme už boli.", "Where we have been."))}</h1>
+        <h1 {t(en, "ov_title", ("Naše aktivity.", "Our activities."))}</h1>
         <p class="body body--light" {t(en, "ov_p", ("Cez aktivity, ktoré organizujeme s podporou Erasmus+ aj vlastnými silami a spolu s partnermi doma aj v zahraničí, spájame mladých ľudí: spolu sa učia, tvoria a nachádzajú priateľstvá cez hranice.", "Through the activities we organise, with Erasmus+ or on our own, and with partners at home and abroad, we bring young people together to learn, create and make friends across borders."))}</p>
       </div>
     </section>
@@ -489,7 +489,7 @@ ABOUT_VALUES = [
    ('Budujeme priateľstvá a partnerstvá po celej Európe a to, čo sa naučíme, prinášame späť do Košíc a Prešova.', 'We build friendships and partnerships across Europe, and bring what we learn back home to Košice and Prešov.')),
 ]
 ABOUT_TEXT = {
-  'ab_label': ('O nás', 'About Us'),
+  'ab_label': ('O nás', 'About us'),
   'ab_title': ('Mladí ľudia, ktorí menia východné Slovensko.', 'Young people changing eastern Slovakia.'),
   'ab_lead': ('Mladá Vlna je mládežnícke občianske združenie so sídlom v Prešove. Pomáhame mladým ľuďom byť aktívni vo vlastnej komunite, v Košiciach, Prešove aj v ich okolí.',
               'Mladá Vlna (Youth Wave) is a youth-led civic association based in Prešov. We help young people become active in their own community, in Košice, Prešov and the towns around them.'),

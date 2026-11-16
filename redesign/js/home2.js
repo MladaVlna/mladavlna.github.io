@@ -7,7 +7,7 @@
   // Slovak is the text in the HTML. Only English lives here.
   var en = {
     skip: 'Skip to content', menu: 'Menu',
-    nav_about: 'About Us', nav_focus: 'What we do', nav_projects: 'Projects', nav_join: 'How to join', nav_contact: 'Contact',
+    nav_about: 'About us', nav_focus: 'What we do', nav_projects: 'Projects', nav_join: 'How to join', nav_contact: 'Contact',
     hero_lead: "Together we're making eastern Slovakia a better place. For everyone, but especially for young people.",
     hero_hint: "Scroll · we'll clean the forest",
     mission_label: 'Our mission',
@@ -52,13 +52,17 @@
   // Start at the very top: the beginning of the forest walk. A link from another page to a section (#join, ...) still works.
   var nav0 = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
   if (location.hash && nav0 && nav0.type === 'reload') history.replaceState(null, '', location.pathname + location.search);   // a reload is a fresh start
-  if (!location.hash) window.scrollTo(0, 0);
+  // Jumps are instant: the stylesheet makes scrolling smooth (scroll-behavior), and a smooth scroll to the
+  // top can be cancelled by an in-app browser restoring the old position, which left pages open at the bottom.
+  function jump(y) { try { window.scrollTo({ top: y, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, y); } }
+  if (!location.hash) jump(0);
   // Some in-app browsers put a newly opened page back at the old page's scroll position after this has run.
   // Once everything has loaded, send it to the top again, unless the visitor has already scrolled themselves.
   var touched = false;
   ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) { window.addEventListener(t, function () { touched = true; }, { once: true, passive: true }); });
-  function toTop() { if (!location.hash && !touched && window.scrollY > 0) window.scrollTo(0, 0); }
-  window.addEventListener('load', function () { toTop(); setTimeout(toTop, 120); });
+  function toTop() { if (!location.hash && !touched && window.scrollY > 0) jump(0); }
+  document.addEventListener('DOMContentLoaded', toTop);
+  window.addEventListener('load', function () { toTop(); [120, 400, 1000, 2000].forEach(function (ms) { setTimeout(toTop, ms); }); });
   window.addEventListener('pageshow', function (e) { if (!e.persisted) toTop(); });
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var nodes = document.querySelectorAll('[data-i18n]'), ariaNodes = document.querySelectorAll('[data-i18n-aria]');
@@ -132,7 +136,7 @@
     else window.scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
     if (Math.abs(y - from) < 4) return;
     setTimeout(function () {
-      if (Math.abs(window.scrollY - from) < 4) window.scrollTo(0, y);
+      if (Math.abs(window.scrollY - from) < 4) jump(y);
     }, lenis ? 1900 : 900);
   }
 
@@ -142,7 +146,7 @@
     window.addEventListener('load', function () {
       var el = null;
       try { el = document.querySelector(location.hash); } catch (e) {}
-      if (el) window.scrollTo(0, Math.max(0, (el.querySelector('[data-anchor]') || el).getBoundingClientRect().top + window.scrollY - 70));
+      if (el) jump(Math.max(0, (el.querySelector('[data-anchor]') || el).getBoundingClientRect().top + window.scrollY - 70));
     });
   }
 
