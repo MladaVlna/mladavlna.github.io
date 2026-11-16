@@ -76,25 +76,25 @@ function start() {
   const fixedRatio = parseFloat(params.get('ratio'));              // ?ratio=1 pins the resolution (tests, screenshots)
   renderer.setPixelRatio(fixedRatio > 0 ? fixedRatio : Math.min(window.devicePixelRatio, tier.ratio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.34;
+  renderer.toneMappingExposure = 1.45;                             // a bright, sunny morning
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;                          // redrawn only when something casting a shadow has moved (see the loop)
   renderer.autoClear = false;                                     // two passes per frame: far backdrop, then the forest
 
-  const MIST = 0x8fc7c2;
+  const MIST = 0xdde6d3;                                          // warm, sunlit haze (matches the sky's horizon)
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(MIST, 0.03);
+  scene.fog = new THREE.FogExp2(MIST, 0.015);                     // light haze only: the owner wants little fog
   scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
   // The sky and the mountains sit hundreds of metres away, far past where the mist hides the forest. They are
   // drawn first in a pass of their own with a deep camera, so the forest camera can stop at 110 m.
   const backdrop = new THREE.Scene();
   backdrop.background = skyTexture();
 
-  scene.add(new THREE.HemisphereLight(0xd4f1ea, 0x1c3a2a, 1.5));
+  scene.add(new THREE.HemisphereLight(0xfff3d6, 0x2c4a2a, 1.75));
   // A low morning sun behind the trees: long shadows fall towards you across the trail.
   const SUN = new THREE.Vector3(18, 26, -40);
-  const sun = new THREE.DirectionalLight(0xfff0c2, 3.0);
+  const sun = new THREE.DirectionalLight(0xffdf9e, 4.0);
   sun.castShadow = true;
   sun.shadow.mapSize.set(tier.shadow, tier.shadow);
   // 68 m across: past that the mist hides the shadows anyway, and a smaller area means fewer trees drawn into the map.
@@ -158,14 +158,14 @@ function start() {
     };
   }
 
-  // ---------- sky: morning mist, a low sun and the ridge of the mountains ----------
+  // ---------- sky: a clear, sunny morning, a warm low sun and the ridge of the mountains ----------
   function skyTexture() {
     return draw(1024, 1024, (g) => {
       const sky = g.createLinearGradient(0, 0, 0, 1024);
-      sky.addColorStop(0, '#dcf4ec'); sky.addColorStop(0.42, '#a9d9d2'); sky.addColorStop(0.56, '#8fc7c2'); sky.addColorStop(1, '#8fc7c2');
+      sky.addColorStop(0, '#5fa9e3'); sky.addColorStop(0.3, '#9fcdf0'); sky.addColorStop(0.47, '#d6e6e6'); sky.addColorStop(0.56, '#dde6d3'); sky.addColorStop(1, '#dde6d3');
       g.fillStyle = sky; g.fillRect(0, 0, 1024, 1024);
-      const glow = g.createRadialGradient(720, 330, 0, 720, 330, 430);
-      glow.addColorStop(0, 'rgba(255,250,214,0.98)'); glow.addColorStop(0.22, 'rgba(246,250,214,0.5)'); glow.addColorStop(1, 'rgba(244,250,214,0)');
+      const glow = g.createRadialGradient(720, 330, 0, 720, 330, 520);
+      glow.addColorStop(0, 'rgba(255,248,220,1)'); glow.addColorStop(0.12, 'rgba(255,236,170,0.75)'); glow.addColorStop(0.4, 'rgba(255,226,160,0.28)'); glow.addColorStop(1, 'rgba(255,226,160,0)');
       g.fillStyle = glow; g.fillRect(0, 0, 1024, 1024);
       const ridge = (base, height, color, seed) => {
         g.beginPath(); g.moveTo(0, 1024);
@@ -175,9 +175,9 @@ function start() {
         }
         g.lineTo(1024, 1024); g.closePath(); g.fillStyle = color; g.fill();
       };
-      ridge(505, 130, '#a6d3ce', 1.3);
-      ridge(528, 95, '#97cbc6', 2.9);
-      ridge(548, 70, '#86bdb9', 4.1);
+      ridge(505, 130, '#bcd3dc', 1.3);
+      ridge(528, 95, '#a9c6cd', 2.9);
+      ridge(548, 70, '#97b9bb', 4.1);
     });
   }
 
@@ -213,7 +213,7 @@ function start() {
     // Colour is painted in: rock, snow above the snow line, dark forest on the lower slopes, all softened by distance haze.
     const mn = geo.attributes.normal, mcol = new Float32Array(mp.count * 3);
     const light = new THREE.Vector3(-0.55, 0.62, 0.56).normalize(), n3 = new THREE.Vector3();
-    const rock = new THREE.Color(0x5f7b84), snow = new THREE.Color(0xf4fbfb), woods = new THREE.Color(0x2c5a4a), haze = new THREE.Color(0xa9d9d2), c = new THREE.Color();
+    const rock = new THREE.Color(0x5f7b84), snow = new THREE.Color(0xf4fbfb), woods = new THREE.Color(0x2c5a4a), haze = new THREE.Color(0xc4dbe2), c = new THREE.Color();
     for (let i = 0; i < mp.count; i++) {
       const x = mp.getX(i), y = mp.getY(i), z = mp.getZ(i);
       n3.set(mn.getX(i), mn.getY(i), mn.getZ(i));
@@ -478,7 +478,7 @@ function start() {
   const rays = [];
   for (let i = 0; i < tier.rays; i++) {
     const ray = new THREE.Mesh(new THREE.PlaneGeometry(rand(2, 6), 46),
-      new THREE.MeshBasicMaterial({ map: rayTex, color: 0xf4f7cf, transparent: true, opacity: rand(0.09, 0.2), blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide }));
+      new THREE.MeshBasicMaterial({ map: rayTex, color: 0xffe9a8, transparent: true, opacity: rand(0.12, 0.26), blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide }));
     ray.position.set(rand(-16, 22), 15, rand(-56, -4));
     ray.rotation.z = 0.44;                                         // slanted along the sun's direction
     ray.userData = { base: ray.material.opacity, phase: rand(0, 6.28) };
@@ -495,7 +495,7 @@ function start() {
   const mists = [];
   for (let i = 0; i < tier.mists; i++) {
     const puff = new THREE.Mesh(new THREE.PlaneGeometry(rand(26, 46), rand(5, 9)),
-      new THREE.MeshBasicMaterial({ map: puffTex, color: 0xd9f1ea, transparent: true, opacity: rand(0.3, 0.6), depthWrite: false, fog: false }));
+      new THREE.MeshBasicMaterial({ map: puffTex, color: 0xfbf4df, transparent: true, opacity: rand(0.04, 0.11), depthWrite: false, fog: false }));
     puff.position.set(rand(-24, 24), rand(0.8, 3), rand(-64, -6));
     puff.userData = { x: puff.position.x, speed: rand(0.03, 0.09), phase: rand(0, 6.28) };
     scene.add(puff); mists.push(puff);
@@ -612,7 +612,9 @@ function start() {
   // They load only once the forest is on screen, so the first picture isn't held up by their 1.5 MB.
   const crew = { count: tier.people, path, heightAt, zFrom: 4, zTo: END_Z + 2, pieces, prepare: (o) => prepare(o) };   // they stay clear of the last tree
   let updatePeople = () => {};
-  const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
+  // A quiet moment if one comes, but never later than 1.5 s: with the forest, the smooth scroll and the printer
+  // all drawing, the page can be busy every frame, and without a deadline the people sometimes never loaded.
+  const whenIdle = (fn) => (window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 400));
   const loadPeople = () => {
     if (crew.count <= 0) return;
     setTimeout(() => whenIdle(() => createVolunteers(scene, crew)

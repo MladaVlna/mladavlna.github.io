@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html lang="sk">
+<!-- Development: the page opens in English (DEFAULT_LANG in js/home2.js). Before release, switch it and this lang back to "sk". -->
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mladá vlna – občianske združenie</title>
-  <meta name="description" content="Mladá vlna o. z. pomáha mladým zapojiť sa do Erasmus+ výmen po celej Európe.">
-  <meta name="theme-color" content="#0a211c">
+  <title>Mladá Vlna – občianske združenie</title>
+  <meta name="description" content="Mladá Vlna o. z. pomáha mladým zapojiť sa do Erasmus+ výmen po celej Európe.">
+  <meta name="theme-color" content="#0e1f26">
   <link rel="icon" href="../images/logos/logo_small.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home2.css">
+  <!-- A reload always starts the forest walk from the beginning, not where the browser remembers you were. -->
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -19,25 +22,24 @@
   </script>
 </head>
 <body>
-  <a class="skip" href="#about" data-i18n="skip">Preskočiť na obsah</a>
+  <a class="skip" href="#mission" data-i18n="skip">Preskočiť na obsah</a>
 
   <header class="top">
     <a class="brand" href="home2.html">
-      <img src="../images/logos/logo_small.png" alt="" width="36" height="36">
-      <span>Mladá vlna</span>
+      <img src="img/logo-mark.png" alt="" width="46" height="46">
+      <span>Mladá Vlna</span>
     </a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
-    <nav class="nav" id="nav" aria-label="Hlavná navigácia">
-      <a href="#about" data-i18n="nav_about">O nás</a>
+    <nav class="nav" id="nav" aria-label="Hlavná navigácia" data-lenis-prevent>
+      <a href="#mission" data-i18n="nav_about">O nás</a>
+      <a href="#environment" data-i18n="nav_focus">Čo robíme</a>
       <a href="#projects" data-i18n="nav_projects">Projekty</a>
       <a href="#join" data-i18n="nav_join">Ako sa zapojiť</a>
-      <a href="#faq" data-i18n="nav_faq">Otázky</a>
       <a href="#contact" data-i18n="nav_contact">Kontakt</a>
       <span class="lang" role="group" aria-label="Jazyk / Language">
-        <button type="button" data-lang="sk" aria-pressed="true">SK</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="en" aria-pressed="true">EN</button><span aria-hidden="true">/</span><button type="button" data-lang="sk" aria-pressed="false">SK</button>
       </span>
     </nav>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav"><span data-i18n="menu">Menu</span><i aria-hidden="true"></i></button>
   </header>
 
   <main>
@@ -55,98 +57,128 @@
         <!-- Darkens as the walk ends inside the last tree's trunk (driven by --dark from hero-forest.js). -->
         <div class="hero__dark" aria-hidden="true"></div>
         <div class="hero__copy">
-          <p class="mono" data-i18n="hero_label">Občianske združenie · východné Slovensko</p>
-          <h1>Mladá <span class="grad">vlna.</span></h1>
-          <p class="hero__lead" data-i18n="hero_lead">Erasmus+ výmeny pre mladých, ktorým nie je jedno, čo po nás zostane. Zadarmo, pre každého od 13 do 30 rokov.</p>
-          <div class="hero__cta">
-            <a class="btn btn--fill" href="#join"><span data-i18n="cta_join">Chcem sa zapojiť</span> <span aria-hidden="true">↗</span></a>
-            <a class="btn btn--ghost" href="#projects" data-i18n="cta_projects">Pozri projekty</a>
-          </div>
+          <h1>Mladá <span class="soft">Vlna.</span></h1>
+          <p class="hero__lead" data-i18n="hero_lead">Spolu meníme východné Slovensko k lepšiemu. Pre každého, no hlavne pre mladých.</p>
         </div>
-        <p class="hero__hint mono"><span data-i18n="hero_hint">Posúvaj · upraceme les</span><span class="hero__bar" aria-hidden="true"></span></p>
-        <img class="eu" src="../images/eu-bigger.png" alt="Co-funded by the European Union" width="250" height="65">
+        <p class="hero__hint"><span data-i18n="hero_hint">Posúvaj · upraceme les</span><span class="hero__bar" aria-hidden="true"></span></p>
       </div>
     </section>
-    <!-- Out of the dark of the trunk into the page below. -->
-    <div class="hero-exit" aria-hidden="true"></div>
-
-    <section class="section" id="about">
-      <div class="wrap about">
-        <div>
-          <p class="mono mono--blue" data-i18n="about_label">O nás</p>
-          <h2 data-i18n="about_title">Berieme mladých do Európy. A Európu do Košíc<span class="dot">.</span></h2>
-          <p class="body" data-i18n="about_p">Sme občianske združenie z východného Slovenska. Cez program Erasmus+ vytvárame príležitosti pre mladých ľudí, študentov a pracovníkov s mládežou, aby sa zapojili do medzinárodných výmen a školení.</p>
-          <ul class="stats">
-            <li><strong>5</strong><span data-i18n="stat_1">výmen od roku 2025</span></li>
-            <li><strong>9</strong><span data-i18n="stat_2">krajín pri jednom stole</span></li>
-            <li><strong>0 €</strong><span data-i18n="stat_3">stojí účasť</span></li>
-          </ul>
+    <!-- The forest walk ends in black; the mission starts in that same black and settles into deep forest green. -->
+    <section class="section mission" id="mission">
+      <div class="wrap" data-anchor>
+        <p class="label label--light"><span data-i18n="mission_label">Naša misia</span></p>
+        <h2 class="mission__title reveal" data-i18n="mission_title">Zmena začína tam, kde žiješ.</h2>
+        <div class="mission__body">
+          <p class="body body--light reveal" data-i18n="mission_p1">Mladá Vlna je mládežnícke občianske združenie z východného Slovenska. Pomáhame mladým ľuďom byť aktívni vo vlastnej komunite: starať sa o miesto, kde žijú, učiť sa nové zručnosti a byť tu jeden pre druhého.</p>
         </div>
-        <figure class="photo reveal">
-          <img src="../Projekty/Populism101/image3.jpeg" alt="Účastníci výmeny Populism 101" loading="lazy">
-          <figcaption class="mono">Populism 101 · Orahovica 2026</figcaption>
+        <ol class="pillars">
+          <li class="reveal"><a href="#environment"><span class="pillars__no">01</span><strong data-i18n="pil1_t">Životné prostredie</strong><span data-i18n="pil1_p">Upratovacie akcie v Košiciach a Prešove.</span></a></li>
+          <li class="reveal"><a href="#digital"><span class="pillars__no">02</span><strong data-i18n="pil2_t">Digitálne zručnosti</strong><span data-i18n="pil2_p">AI, vibe coding a 3D tlač pre mladých s menšími príležitosťami.</span></a></li>
+          <li class="reveal"><a href="#wellbeing"><span class="pillars__no">03</span><strong data-i18n="pil3_t">Duševné zdravie</strong><span data-i18n="pil3_p">To, čo spája všetko ostatné.</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section paper focus" id="environment">
+      <svg class="contours" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M-20 120C180 60 340 180 520 140S860 40 1220 110"/><path d="M-20 170C190 110 330 230 520 190S860 90 1220 160"/>
+          <path d="M-20 230C200 170 320 290 520 250S870 150 1220 220"/><path d="M-20 620C160 560 300 700 520 660S900 560 1220 640"/>
+          <path d="M-20 680C170 620 310 760 520 720S910 620 1220 700"/>
+          <path d="M860 420c40-60 160-60 190 0s-60 110-120 90-110-40-70-90z"/><path d="M890 425c30-38 110-38 130 0s-40 70-82 58-74-24-48-58z"/>
+        </g>
+      </svg>
+      <div class="wrap focus__grid">
+        <div class="focus__text">
+          <p class="label"><span>01 · </span><span data-i18n="env_label">Životné prostredie</span></p>
+          <h2 data-i18n="env_title">Čistejšie Košice a Prešov, vrece po vreci.</h2>
+          <p class="body" data-i18n="env_p1">Organizujeme upratovacie akcie v Košiciach a Prešove: v parkoch, pri cestách aj na okraji lesa. Pridať sa môže ktokoľvek, stačí prísť.</p>
+          <p class="body" data-i18n="env_p2">Nejde len o odpad. Pri spoločnej práci sa ľudia spoznajú, vidia výsledok hneď a začnú si všímať, čo sa okolo nich deje.</p>
+        </div>
+        <figure class="print reveal">
+          <img src="img/projects/masters-of-puppets/01-sm.webp" alt="Mladí ľudia v reflexných vestách pred upratovacou akciou" loading="lazy">
+          <figcaption data-i18n="env_cap">Pred upratovaním · The Masters of Puppets</figcaption>
         </figure>
       </div>
+    </section>
 
-      <div class="wrap cards3">
-        <article class="card reveal">
-          <span class="card__no mono">01</span>
-          <h3 data-i18n="c1_t">Mládežnícke výmeny</h3>
-          <p data-i18n="c1_p">Týždeň v medzinárodnom tíme pre mladých, ktorí hľadajú skúsenosť za hranicami Slovenska.</p>
-        </article>
-        <article class="card reveal">
-          <span class="card__no mono">02</span>
-          <h3 data-i18n="c2_t">Školenia a workshopy</h3>
-          <p data-i18n="c2_p">Pre pedagógov, pracovníkov s mládežou a dobrovoľníkov, ktorí si chcú zlepšiť odborné aj osobné zručnosti.</p>
-        </article>
-        <article class="card reveal">
-          <span class="card__no mono">03</span>
-          <h3 data-i18n="c3_t">Niečo pre okolie</h3>
-          <p data-i18n="c3_p">Čistíme mestá, hráme divadlo pre škôlkarov a to, čo vytvoríme, darujeme miestnej komunite.</p>
-        </article>
+    <section class="section paper paper--deep focus" id="digital">
+      <div class="wrap focus__grid focus__grid--flip">
+        <div class="focus__text">
+          <p class="label"><span>02 · </span><span data-i18n="dig_label">Digitálne zručnosti</span></p>
+          <h2 data-i18n="dig_title">Technológie pre každého, nielen pre tých, čo mali šťastie.</h2>
+          <p class="body" data-i18n="dig_p">Pracujeme s mladými ľuďmi s menšími príležitosťami. Učíme ich používať nové technológie ako nástroje vzdelávania a tvorby, nie len ako niečo, čo sa deje okolo nich.</p>
+          <ul class="tools">
+            <li class="reveal"><strong data-i18n="dig1_t">Umelá inteligencia</strong><span data-i18n="dig1_p">Ako sa s AI učiť, hľadať informácie a tvoriť, s kritickým pohľadom.</span></li>
+            <li class="reveal"><strong data-i18n="dig2_t">Vibe coding</strong><span data-i18n="dig2_p">Vlastná webstránka alebo aplikácia tak, že ju opíšeš AI. Programovať vopred nemusíš vedieť.</span></li>
+            <li class="reveal"><strong data-i18n="dig3_t">3D tlač</strong><span data-i18n="dig3_p">Od nápadu k predmetu, ktorý chytíš do ruky. Navrhneš ho, vytlačíš a zistíš, čo všetko dokážeš.</span></li>
+          </ul>
+        </div>
+        <!-- A 3D printer printing the Mladá Vlna logo, layer by layer (js/printer.js). -->
+        <figure class="printer" role="img" aria-label="3D tlačiareň tlačí logo Mladej Vlny" data-i18n-aria="printer_alt">
+          <canvas class="printer__canvas" aria-hidden="true"></canvas>
+          <figcaption class="printer__status" aria-hidden="true"><span class="printer__dot"></span><span class="printer__file">mlada-vlna.stl</span><span class="printer__pct">0 %</span></figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="section section--tint" id="projects">
+    <section class="section paper focus" id="wellbeing">
+      <div class="wrap focus__grid">
+        <div class="focus__text">
+          <p class="label"><span>03 · </span><span data-i18n="mh_label">Duševné zdravie</span></p>
+          <h2 data-i18n="mh_title">Niť, ktorá spája všetko ostatné.</h2>
+          <p class="body" data-i18n="mh_p1">Každá naša aktivita je aj miestom, kde sa mladí stretnú, porozprávajú a cítia, že niekam patria. Či už upratujeme, tlačíme v 3D alebo cestujeme, ide nám o to isté.</p>
+          <p class="body" data-i18n="mh_p2">Vytvárame bezpečný priestor, kde sa mladí ľudia prepájajú, zdieľajú, čím prechádzajú, a spoločne zvládajú výzvy, ktoré by sami niesli ťažko.</p>
+        </div>
+        <figure class="print print--tilt reveal">
+          <img src="img/projects/retoy/18-sm.webp" alt="Mladí ľudia sedia v kruhu a rozprávajú sa" loading="lazy">
+          <figcaption data-i18n="mh_cap">Spoločný kruh · ReToy</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section paper paper--deep" id="projects">
       <div class="wrap">
-        <p class="mono mono--blue" data-i18n="proj_label">Projekty</p>
-        <h2 data-i18n="proj_title">Kde sme už boli<span class="dot">.</span></h2>
+        <p class="label"><span data-i18n="proj_label">Projekty Erasmus+</span></p>
+        <h2 data-i18n="proj_title">Kde sme už boli.</h2>
+        <p class="body" data-i18n="proj_p">Výmeny Erasmus+ sú časť toho, čo robíme. Na týždeň spoja mladých z celej Európy a domov si prinesú nápady pre vlastnú komunitu.</p>
+        <p class="proj-all"><a class="link" href="projects/index.html"><span data-i18n="proj_all">Všetky projekty a fotky</span> <span aria-hidden="true">→</span></a></p>
         <div class="grid">
-          <a class="proj reveal" href="../Projekty/Populism101/populism.html">
-            <img src="../Projekty/Populism101/image1.jpeg" alt="" loading="lazy">
-            <span class="tag mono" data-i18n="tag_demo">Demokracia</span>
+          <a class="proj reveal" href="projects/populism-101.html">
+            <span class="proj__img"><img src="img/projects/populism-101/01-sm.webp" alt="" loading="lazy"></span>
+            <span class="proj__tag" data-i18n="tag_demo">Demokracia</span>
             <h3>Populism 101</h3>
-            <p class="mono"><span data-i18n="p1_place">Orahovica, Chorvátsko</span> · 07/2026</p>
+            <p><span data-i18n="p1_place">Orahovica, Chorvátsko</span> · 07/2026</p>
           </a>
-          <a class="proj reveal" href="../Projekty/MasterofPuppets/masterofpuppets.html">
-            <img src="../Projekty/MasterofPuppets/image3.jpg" alt="" loading="lazy">
-            <span class="tag mono" data-i18n="tag_eco">Ekológia</span>
+          <a class="proj reveal" href="projects/masters-of-puppets.html">
+            <span class="proj__img"><img src="img/projects/masters-of-puppets/02-sm.webp" alt="" loading="lazy"></span>
+            <span class="proj__tag" data-i18n="tag_eco">Ekológia</span>
             <h3>The Masters of Puppets</h3>
-            <p class="mono"><span data-i18n="p2_place">Rymanów, Poľsko</span> · 03/2026</p>
+            <p><span data-i18n="p2_place">Rymanów, Poľsko</span> · 03/2026</p>
           </a>
-          <a class="proj reveal" href="../Projekty/Smart&amp;Sustainable/sustainable.html">
-            <img src="../Projekty/Smart&amp;Sustainable/image3.jpg" alt="" loading="lazy">
-            <span class="tag mono" data-i18n="tag_eco">Ekológia</span>
+          <a class="proj reveal" href="projects/smart-sustainable.html">
+            <span class="proj__img"><img src="img/projects/smart-sustainable/04-sm.webp" alt="" loading="lazy"></span>
+            <span class="proj__tag" data-i18n="tag_eco">Ekológia</span>
             <h3>Smart &amp; Sustainable</h3>
-            <p class="mono"><span data-i18n="p3_place">Košice, Slovensko</span> · 12/2025</p>
+            <p><span data-i18n="p3_place">Košice, Slovensko</span> · 12/2025</p>
           </a>
-          <a class="proj reveal" href="../Projekty/Retoy/retoy.html">
-            <img src="../Projekty/Retoy/image1.jpg" alt="" loading="lazy">
-            <span class="tag mono" data-i18n="tag_eco">Ekológia</span>
+          <a class="proj reveal" href="projects/retoy.html">
+            <span class="proj__img"><img src="img/projects/retoy/02-sm.webp" alt="" loading="lazy"></span>
+            <span class="proj__tag" data-i18n="tag_eco">Ekológia</span>
             <h3>ReToy</h3>
-            <p class="mono"><span data-i18n="p3_place">Košice, Slovensko</span> · 09/2025</p>
+            <p><span data-i18n="p3_place">Košice, Slovensko</span> · 09/2025</p>
           </a>
-          <a class="proj reveal" href="../Projekty/CTRLBulgaria/ctrlaltrights.html">
-            <img src="../Projekty/CTRLBulgaria/photo1.jpg" alt="" loading="lazy">
-            <span class="tag mono" data-i18n="tag_rights">Ľudské práva</span>
+          <a class="proj reveal" href="projects/ctrl-alt-rights.html">
+            <span class="proj__img"><img src="img/projects/ctrl-alt-rights/01-sm.webp" alt="" loading="lazy"></span>
+            <span class="proj__tag" data-i18n="tag_rights">Ľudské práva</span>
             <h3>CTRL + ALT + RIGHTS</h3>
-            <p class="mono"><span data-i18n="p5_place">Stara Zagora, Bulharsko</span> · 06/2025</p>
+            <p><span data-i18n="p5_place">Stara Zagora, Bulharsko</span> · 06/2025</p>
           </a>
           <div class="proj proj--next reveal">
-            <span class="tag mono" data-i18n="tag_next">Ďalšia výzva</span>
+            <span class="proj__tag" data-i18n="tag_next">Ďalšia výzva</span>
             <h3 data-i18n="next_t">Tu môže byť tvoja výmena.</h3>
             <p data-i18n="next_p">Momentálne nie je otvorená žiadna výzva. Nové oznamujeme na Instagrame.</p>
-            <a class="btn btn--fill" href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
+            <a class="link" href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
@@ -154,72 +186,48 @@
 
     <div class="strip" aria-hidden="true">
       <div class="strip__row">
-        <img src="../Projekty/Retoy/image4.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/MasterofPuppets/image2.jpg" alt="" loading="lazy">
-        <img src="../Projekty/Retoy/image16.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/Populism101/image2.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/Retoy/image14.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/MasterofPuppets/image1.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/Retoy/image4.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/MasterofPuppets/image2.jpg" alt="" loading="lazy">
-        <img src="../Projekty/Retoy/image16.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/Populism101/image2.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/Retoy/image14.jpeg" alt="" loading="lazy">
-        <img src="../Projekty/MasterofPuppets/image1.jpeg" alt="" loading="lazy">
+        <img src="img/projects/retoy/04-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/masters-of-puppets/01-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/retoy/12-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/populism-101/02-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/retoy/10-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/masters-of-puppets/03-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/retoy/04-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/masters-of-puppets/01-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/retoy/12-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/populism-101/02-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/retoy/10-sm.webp" alt="" loading="lazy">
+        <img src="img/projects/masters-of-puppets/03-sm.webp" alt="" loading="lazy">
       </div>
     </div>
 
-    <section class="section" id="join">
+    <section class="section paper" id="join">
       <div class="wrap">
-        <p class="mono mono--blue" data-i18n="join_label">Ako sa zapojiť</p>
-        <h2 data-i18n="join_title">Štyri kroky k prvej výmene<span class="dot">.</span></h2>
-        <ol class="steps">
-          <li class="step reveal"><span class="mono">01</span><h3 data-i18n="s1_t">Vyber si projekt</h3><p data-i18n="s1_p">Pozri si otvorené výzvy a infopack s programom, miestom a podmienkami.</p></li>
-          <li class="step reveal"><span class="mono">02</span><h3 data-i18n="s2_t">Vyplň formulár</h3><p data-i18n="s2_p">Stačí vek 13 až 30 rokov. Potvrdenie o štúdiu ani o práci netreba.</p></li>
-          <li class="step reveal"><span class="mono">03</span><h3 data-i18n="s3_t">Ozveme sa ti</h3><p data-i18n="s3_p">Po zvážení všetkých prihlášok ťa oslovíme. Ak máš stále záujem, ideš.</p></li>
-          <li class="step reveal"><span class="mono">04</span><h3 data-i18n="s4_t">Zbaľ sa a cestuj</h3><p data-i18n="s4_p">Ubytovanie a stravu hradí grant EÚ. Cestovné ti preplatíme po projekte.</p></li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="section section--tint" id="faq">
-      <div class="wrap faq">
-        <div>
-          <p class="mono mono--blue" data-i18n="faq_label">Otázky</p>
-          <h2 data-i18n="faq_title">Na čo sa pýtate najčastejšie<span class="dot">.</span></h2>
-        </div>
-        <div class="faq__list">
-          <details class="reveal">
-            <summary data-i18n="q1">Nie je to náhodou podvod?</summary>
-            <p><span data-i18n="a1">Nie. Všetky projekty financuje program Erasmus+ pod dozorom Európskej komisie. Zoznam schválených projektov nájdeš na</span> <a href="https://erasmus-plus.ec.europa.eu/projects/" target="_blank" rel="noopener noreferrer" data-i18n="a1_link">stránke Európskej komisie</a>.</p>
-          </details>
-          <details class="reveal">
-            <summary data-i18n="q2">Koľko budem platiť?</summary>
-            <p data-i18n="a2">Nič. Ubytovanie a stravu na mieste hradí grant Európskej únie. Cestovné sa do určitej výšky, podľa vzdialenosti, prepláca po skončení projektu, zvyčajne do jedného mesiaca.</p>
-          </details>
-          <details class="reveal">
-            <summary data-i18n="q3">Musím byť študent?</summary>
-            <p data-i18n="a3">Nie. Na mládežnícku výmenu stačí vek 13 až 30 rokov, vedúci tímu môže byť starší. Na tréningový kurz stačí vek 18 a viac.</p>
-          </details>
-          <details class="reveal">
-            <summary data-i18n="q4">Neviem dobre po anglicky. Je to problém?</summary>
-            <p data-i18n="a4">Vôbec nie. Cestuješ v národnom tíme, takže máš vždy pri sebe Slovákov, ktorí ti pomôžu prekladať aj vyjadriť sa.</p>
-          </details>
-          <details class="reveal">
-            <summary data-i18n="q5">Kde nájdem podrobnosti o projekte?</summary>
-            <p data-i18n="a5">V takzvanom infopacku. Nájdeš ho na stránke každého projektu.</p>
-          </details>
+        <p class="label"><span data-i18n="join_label">Ako sa zapojiť</span></p>
+        <h2 data-i18n="join_title">Cesta k tvojej prvej výmene.</h2>
+        <div class="trail">
+          <svg class="trail__path" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22C120 4 210 36 330 20S560 2 670 22 880 38 1000 16" pathLength="1"/></svg>
+          <ol class="steps">
+            <li class="step reveal"><span class="step__no"><span data-i18n="step">Krok</span> 1</span><h3 data-i18n="s1_t">Vyber si projekt</h3><p data-i18n="s1_p">Pozri si otvorené výzvy a infopack s programom, miestom a podmienkami.</p></li>
+            <li class="step reveal"><span class="step__no"><span data-i18n="step">Krok</span> 2</span><h3 data-i18n="s2_t">Vyplň formulár</h3><p data-i18n="s2_p">Stačí mať 13 až 30 rokov.<br>Napíš nám poriadnu motiváciu: prečo chceš ísť a čo so sebou prinesieš.</p></li>
+            <li class="step reveal"><span class="step__no"><span data-i18n="step">Krok</span> 3</span><h3 data-i18n="s3_t">Ozveme sa ti</h3><p data-i18n="s3_p">Po zvážení všetkých prihlášok ťa oslovíme. Prednosť dávame mladým ľuďom s menšími príležitosťami.</p></li>
+            <li class="step reveal"><span class="step__no"><span data-i18n="step">Krok</span> 4</span><h3 data-i18n="s4_t">Zbaľ sa a cestuj</h3><p data-i18n="s4_p">Ubytovanie a stravu hradí grant EÚ. Cestovné ti preplatíme po projekte.</p></li>
+          </ol>
         </div>
       </div>
     </section>
 
     <section class="cta" id="contact">
+      <!-- A ridge of spruce tops: the forest closes the page. -->
+      <svg class="treeline" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 120V84l18-22 8 10 14-34 14 30 10-12 16 32 12-20 14-40 16 44 10-14 14 26 18-36 12 18 16-44 18 52 10-10 12 22 16-30 14 18 18-46 14 34 12-12 16 30 14-24 16-38 16 42 12-10 14 24 16-32 12 14 18-48 16 50 12-14 14 28 16-28 14 16 16-40 18 44 10-12 14 26 16-34 14 20 16-42 16 46 12-16 14 30 16-26 14 18 18-50 14 48 12-12 16 26 14-30 16 20 14-38 18 40 12-14 14 28 16-36 14 22 16-44 16 48 12-14 14 24 16-30 14 16 18-42 14 40 12-12 16 30 14-26 16 18 14-40 18 44 10-10 14 24 16-34 14 20 16-46 16 50 12-16 14 28 16-28 14 16 16-38 18 42 12-12 14 26 16-32 14 18 16-44 16 46 12-14 14 26 16-28 14 18 18-40 14 38 12-10 16 28 14-24 16 20 14-36 18 40 10-12 14 24 16-30 14 16 16-42 16 44 12-14 14 28 16-26 14 14 V120z"/>
+      </svg>
       <div class="wrap">
-        <p class="mono" data-i18n="cta_label">Kontakt</p>
-        <h2 data-i18n="cta_title">Máš 13 až 30 rokov? Ďalšia výmena môže byť tvoja<span class="dot">.</span></h2>
-        <div class="hero__cta">
-          <a class="btn btn--fill" href="mailto:contact@mladavlna.org">contact@mladavlna.org <span aria-hidden="true">↗</span></a>
-          <a class="btn btn--ghost" href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <p class="label label--light"><span data-i18n="cta_label">Kontakt</span></p>
+        <h2 data-i18n="cta_title">Chceš niečo zmeniť tam, kde žiješ? Ozvi sa.</h2>
+        <div class="actions">
+          <a class="btn" href="mailto:contact@mladavlna.org">contact@mladavlna.org<span class="btn__arrow" aria-hidden="true">→</span></a>
+          <a class="link link--light" href="https://www.instagram.com/mladavlna/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
         </div>
       </div>
     </section>
@@ -227,14 +235,15 @@
 
   <footer class="foot">
     <div class="wrap foot__in">
-      <p><strong>Mladá vlna, o. z.</strong><br>Tomášikova 22, 080 01 Prešov<br><a href="tel:+421918208346">+421 918 208 346</a></p>
+      <p><strong>Mladá Vlna, o. z.</strong><br>Tomášikova 22, 080 01 Prešov<br><a href="tel:+421918208346">+421 918 208 346</a></p>
       <p><a href="../documents.html" data-i18n="docs">Dokumenty</a><br><a href="../blog.html">Blog</a><br><a href="index.html" data-i18n="other">Prvá verzia stránky</a></p>
-      <img class="eu eu--foot" src="../images/eu-bigger.png" alt="Co-funded by the European Union" width="250" height="65">
     </div>
-    <p class="wrap mono foot__note">© 2026 Mladá vlna</p>
+    <p class="wrap foot__note">© 2026 Mladá Vlna</p>
   </footer>
 
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
   <script type="module" src="js/hero-forest.js"></script>
+  <script type="module" src="js/printer.js"></script>
   <script src="js/home2.js" defer></script>
 </body>
 </html>

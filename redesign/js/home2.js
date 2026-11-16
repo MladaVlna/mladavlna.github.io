@@ -1,92 +1,173 @@
-// Second homepage: language switch, phone menu and scroll reveals.
+// Second homepage: language switch, smooth scrolling, the top bar, phone menu and scroll reveals.
 (function () {
+  // DEVELOPMENT: the page always opens in English while it is being designed.
+  // BEFORE RELEASE: set this back to 'sk' (and <html lang="sk"> in home2.html).
+  var DEFAULT_LANG = 'en';
+
   // Slovak is the text in the HTML. Only English lives here.
   var en = {
-    skip: 'Skip to content',
-    nav_about: 'About', nav_projects: 'Projects', nav_join: 'How to join', nav_faq: 'Questions', nav_contact: 'Contact',
-    hero_label: 'Civic association · eastern Slovakia',
-    hero_lead: 'Erasmus+ exchanges for young people who care about what we leave behind. Free, for anyone aged 13 to 30.',
-    cta_join: 'I want to join', cta_projects: 'See the projects',
+    skip: 'Skip to content', menu: 'Menu',
+    nav_about: 'About', nav_focus: 'What we do', nav_projects: 'Projects', nav_join: 'How to join', nav_contact: 'Contact',
+    hero_lead: "Together we're making eastern Slovakia a better place. For everyone, but especially for young people.",
     hero_hint: "Scroll · we'll clean the forest",
-    about_label: 'About us',
-    about_title: 'We take young people out into Europe. And bring Europe to Košice<span class="dot">.</span>',
-    about_p: 'We are a civic association from eastern Slovakia. Through the Erasmus+ programme we create opportunities for young people, students and youth workers to take part in international exchanges and training.',
-    stat_1: 'exchanges since 2025', stat_2: 'countries at one table', stat_3: 'is what it costs to take part',
-    c1_t: 'Youth exchanges', c1_p: 'A week in an international team, for young people looking for experience beyond Slovakia.',
-    c2_t: 'Training and workshops', c2_p: 'For teachers, youth workers and volunteers who want to build professional and personal skills.',
-    c3_t: 'Something for the neighbourhood', c3_p: 'We clean up towns, perform for kindergarten children and give what we make to the local community.',
-    proj_label: 'Projects', proj_title: 'Where we have been<span class="dot">.</span>',
+    mission_label: 'Our mission',
+    mission_title: 'Change starts where you live.',
+    mission_p1: 'Mladá Vlna is a youth-led civic association from eastern Slovakia. We help young people become active in their own community: caring for the place they live in, learning new skills and being there for each other.',
+    pil1_t: 'Environment', pil1_p: 'Clean-up actions in Košice and Prešov.',
+    pil2_t: 'Digital skills', pil2_p: 'AI, vibe coding and 3D printing for young people with fewer opportunities.',
+    pil3_t: 'Mental health', pil3_p: 'What ties everything else together.',
+    env_label: 'Environment', env_title: 'A cleaner Košice and Prešov, one bag at a time.',
+    env_p1: 'We organise clean-up actions in Košice and Prešov: in parks, along roads and at the edge of the forest. Anyone can join; just turn up.',
+    env_p2: "It isn't only about rubbish. Working side by side, people get to know each other, see the result straight away and start noticing what is happening around them.",
+    env_cap: 'Before a clean-up · The Masters of Puppets',
+    dig_label: 'Digital skills', dig_title: 'Technology for everyone, not just the lucky few.',
+    dig_p: 'We work with young people with fewer opportunities. We teach them to use new technology as a tool for learning and making things, not just something that happens around them.',
+    dig1_t: 'Artificial intelligence', dig1_p: 'How to learn, research and create with AI, with a critical eye.',
+    dig2_t: 'Vibe coding', dig2_p: 'Your own website or app, made by describing it to AI. No coding experience needed.',
+    dig3_t: '3D printing', dig3_p: 'From an idea to an object you can hold. Design it, print it, and find out what you can do.',
+    printer_alt: 'A 3D printer printing the Mladá Vlna logo',
+    mh_label: 'Mental health', mh_title: 'The thread that ties everything together.',
+    mh_p1: "Every activity we run is also a place where young people meet, talk and feel they belong. Whether we're cleaning up, 3D printing or travelling, that's what it's really about.",
+    mh_p2: "We create safe spaces where young people connect, share what they're going through and face together the challenges that would be hard to carry alone.",
+    mh_cap: 'Sharing circle · ReToy',
+    proj_label: 'Erasmus+ projects', proj_all: 'All projects and photos', proj_title: 'Where we have been.',
+    proj_p: 'Erasmus+ exchanges are one part of what we do. For a week they bring together young people from across Europe, who come home with ideas for their own community.',
     tag_demo: 'Democracy', tag_eco: 'Environment', tag_rights: 'Human rights', tag_next: 'Next call',
     p1_place: 'Orahovica, Croatia', p2_place: 'Rymanów, Poland', p3_place: 'Košice, Slovakia', p5_place: 'Stara Zagora, Bulgaria',
     next_t: 'Your exchange could be here.', next_p: 'No call is open at the moment. We announce new ones on Instagram.',
-    join_label: 'How to join', join_title: 'Four steps to your first exchange<span class="dot">.</span>',
+    join_label: 'How to join', join_title: 'The trail to your first exchange.', step: 'Step',
     s1_t: 'Pick a project', s1_p: 'Look through the open calls and the info pack with the programme, place and conditions.',
-    s2_t: 'Fill in the form', s2_p: 'You only need to be 13 to 30. No proof of study or work is required.',
-    s3_t: 'We get in touch', s3_p: "Once we have considered every application, we contact you. If you're still interested, you're in.",
+    s2_t: 'Fill in the form', s2_p: 'You need to be 13 to 30.<br>Write us a great motivation: why you want to go, and what you would bring with you.',
+    s3_t: 'We get in touch', s3_p: "Once we have considered every application, we contact you. We give priority to young people with fewer opportunities.",
     s4_t: 'Pack and go', s4_p: 'Accommodation and meals are covered by an EU grant. Travel is reimbursed after the project.',
-    faq_label: 'Questions', faq_title: 'What you ask most often<span class="dot">.</span>',
-    q1: 'Is this a scam?',
-    a1: 'No. Every project is funded by Erasmus+ under the supervision of the European Commission. The list of approved projects is on the',
-    a1_link: "European Commission's website",
-    q2: 'How much does it cost?',
-    a2: 'Nothing. Accommodation and meals on site are covered by a European Union grant. Travel is reimbursed up to a set amount, depending on distance, usually within a month of the project ending.',
-    q3: 'Do I have to be a student?',
-    a3: 'No. For a youth exchange you only need to be 13 to 30; a team leader can be older. For a training course you need to be 18 or over.',
-    q4: "My English isn't good. Is that a problem?",
-    a4: 'Not at all. You travel in a national team, so there are always Slovaks beside you to help you translate and speak up.',
-    q5: 'Where do I find the details of a project?',
-    a5: "In its info pack. You'll find it on each project's page.",
-    cta_label: 'Contact', cta_title: 'Aged 13 to 30? The next exchange could be yours<span class="dot">.</span>',
+    cta_label: 'Contact', cta_title: 'Want to change something where you live? Get in touch.',
     docs: 'Documents', other: 'First version of the site'
   };
+  // Other pages (the project pages) add their own English text in window.PAGE_EN, set before this script.
+  if (window.PAGE_EN) for (var k in window.PAGE_EN) en[k] = window.PAGE_EN[k];
 
+  var root = document.documentElement;
+  // ?palette=warm shows the earlier warm cream and green-black palette, for comparison.
+  if (/[?&]palette=warm(&|$)/.test(location.search)) root.setAttribute('data-palette', 'warm');
+  // Start at the very top: the beginning of the forest walk. A link from another page to a section (#join, ...) still works.
+  var nav0 = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (location.hash && nav0 && nav0.type === 'reload') history.replaceState(null, '', location.pathname + location.search);   // a reload is a fresh start
+  if (!location.hash) window.scrollTo(0, 0);
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var nodes = document.querySelectorAll('[data-i18n]');
-  var sk = {};
+  var nodes = document.querySelectorAll('[data-i18n]'), ariaNodes = document.querySelectorAll('[data-i18n-aria]');
+  var sk = {}, skAria = {};
   nodes.forEach(function (el) { sk[el.getAttribute('data-i18n')] = el.innerHTML; });
+  ariaNodes.forEach(function (el) { skAria[el.getAttribute('data-i18n-aria')] = el.getAttribute('aria-label'); });
+  var lang = 'sk';
 
-  function apply(lang) {
-    var dict = lang === 'en' ? en : sk;
-    document.documentElement.lang = lang;
+  function apply(next) {
+    lang = next;
+    var dict = next === 'en' ? en : sk, aria = next === 'en' ? en : skAria;
+    root.lang = next;
     nodes.forEach(function (el) {
       var text = dict[el.getAttribute('data-i18n')];
       if (text != null) el.innerHTML = text;
     });
-    document.querySelectorAll('.lang button').forEach(function (b) {
-      b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+    ariaNodes.forEach(function (el) {
+      var text = aria[el.getAttribute('data-i18n-aria')];
+      if (text != null) el.setAttribute('aria-label', text);
     });
-    try { localStorage.setItem('lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.lang === next));
+    });
   }
   document.querySelectorAll('.lang button').forEach(function (b) {
     b.addEventListener('click', function () {
-      var lang = b.dataset.lang;
-      if (lang === document.documentElement.lang) return;
-      if (reduced) { apply(lang); return; }
+      var next = b.dataset.lang;
+      if (next === lang) return;
+      if (reduced) { apply(next); return; }
       document.body.classList.add('is-swapping');
-      setTimeout(function () { apply(lang); document.body.classList.remove('is-swapping'); }, 300);
+      setTimeout(function () { apply(next); document.body.classList.remove('is-swapping'); }, 300);
+      try { sessionStorage.setItem('mv-lang', next); } catch (e) {}   // carried to the next page in this visit
     });
   });
-  try { if (localStorage.getItem('lang') === 'en') apply('en'); } catch (e) {}
 
-  // Phone menu.
-  var btn = document.querySelector('.menu-btn'), nav = document.getElementById('nav');
+  // ---------- smooth scrolling ----------
+  // Lenis eases wheel scrolling; the page still scrolls natively underneath, so the forest walk (which reads
+  // window.scrollY) follows it. Touch scrolling stays native. Off for reduced motion.
+  var lenis = null;
+  function startLenis() {
+    if (reduced || !window.Lenis) return;
+    lenis = new window.Lenis({ lerp: 0.11, wheelMultiplier: 0.9, smoothWheel: true });
+    window.__lenis = lenis;                                          // for tests: __lenis.scrollTo(y, { immediate: true })
+    (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
+    lenis.on('scroll', onScroll);
+  }
+  if (window.Lenis) startLenis(); else window.addEventListener('load', startLenis);
+
+  // In-page links glide with Lenis, under the top bar.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href');
+    var target = id.length > 1 && document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    closeMenu();
+    target = target.querySelector('[data-anchor]') || target;      // e.g. the mission text, not the black above it
+    if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.6 });
+    else target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+    // The address is left as it is, so a reload starts at the top of the forest rather than at this section.
+  });
+
+  // ---------- top bar ----------
+  // Over the forest and the dark mission it is plain light words; on the paper sections it becomes a paper strip.
+  // Pages mark where their paper begins (data-paper-start) and where a dark band begins (data-dark-start);
+  // the homepage uses its environment and mission sections.
+  var firstPaper = document.querySelector('[data-paper-start]') || document.getElementById('environment');
+  var darkStart = document.querySelector('[data-dark-start]') || document.getElementById('mission');
+  var paperFrom = 0, darkFrom = 0;
+  function measure() {
+    paperFrom = firstPaper ? firstPaper.offsetTop - 60 : Infinity;
+    darkFrom = darkStart ? darkStart.offsetTop - 60 : Infinity;
+  }
+  measure();
+  window.addEventListener('resize', measure);
+  window.addEventListener('load', measure);
+
+  // ---------- phone menu ----------
+  var btn = document.querySelector('.menu-btn');
+  function closeMenu() {
+    if (!root.classList.contains('menu-open')) return;
+    root.classList.remove('menu-open'); btn.setAttribute('aria-expanded', 'false');
+    if (lenis) lenis.start(); document.body.style.overflow = '';
+  }
   btn.addEventListener('click', function () {
-    btn.setAttribute('aria-expanded', String(nav.classList.toggle('is-open')));
+    var open = root.classList.toggle('menu-open');
+    btn.setAttribute('aria-expanded', String(open));
+    if (lenis) { open ? lenis.stop() : lenis.start(); }
+    document.body.style.overflow = open ? 'hidden' : '';
   });
-  nav.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') { nav.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
-  });
+  window.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 980) closeMenu(); });
 
-  // Fade cards in as they enter the screen.
-  var reveals = document.querySelectorAll('.reveal');
+  function onScroll() {
+    root.classList.toggle('on-paper', window.scrollY > paperFrom);
+    root.classList.toggle('on-dark', window.scrollY > darkFrom);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- reveals ----------
+  var reveals = document.querySelectorAll('.reveal, .trail');
   if ('IntersectionObserver' in window && !reduced) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
       });
     }, { threshold: 0.15 });
-    reveals.forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(el); });
+    reveals.forEach(function (el, i) { if (el.classList.contains('reveal')) el.style.transitionDelay = (i % 4) * 90 + 'ms'; io.observe(el); });
   } else {
     reveals.forEach(function (el) { el.classList.add('is-in'); });
   }
+
+  var chosen = null;
+  try { chosen = sessionStorage.getItem('mv-lang'); } catch (e) {}
+  apply(chosen === 'sk' || chosen === 'en' ? chosen : DEFAULT_LANG);
+  window.MV_LANG = function () { return lang; };
 })();

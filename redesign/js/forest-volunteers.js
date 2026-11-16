@@ -216,15 +216,10 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
     const tall = rand(1.64, 1.84), scale = tall / role.height;
     const root = new THREE.Group();                              // moved and turned by the code below
     const body = SkeletonUtils.clone(role.model);
-    // A generous fixed bounding sphere (the resting body's, enlarged for crouching and swinging arms) lets
-    // three.js skip people who are off screen or outside the shadow area, without re-measuring them each frame.
-    body.traverse((o) => {
-      if (!o.isSkinnedMesh) return;
-      if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
-      o.boundingSphere = o.geometry.boundingSphere.clone();
-      o.boundingSphere.radius *= 1.3;
-      o.frustumCulled = true;
-    });
+    // Drawn always until the body has been posed and measured (see fitBounds in update): the compressed model's
+    // own resting bounds are a 2 cm dot at the feet, and culling with those made people vanish whenever their
+    // feet left the picture.
+    body.traverse((o) => { if (o.isSkinnedMesh) o.frustumCulled = false; });
     body.scale.setScalar(scale);
     body.position.y = -role.floor * scale;
     body.rotation.y = -role.facing;                              // so the character's own "forward" is the group's +z
@@ -249,7 +244,7 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
       rightHand: body.getObjectByName('Bip01_R_Hand'), leftHand: body.getObjectByName('Bip01_L_Hand'),
       homeZ, z: homeZ, x: path(homeZ) + (i % 2 ? 1 : -1) * rand(1.6, 2.8),
       state: 'seek', wait: rand(0, 3), target: null, goal: new THREE.Vector2(), face: new THREE.Vector2(),
-      yaw: rand(0, 6.28), wantYaw: undefined, u: 0, grabbed: false, low: 0,
+      yaw: rand(0, 6.28), wantYaw: undefined, u: 0, grabbed: false, low: 0, sized: 0,
     });
   }
 
@@ -297,6 +292,18 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
   update.people = people;
   return update;
 
+  // Once a person has been posed for a few frames, measure the real body (with its bones) and give three.js a
+  // sphere around it, enlarged for crouching, reaching and swinging arms. From then on people off screen, or
+  // outside the shadow area, are skipped; people on screen are always drawn.
+  function fitBounds(root) {
+    root.traverse((o) => {
+      if (!o.isSkinnedMesh) return;
+      o.computeBoundingSphere();
+      o.boundingSphere.radius *= 1.45;
+      o.frustumCulled = true;
+    });
+  }
+
   function update(time, dt) {
     for (const p of people) {
       if (p.state === 'seek') {
@@ -340,6 +347,7 @@ export async function createVolunteers(scene, { count, path, heightAt, zFrom, zT
 
       // The stick and bag follow the hands. They are placed in the person's own space, so they turn with the body.
       p.root.updateMatrixWorld(true);
+      if (p.sized < 3 && ++p.sized === 3) fitBounds(p.root);
       const crouching = p.current === 'down' ? 1 : 0;
       p.low += (crouching - p.low) * Math.min(1, dt * 4);
       p.rightHand.getWorldPosition(hand); p.root.worldToLocal(hand);
