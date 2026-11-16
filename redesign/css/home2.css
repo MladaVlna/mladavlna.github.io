@@ -143,7 +143,11 @@ h3 { font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.15; font-weight
 h1 { font-size: clamp(3.4rem, min(11.5vw, 17vh), 10.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; text-shadow: 0 16px 38px rgba(0, 0, 0, 0.28); }
 h1 .soft { color: #cfe3cf; }
 .hero__lead { margin: clamp(14px, 2.6vh, 24px) 0 0; max-width: 30em; font-size: clamp(1rem, 1.35vw, 1.22rem); color: #e6f0ea; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42); }
-.hero__hint { position: absolute; z-index: 2; right: var(--gutter); bottom: 34px; margin: 0; color: #d3e8dd; display: flex; align-items: center; gap: 14px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+.hero__hint { position: absolute; z-index: 2; right: var(--gutter); bottom: 34px; margin: 0; color: #d3e8dd; display: flex; align-items: center; gap: 14px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5); pointer-events: none; }
+/* The scroll cue, on every screen size: a ringed arrow that keeps nudging downwards. */
+.hero__arrow { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 50%; background: rgba(6, 14, 18, 0.18); }
+.hero__arrow svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: nudge 1.8s var(--ease) infinite; }
+@keyframes nudge { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(4px); } }
 /* A thin bar that fills as you walk through the forest. */
 .hero__bar { position: relative; width: 120px; height: 2px; background: rgba(255, 255, 255, 0.25); overflow: hidden; }
 .hero__bar::after { content: ""; position: absolute; inset: 0; background: var(--accent-light); transform-origin: left; transform: scaleX(var(--p)); }
@@ -278,8 +282,10 @@ main, .foot { transition: opacity 0.3s ease; }
   .menu-open .top a, .menu-open .top button { text-shadow: none; }
   .menu-open .menu-btn i::before { top: 4.25px; transform: rotate(45deg); }
   .menu-open .menu-btn i::after { top: 4.25px; transform: rotate(-45deg); }
-  .hero__copy { bottom: clamp(44px, 9vh, 88px); }
-  .hero__hint { display: none; }
+  .hero__copy { bottom: calc(clamp(44px, 9vh, 88px) + 34px); }
+  /* The cue sits centred under the hero text; the progress bar is left out to keep it short. */
+  .hero__hint { left: 0; right: 0; bottom: max(18px, env(safe-area-inset-bottom)); justify-content: center; gap: 10px; font-size: 0.72rem; }
+  .hero__bar { display: none; }
   .focus__grid, .focus__grid--flip { grid-template-columns: 1fr; }
   .focus__grid--flip .printer { order: 0; }
   .pillars { grid-template-columns: 1fr; }
@@ -299,16 +305,26 @@ main, .foot { transition: opacity 0.3s ease; }
   .actions .btn { width: 100%; justify-content: space-between; }
   .tools li { grid-template-columns: 1fr; }                      /* name above its line: two columns leave long words no room */
 }
+/* The smallest phones: the name, the language switch and the burger share one line. */
+@media (max-width: 380px) {
+  .top { gap: 8px; }
+  .brand { gap: 9px; font-size: 1rem; white-space: nowrap; }
+  .lang { padding-right: 8px; }
+  .lang button { min-width: 34px; padding-left: 4px; padding-right: 4px; }
+}
 /* Short screens (phones turned sideways, small laptop windows): tighter hero and sections. */
 @media (max-height: 520px) {
-  .hero__copy { bottom: 22px; }
+  .hero__copy { bottom: 22px; right: calc(var(--gutter) + 52px); }
   .hero__lead { font-size: 0.95rem; line-height: 1.45; max-width: 44em; }
-  .hero__hint { display: none; }
+  /* Little height: just the arrow, in the corner beside the text. */
+  .hero__hint { left: auto; right: var(--gutter); bottom: 22px; }
+  .hero__hint > span:not(.hero__arrow) { display: none; }
   .top { padding-top: 12px; padding-bottom: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   .trail__path path { stroke-dashoffset: 0; transition: none; }
   .strip__row { animation: none; }
+  .hero__arrow svg { animation: none; }
   .btn, .proj__img img, main, .foot, .nav { transition: none; }
 }
