@@ -55,6 +55,8 @@
 .chapters p { margin: 0; color: var(--muted); max-width: 40em; }
 
 /* ---------- previous / next ---------- */
+/* Room under the row for the treeline of the contact section below, which reaches up into it. */
+.pnext-wrap { padding-bottom: calc(clamp(50px, 7vw, 110px) + 28px); }
 .pnext { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
 .pnext a { position: relative; display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 20px; padding: clamp(24px, 3vw, 40px) var(--gutter); text-decoration: none; transition: background 0.3s ease; }
 .pnext a + a { border-left: 1px solid var(--line); }

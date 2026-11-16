@@ -358,7 +358,7 @@ def project_page(i, p, photos):
       </div>
     </section>
 
-    <div class="paper">{pnext}</div>
+    <div class="paper pnext-wrap">{pnext}</div>
 '''
     lightbox = f'''
   <dialog class="lightbox" aria-label="{e(p["title"])}">
@@ -405,7 +405,7 @@ def overview(all_photos):
       <div class="wrap">
         <p class="label label--light"><span {t(en, "ov_label", ("Projekty", "Projects"))}</span></p>
         <h1 {t(en, "ov_title", ("Kde sme už boli.", "Where we have been."))}</h1>
-        <p class="body body--light" {t(en, "ov_p", ("Mládežnícke výmeny Erasmus+, na ktorých sa naši mladí zúčastnili, doma v Košiciach aj po Európe. Každá je týždeň učenia, tvorenia a nových priateľstiev.", "Erasmus+ youth exchanges our young people have taken part in, at home in Košice and across Europe. Each one is a week of learning, making and new friends."))}</p>
+        <p class="body body--light" {t(en, "ov_p", ("Výmeny Erasmus+, ktorých sme boli súčasťou, v Košiciach aj po Európe. Každá spojí na týždeň mladých ľudí z viacerých krajín: workshopy, spoločné projekty a nové priateľstvá.", "The Erasmus+ youth exchanges we have been part of, in Košice and across Europe. Each one brings young people from several countries together for a week of workshops, shared projects and new friendships."))}</p>
       </div>
     </section>
 
