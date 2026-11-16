@@ -92,7 +92,9 @@
   // window.scrollY) follows it. Touch scrolling stays native. Off for reduced motion.
   var lenis = null;
   function startLenis() {
-    if (reduced || !window.Lenis) return;
+    // Lenis only smooths the mouse wheel. On touch screens (tablets, phones) it adds nothing, and its
+    // scrollTo was seen to leave the menu links dead on a tablet, so touch screens scroll natively.
+    if (reduced || !window.Lenis || !window.matchMedia('(pointer: fine)').matches) return;
     lenis = new window.Lenis({ lerp: 0.11, wheelMultiplier: 0.9, smoothWheel: true });
     window.__lenis = lenis;                                          // for tests: __lenis.scrollTo(y, { immediate: true })
     (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
@@ -110,10 +112,32 @@
     e.preventDefault();
     closeMenu();
     target = target.querySelector('[data-anchor]') || target;      // e.g. the mission text, not the black above it
-    if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.6 });
-    else target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+    glideTo(target);
     // The address is left as it is, so a reload starts at the top of the forest rather than at this section.
   });
+
+  // Scrolls so the element sits just under the top bar. If the page hasn't moved by the time the glide
+  // should be over (a smooth-scroll library or a browser that ignores the request), it jumps there instead.
+  function glideTo(el) {
+    var y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - 70);
+    var from = window.scrollY;
+    if (lenis) lenis.scrollTo(y, { duration: 1.6, force: true });
+    else window.scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
+    if (Math.abs(y - from) < 4) return;
+    setTimeout(function () {
+      if (Math.abs(window.scrollY - from) < 4) window.scrollTo(0, y);
+    }, lenis ? 1900 : 900);
+  }
+
+  // Arriving from another page with a section in the address (home2.html#join): go to it once the page
+  // has its final height, under the top bar.
+  if (location.hash.length > 1) {
+    window.addEventListener('load', function () {
+      var el = null;
+      try { el = document.querySelector(location.hash); } catch (e) {}
+      if (el) window.scrollTo(0, Math.max(0, (el.querySelector('[data-anchor]') || el).getBoundingClientRect().top + window.scrollY - 70));
+    });
+  }
 
   // ---------- top bar ----------
   // Over the forest and the dark mission it is plain light words; on the paper sections it becomes a paper strip.
