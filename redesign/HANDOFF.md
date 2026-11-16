@@ -107,6 +107,12 @@ Test switches on that address:
 - **EU emblem (owner, 16 November 2026):** the "Co-funded by the European Union" emblem goes only on the pages of the projects themselves: each `projects/<slug>.html` shows it under the facts (`img/eu-cofunded.png`, a 640 px copy of `images/eu.png`). Not on the homepage, the projects list or the old site's main pages (removed there on 15 November 2026 on purpose; the old pages in `Projekty/` keep theirs).
 - The language choice now carries from page to page within a visit (`sessionStorage`), still opening in English by default.
 
+## About page (16 November 2026)
+
+- `about/index.html`, built by `tools/build-projects.py` (`about()`, texts in `TEAM`, `ABOUT_FOCUS`, `ABOUT_VALUES`, `ABOUT_TEXT`): who we are, what we do (the three focus areas plus Erasmus+), how we work, the team, and the association's details. "About" in every top bar now opens it (it used to scroll to the mission).
+- Content comes from the old `about-us.html`, the old homepage FAQ, the statutes in `Documents/` and the new homepage. Team photos are cropped from `images/Nika.jpg`, `Lukas.jpg`, `Adam.jpg` into `img/team/` (Adam's number plate cropped out).
+- **To confirm with the owner:** whether the team (Lukáš, Nika, Adam) is current and complete, their roles (Adam had none on the old site; "Ecology and sustainability" describes his background), the IČO and founding year (not on the page yet).
+
 ## Fixed: volunteers disappearing (15 November 2026)
 
 - **They sometimes never loaded:** their loading waited for an idle moment with no deadline, and with the forest, the smooth scroll and the printer all drawing, that moment could fail to come. It now has a 1.5 s deadline (`whenIdle` in `js/hero-forest.js`).

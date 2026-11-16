@@ -203,7 +203,7 @@ def t(en, key, pair):
     en[key] = pair[1]
     return f'data-i18n="{key}">{e(pair[0])}'
 
-def head(title_sk, desc):
+def head(title_sk, desc, projects='index.html'):
     return f'''<!DOCTYPE html>
 <!-- Built by tools/build-projects.py: edit the content there and run it again, not this file. -->
 <!-- Development: opens in English (DEFAULT_LANG in js/home2.js). Before release, switch it and this lang back to "sk". -->
@@ -230,9 +230,9 @@ def head(title_sk, desc):
       <span>Mladá Vlna</span>
     </a>
     <nav class="nav" id="nav" aria-label="Hlavná navigácia" data-lenis-prevent>
-      <a href="../home2.html#mission" data-i18n="nav_about">O nás</a>
+      <a href="../about/index.html" data-i18n="nav_about">O nás</a>
       <a href="../home2.html#environment" data-i18n="nav_focus">Čo robíme</a>
-      <a href="index.html" data-i18n="nav_projects">Projekty</a>
+      <a href="{projects}" data-i18n="nav_projects">Projekty</a>
       <a href="../home2.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
       <a href="#contact" data-i18n="nav_contact">Kontakt</a>
       <span class="lang" role="group" aria-label="Jazyk / Language">
@@ -437,6 +437,166 @@ def overview(all_photos):
     with open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
+# ---------------------------------------------------------------------------------------------------------
+# The About page (about/index.html). Facts from the old about-us.html, the statutes (Documents/) and the
+# homepage; the team is the one on the old site (to be confirmed by the owner). Each text is (Slovak, English).
+TEAM = [
+  dict(name='Lukáš', photo='lukas', role=('Predseda', 'Chair'),
+       bio=('Vyštudoval informatiku a pedagogiku na Technickej univerzite v Košiciach, kde je dnes doktorandom a skúma optimalizáciu algoritmov pomocou umelej inteligencie. Prešiel mnohými mládežníckymi výmenami a kurzami Erasmus+ a priniesol si z nich kontakty z celej Európy.',
+            'He studied computer science and education at the Technical University of Košice, where he is now a PhD student researching how to optimise algorithms with AI. He has taken part in many Erasmus+ youth exchanges and courses, and brought back contacts from all over Europe.')),
+  dict(name='Nika', photo='nika', role=('Manažérka digitalizácie', 'Digital manager'),
+       bio=('Vyštudovala informatiku a pedagogiku na Technickej univerzite v Košiciach a ako doktorandka sa venuje matematike, konkrétne extremálnym algebrám. V združení má na starosti web a všetko digitálne. Vo voľnom čase bicykluje, lyžuje a hrá stolný tenis.',
+            'She studied computer science and education at the Technical University of Košice, and as a PhD student researches mathematics, specifically extremal algebras. In the association she looks after the website and everything digital. In her free time she cycles, skis and plays table tennis.')),
+  dict(name='Adam', photo='adam', role=('Ekológia a udržateľnosť', 'Ecology and sustainability'),
+       bio=('Vyštudoval lesníctvo a ochranu prírody. Rozumie environmentálnej vede, ochrane biodiverzity a udržateľnému hospodáreniu s prírodnými zdrojmi, a preto je oporou našich zelených projektov a environmentálneho vzdelávania.',
+            'He studied forestry and nature conservation. He knows environmental science, biodiversity protection and sustainable resource management, which makes him the backbone of our green projects and environmental education.')),
+]
+
+ABOUT_FOCUS = [
+  (('Životné prostredie', 'Environment'),
+   ('Upratovacie akcie v Košiciach a Prešove a projekty, v ktorých odpad dostane druhý život.', 'Clean-up actions in Košice and Prešov, and projects that give rubbish a second life.')),
+  (('Digitálne zručnosti', 'Digital skills'),
+   ('AI, vibe coding a 3D tlač ako nástroje učenia a tvorby pre mladých s menšími príležitosťami.', 'AI, vibe coding and 3D printing as tools for learning and making, for young people with fewer opportunities.')),
+  (('Duševné zdravie', 'Mental health'),
+   ('Bezpečný priestor, kde sa mladí prepájajú, zdieľajú, čím prechádzajú, a zvládajú výzvy spolu.', 'Safe spaces where young people connect, share what they are going through and face challenges together.')),
+  (('Výmeny a školenia Erasmus+', 'Erasmus+ exchanges and training'),
+   ('Mládežnícke výmeny pre 13- až 30-ročných a tréningové kurzy pre pracovníkov s mládežou, pedagógov a dobrovoľníkov.', 'Youth exchanges for 13 to 30 year olds, and training courses for youth workers, teachers and volunteers.')),
+]
+ABOUT_VALUES = [
+  (('Učíme sa robením', 'We learn by doing'),
+   ('Workshopy, hry, simulácie, debaty a práca rukami. Neformálne vzdelávanie, pri ktorom sa učíš skúsenosťou a od ostatných.', 'Workshops, games, simulations, debates and hands-on work. Non-formal education, where you learn from experience and from each other.')),
+  (('Vítaný je každý', 'Everyone is welcome'),
+   ('Účasť je zadarmo a nemusíš byť študent. Ak nevieš dobre po anglicky, nevadí: cestuješ v slovenskom tíme, ktorý ti pomôže.', 'Taking part is free and you do not need to be a student. If your English is not great, that is fine: you travel in a Slovak team that helps you.')),
+  (('Európa za dverami', 'Europe on our doorstep'),
+   ('Budujeme priateľstvá a partnerstvá po celej Európe a to, čo sa naučíme, prinášame späť do Košíc a Prešova.', 'We build friendships and partnerships across Europe, and bring what we learn back home to Košice and Prešov.')),
+]
+ABOUT_TEXT = {
+  'ab_label': ('O nás', 'About us'),
+  'ab_title': ('Mladí ľudia, ktorí menia východné Slovensko.', 'Young people changing eastern Slovakia.'),
+  'ab_lead': ('Mladá Vlna je mládežnícke občianske združenie so sídlom v Prešove. Pomáhame mladým ľuďom byť aktívni vo vlastnej komunite, v Košiciach, Prešove aj v ich okolí.',
+              'Mladá Vlna is a youth-led civic association based in Prešov. We help young people become active in their own community, in Košice, Prešov and the towns around them.'),
+  'who_label': ('Kto sme', 'Who we are'),
+  'who_title': ('Zmena začína tam, kde žiješ.', 'Change starts where you live.'),
+  'who_p1': ('Preto pracujeme s mladými ľuďmi na východnom Slovensku: staráme sa o miesto, kde žijeme, učíme sa spolu nové zručnosti a sme tu jeden pre druhého.',
+             'That is why we work with young people in eastern Slovakia: we look after the place we live in, learn new skills together and are there for each other.'),
+  'who_p2': ('Niektoré aktivity robíme vlastnými silami, iné s podporou programu Erasmus+, vždy spolu s partnermi doma aj v zahraničí. Spájame mladých z rôznych miest a krajín, aby sa navzájom inšpirovali.',
+             'Some of our activities we run on our own, others with the support of Erasmus+, always together with partners at home and abroad. We bring together young people from different towns and countries so they can inspire each other.'),
+  'who_p3': ('Prednosť dávame mladým ľuďom s menšími príležitosťami: tým, ktorí sa nedostanú často cestovať, vyskúšať nové technológie či byť vypočutí.',
+             'We give priority to young people with fewer opportunities: those who rarely get the chance to travel, try new technology or have their voice heard.'),
+  'wd_label': ('Čo robíme', 'What we do'),
+  'wd_title': ('Štyri cesty, jeden cieľ.', 'Four paths, one goal.'),
+  'wd_link': ('Naše projekty', 'Our projects'),
+  'vl_label': ('Čomu veríme', 'What we believe in'),
+  'vl_title': ('Ako pracujeme.', 'How we work.'),
+  'tm_label': ('Náš tím', 'Our team'),
+  'tm_title': ('Ľudia za Mladou Vlnou.', 'The people behind Mladá Vlna.'),
+  'fx_label': ('Združenie v skratke', 'The association at a glance'),
+  'fx_lead': ('Všetky oficiálne dokumenty, vrátane stanov, nájdeš v sekcii Dokumenty.', 'All our official documents, including the statutes, are on the Documents page.'),
+  'fx_docs': ('Dokumenty', 'Documents'),
+  'fx_n': ('Názov', 'Name'),
+  'fx_f': ('Forma', 'Legal form'), 'fx_fv': ('Občianske združenie', 'Civic association'),
+  'fx_s': ('Sídlo', 'Registered office'), 'fx_sv': ('Tomášikova 4856/22, 080 01 Prešov', 'Tomášikova 4856/22, 080 01 Prešov, Slovakia'),
+  'fx_a': ('Kde pôsobíme', 'Where we work'), 'fx_av': ('Košice, Prešov a východné Slovensko', 'Košice, Prešov and eastern Slovakia'),
+  'fx_p': ('Telefón', 'Phone'),
+}
+
+def about():
+    en = {}
+    T = lambda key: t(en, key, ABOUT_TEXT[key])
+    focus_html = '\n'.join(
+        f'          <li class="reveal"><strong {t(en, f"af{i}t", a)}</strong><span {t(en, f"af{i}p", b)}</span></li>'
+        for i, (a, b) in enumerate(ABOUT_FOCUS))
+    values_html = '\n'.join(
+        f'          <li class="reveal"><span class="values__no">0{i + 1}</span><h3 {t(en, f"av{i}t", a)}</h3><p {t(en, f"av{i}p", b)}</p></li>'
+        for i, (a, b) in enumerate(ABOUT_VALUES))
+    team_html = '\n'.join(
+        '          <li class="reveal">\n'
+        f'            <img src="../img/team/{m["photo"]}.webp" alt="{e(m["name"])}" width="720" height="900" loading="lazy" decoding="async">\n'
+        f'            <h3>{e(m["name"])}</h3>\n'
+        f'            <p class="team__role" {t(en, f"tr{i}", m["role"])}</p>\n'
+        f'            <p {t(en, f"tb{i}", m["bio"])}</p>\n'
+        '          </li>'
+        for i, m in enumerate(TEAM))
+    body = f"""
+  <main id="main">
+    <section class="phead" data-dark-start>
+      <div class="wrap">
+        <p class="label label--light"><span {T("ab_label")}</span></p>
+        <h1 {T("ab_title")}</h1>
+        <p class="body body--light" {T("ab_lead")}</p>
+      </div>
+    </section>
+
+    <section class="section paper" data-paper-start>
+      <div class="wrap pstory__grid">
+        <div>
+          <p class="label"><span {T("who_label")}</span></p>
+          <h2 {T("who_title")}</h2>
+        </div>
+        <div class="about__text">
+          <p class="body" {T("who_p1")}</p>
+          <p class="body" {T("who_p2")}</p>
+          <p class="body" {T("who_p3")}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section paper paper--deep">
+      <div class="wrap pstory__grid">
+        <div>
+          <p class="label"><span {T("wd_label")}</span></p>
+          <h2 {T("wd_title")}</h2>
+          <p class="proj-all"><a class="link" href="../projects/index.html"><span {T("wd_link")}</span> <span aria-hidden="true">→</span></a></p>
+        </div>
+        <ul class="tools">
+{focus_html}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section paper">
+      <div class="wrap">
+        <p class="label"><span {T("vl_label")}</span></p>
+        <h2 {T("vl_title")}</h2>
+        <ol class="values">
+{values_html}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section paper paper--deep" id="team">
+      <div class="wrap">
+        <p class="label"><span {T("tm_label")}</span></p>
+        <h2 {T("tm_title")}</h2>
+        <ul class="team">
+{team_html}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section paper pnext-wrap">
+      <div class="wrap pintro__grid">
+        <div>
+          <p class="label"><span {T("fx_label")}</span></p>
+          <p class="plead" {T("fx_lead")}</p>
+          <p class="proj-all"><a class="link" href="../../documents.html"><span {T("fx_docs")}</span> <span aria-hidden="true">→</span></a></p>
+        </div>
+        <dl class="facts">
+          <div><dt {T("fx_n")}</dt><dd>Mladá Vlna, o. z.</dd></div>
+          <div><dt {T("fx_f")}</dt><dd {T("fx_fv")}</dd></div>
+          <div><dt {T("fx_s")}</dt><dd {T("fx_sv")}</dd></div>
+          <div><dt {T("fx_a")}</dt><dd {T("fx_av")}</dd></div>
+          <div><dt>E-mail</dt><dd><a href="mailto:contact@mladavlna.org">contact@mladavlna.org</a></dd></div>
+          <div><dt {T("fx_p")}</dt><dd><a href="tel:+421918208346">+421 918 208 346</a></dd></div>
+        </dl>
+      </div>
+    </section>
+"""
+    os.makedirs(os.path.join(SITE, 'about'), exist_ok=True)
+    page = head('O nás', 'Mladá Vlna je mládežnícke občianske združenie z Prešova, ktoré pomáha mladým byť aktívni vo vlastnej komunite.', '../projects/index.html') + body + foot(en)
+    with open(os.path.join(SITE, 'about', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write(page)
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     all_photos = {}
@@ -445,4 +605,5 @@ if __name__ == '__main__':
     for i, p in enumerate(PROJECTS):
         project_page(i, p, all_photos[p['slug']])
     overview(all_photos)
-    print('built', len(PROJECTS), 'project pages and the overview in', OUT)
+    about()
+    print('built', len(PROJECTS), 'project pages, the overview and the About page')
