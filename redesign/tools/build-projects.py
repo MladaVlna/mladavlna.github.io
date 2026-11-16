@@ -139,7 +139,7 @@ PROJECTS = [
         'One game was invented just for this project: “Guess my Right”, where you identify a human right by asking questions. We took home many more activities like it, and new friendships.')),
     ],
     photos=['photo1.jpg', 'photo2.jpg', 'photo3.jpg'], cover=0,
-    infopack='infopack.pdf', drive=None,
+    infopack=None, drive=None,   # the info pack is not public (owner, 16 November 2026)
   ),
 ]
 
@@ -298,7 +298,8 @@ def project_page(i, p, photos):
     mats = ''
     if p.get('drive'):
         mats += f'<a class="btn btn--dark" href="{e(p["drive"])}" target="_blank" rel="noopener noreferrer"><span {t(en, "materials", UI["materials"])}</span><span class="btn__arrow" aria-hidden="true">↗</span></a>\n          '
-    mats += f'<a class="link" href="../../Projekty/{e(p["folder"])}/{e(p["infopack"])}" target="_blank" rel="noopener"><span {t(en, "infopack", UI["infopack"])}</span> <span aria-hidden="true">↗</span></a>'
+    if p.get('infopack'):
+        mats += f'<a class="link" href="../../Projekty/{e(p["folder"])}/{e(p["infopack"])}" target="_blank" rel="noopener"><span {t(en, "infopack", UI["infopack"])}</span> <span aria-hidden="true">↗</span></a>'
 
     def nav_link(q, cls, label_key):
         qp = make_photos(q)[q['cover']]
@@ -339,10 +340,10 @@ def project_page(i, p, photos):
         <div class="photos{" photos--few" if n <= 4 else ""}">
 {thumbs}
         </div>
-        <div class="materials">
+{f'''        <div class="materials">
           {mats}
         </div>
-      </div>
+''' if mats else ''}      </div>
     </section>
 
     <section class="section paper paper--deep pstory">
