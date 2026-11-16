@@ -118,6 +118,10 @@ Test switches on that address:
 - **Footer (16 November 2026):** Documents opens the About page's documents section (`about/index.html#documents`, which lists the PDFs in `Documents/`), Projects opens the projects list; the Blog and First version links were removed.
 - **To confirm with the owner:** whether the team is current and complete; the IČO and founding year (not on the page yet).
 
+## Contact page (16 November 2026)
+
+- `contact/index.html`, built by `tools/build-projects.py` (`contact()`, texts in `CONTACT_TEXT`, feed photos in `IG_FEED`). No form, at the owner's request: the email address is the headline (tap to write, or "Copy address", `js/contact.js`), then phone, address and Instagram as facts. Instagram is a tilted phone showing the profile, a slowly scrolling feed of real project photos and floating hearts; the whole phone links to the account. Motion stops for reduced motion. "Contact" in every top bar now opens this page.
+
 ## Fixed: volunteers disappearing (15 November 2026)
 
 - **They sometimes never loaded:** their loading waited for an idle moment with no deadline, and with the forest, the smooth scroll and the printer all drawing, that moment could fail to come. It now has a 1.5 s deadline (`whenIdle` in `js/hero-forest.js`).

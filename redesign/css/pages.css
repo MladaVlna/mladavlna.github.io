@@ -132,6 +132,60 @@
 .docs .link { color: var(--ink); align-items: baseline; }
 .docs__type { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); }
 
+/* ---------- contact ---------- */
+/* The email address is the page's headline: big, in the display face, with the @ in the accent blue. */
+.mailbox .label { margin-bottom: 14px; }
+.mail { display: inline-block; max-width: 100%; font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 7.4vw, 6rem); line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0 3px no-repeat; transition: background-size 0.5s var(--ease); padding-bottom: 6px; }
+.mail:hover { background-size: 100% 3px; }
+.mail__at { color: var(--accent); }
+.mailbox .actions { margin-top: clamp(26px, 3.4vw, 40px); }
+.copy { font: inherit; font-weight: 600; color: var(--ink); background: none; border: 0; cursor: pointer; }
+.copy__done { display: none; }
+.copy.is-copied .copy__idle { display: none; }
+.copy.is-copied .copy__done { display: inline; color: var(--moss); }
+.copy.is-copied::after { background: var(--moss); }
+.mailbox__more { margin-top: clamp(60px, 8vw, 100px); max-width: 560px; }
+.mailbox__more .facts a { color: var(--ink); }
+
+/* ---------- Instagram: a phone with the profile and a slowly scrolling feed ---------- */
+.ig { position: relative; overflow-x: clip; background: var(--grain), var(--forest); color: #fff; padding: clamp(100px, 12vw, 160px) 0 clamp(90px, 11vw, 150px); }
+.ig__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 340px); gap: clamp(40px, 7vw, 110px); align-items: center; }
+.ig__text h2 { color: #fff; }
+.ig__text .actions { margin-top: 34px; }
+.ig__phone { position: relative; display: block; aspect-ratio: 9 / 18; border-radius: 42px; padding: 11px; background: linear-gradient(145deg, #1d2b31, #070d10); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5), inset 0 0 0 1.5px rgba(255, 255, 255, 0.12); transform: rotate(-5deg); transition: transform 0.7s var(--ease); text-decoration: none; color: var(--ink); }
+.ig__phone:hover, .ig__phone:focus-visible { transform: rotate(-1.5deg) translateY(-8px); }
+.ig__screen { display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 32px; background: #fff; }
+.ig__top { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 6px; font: 600 0.85rem var(--sans); }
+.ig__dots { letter-spacing: 1px; color: #8a959c; }
+.ig__head { display: flex; align-items: center; gap: 12px; padding: 10px 16px 4px; }
+/* The story ring around the logo. */
+.ig__avatar { flex: none; width: 64px; height: 64px; padding: 3px; border-radius: 50%; background: conic-gradient(from 200deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); animation: ring 6s linear infinite; }
+.ig__avatar img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; background: #fff; animation: ring 6s linear infinite reverse; }
+@keyframes ring { to { transform: rotate(360deg); } }
+.ig__who { display: grid; gap: 2px; min-width: 0; }
+.ig__who strong { font: 700 0.95rem var(--sans); }
+.ig__who small { font: 400 0.78rem/1.3 var(--sans); color: #56636b; }
+.ig__follow { margin: 10px 16px 12px; padding: 7px 0; border-radius: 8px; background: #0095f6; color: #fff; text-align: center; font: 600 0.82rem var(--sans); }
+.ig__feed { position: relative; flex: 1; overflow: hidden; }
+.ig__track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; animation: feed 36s linear infinite; }
+.ig__track img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+@keyframes feed { to { transform: translateY(calc(-50% - 1px)); } }
+.ig__phone:hover .ig__track { animation-play-state: paused; }
+/* Little hearts floating up beside the phone. */
+.ig__heart { position: absolute; right: -14px; bottom: 26%; font-size: 1.5rem; color: #ff3b5c; opacity: 0; animation: heart 4.5s ease-out infinite; text-shadow: 0 4px 14px rgba(255, 59, 92, 0.4); }
+.ig__heart--2 { right: -30px; font-size: 1.1rem; animation-delay: 1.5s; }
+.ig__heart--3 { right: 4px; font-size: 1.3rem; animation-delay: 3s; }
+@keyframes heart { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 15% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-170px) translateX(-16px) scale(0.9); } }
+
+@media (max-width: 980px) {
+  .ig__grid { grid-template-columns: 1fr; }
+  .ig__phone { width: min(300px, 78vw); margin: 10px auto 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ig__track, .ig__avatar, .ig__avatar img, .ig__heart { animation: none; }
+  .ig__phone { transition: none; }
+}
+
 /* ---------- small screens ---------- */
 @media (max-width: 980px) {
   .pintro__grid, .pstory__grid { grid-template-columns: 1fr; }

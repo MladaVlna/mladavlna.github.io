@@ -253,7 +253,7 @@ def head(title_sk, desc, projects='index.html'):
       <a href="../about/index.html" data-i18n="nav_about">O nás</a>
       <a href="{projects}" data-i18n="nav_projects">Projekty</a>
       <a href="../home2.html#join" data-i18n="nav_join">Ako sa zapojiť</a>
-      <a href="#contact" data-i18n="nav_contact">Kontakt</a>
+      <a href="../contact/index.html" data-i18n="nav_contact">Kontakt</a>
       <span class="lang" role="group" aria-label="Jazyk / Language">
         <button type="button" data-lang="en" aria-pressed="true">EN</button><span aria-hidden="true">/</span><button type="button" data-lang="sk" aria-pressed="false">SK</button>
       </span>
@@ -724,6 +724,107 @@ def about():
     with open(os.path.join(SITE, 'about', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
 
+# ---------------------------------------------------------------------------------------------------------
+# The Contact page (contact/index.html): no form; the email address is the main way in, Instagram is shown as
+# a phone with the profile and a slowly scrolling feed of real project photos (owner, 16 November 2026).
+CONTACT_TEXT = {
+  'ct_label': ('Kontakt', 'Contact'),
+  'ct_title': ('Napíš nám.', 'Write to us.'),
+  'ct_lead': ('Máš nápad, otázku alebo by si chcel ísť na výmenu? Najrýchlejšie nás zastihneš e-mailom.',
+              'Got an idea, a question, or want to join an exchange? Email is the quickest way to reach us.'),
+  'ct_mail_label': ('E-mail', 'Email'),
+  'ct_write': ('Napísať e-mail', 'Write an email'),
+  'ct_copy': ('Kopírovať adresu', 'Copy address'),
+  'ct_copied': ('Skopírované', 'Copied'),
+  'ct_other': ('Ďalšie kontakty', 'Other ways to reach us'),
+  'ct_phone': ('Telefón', 'Phone'),
+  'ct_addr': ('Adresa', 'Address'),
+  'ct_addr_v': ('Tomášikova 22, 080 01 Prešov', 'Tomášikova 22, 080 01 Prešov, Slovakia'),
+  'ct_ig_label': ('Instagram', 'Instagram'),
+  'ct_ig_title': ('Pozri sa, čo práve robíme.', 'See what we are up to.'),
+  'ct_ig_p': ('Fotky z výmen, upratovaní a workshopov. Nové výzvy na výmeny oznamujeme ako prvé práve tu.',
+              'Photos from exchanges, clean-ups and workshops. New calls for exchanges are announced here first.'),
+  'ct_ig_btn': ('Sledovať @mladavlna', 'Follow @mladavlna'),
+  'ct_ig_follow': ('Sledovať', 'Follow'),
+  'ct_ig_bio': ('Mladí ľudia, ktorí menia východné Slovensko.', 'Young people changing eastern Slovakia.'),
+  'ct_ig_alt': ('Instagram Mladej Vlny: profil a fotky', 'Mladá Vlna on Instagram: profile and photos'),
+}
+# Photos for the feed in the phone: a mix from every project.
+IG_FEED = ['retoy/02', 'smart-sustainable/12', 'masters-of-puppets/01', 'ctrl-alt-rights/04', 'populism-101/01', 'retoy/12',
+           'smart-sustainable/04', 'retoy/18', 'ctrl-alt-rights/05', 'masters-of-puppets/02', 'smart-sustainable/16', 'populism-101/02']
+INSTAGRAM = 'https://www.instagram.com/mladavlna/'
+EMAIL = 'contact@mladavlna.org'
+
+def contact():
+    en = {}
+    T = lambda key: t(en, key, CONTACT_TEXT[key])
+    tiles = ''.join(f'<img src="../img/projects/{x}-sm.webp" alt="" loading="lazy" decoding="async">' for x in IG_FEED)
+    body = f"""
+  <main id="main">
+    <section class="phead" data-dark-start>
+      <div class="wrap">
+        <p class="label label--light"><span {T("ct_label")}</span></p>
+        <h1 {T("ct_title")}</h1>
+        <p class="body body--light" {T("ct_lead")}</p>
+      </div>
+    </section>
+
+    <section class="section paper" data-paper-start>
+      <div class="wrap mailbox">
+        <p class="label"><span {T("ct_mail_label")}</span></p>
+        <a class="mail" href="mailto:{EMAIL}"><span class="mail__user">contact</span><span class="mail__at">@</span><span>mladavlna.org</span></a>
+        <div class="actions">
+          <a class="btn btn--dark" href="mailto:{EMAIL}"><span {T("ct_write")}</span><span class="btn__arrow" aria-hidden="true">→</span></a>
+          <button class="copy link" type="button" data-copy="{EMAIL}"><span class="copy__idle" {T("ct_copy")}</span><span class="copy__done" aria-live="polite" {T("ct_copied")}</span></button>
+        </div>
+        <div class="mailbox__more">
+          <p class="label"><span {T("ct_other")}</span></p>
+          <dl class="facts">
+            <div><dt {T("ct_phone")}</dt><dd><a href="tel:+421918208346">+421 918 208 346</a></dd></div>
+            <div><dt {T("ct_addr")}</dt><dd {T("ct_addr_v")}</dd></div>
+            <div><dt>Instagram</dt><dd><a href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer">@mladavlna</a></dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="ig" id="instagram">
+      {TREELINE}
+      <div class="wrap ig__grid">
+        <div class="ig__text">
+          <p class="label label--light"><span {T("ct_ig_label")}</span></p>
+          <h2 {T("ct_ig_title")}</h2>
+          <p class="body body--light" {T("ct_ig_p")}</p>
+          <div class="actions">
+            <a class="btn" href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer"><span {T("ct_ig_btn")}</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <a class="ig__phone" href="{INSTAGRAM}" target="_blank" rel="noopener noreferrer" aria-label="{e(CONTACT_TEXT['ct_ig_alt'][0])}" data-i18n-aria="ct_ig_alt">
+          <span class="ig__screen" aria-hidden="true">
+            <span class="ig__top"><span>@mladavlna</span><span class="ig__dots">•••</span></span>
+            <span class="ig__head">
+              <span class="ig__avatar"><img src="../img/logo-mark.png" alt=""></span>
+              <span class="ig__who"><strong>Mladá Vlna</strong><small {T("ct_ig_bio")}</small></span>
+            </span>
+            <span class="ig__follow" {T("ct_ig_follow")}</span>
+            <span class="ig__feed"><span class="ig__track">{tiles}{tiles}</span></span>
+          </span>
+          <span class="ig__heart ig__heart--1" aria-hidden="true">♥</span>
+          <span class="ig__heart ig__heart--2" aria-hidden="true">♥</span>
+          <span class="ig__heart ig__heart--3" aria-hidden="true">♥</span>
+        </a>
+      </div>
+    </section>
+"""
+    os.makedirs(os.path.join(SITE, 'contact'), exist_ok=True)
+    foot_html = foot(en, '\n  <script src="../js/contact.js" defer></script>')
+    # This page is the contact: the closing "get in touch" band of the other pages is left out.
+    a = foot_html.index('    <section class="cta" id="contact">'); b = foot_html.index('  </main>')
+    foot_html = foot_html[:a] + foot_html[b:]
+    page = head('Kontakt', 'Napíš Mladej Vlne na contact@mladavlna.org alebo nás sleduj na Instagrame @mladavlna.', '../projects/index.html') + body + foot_html
+    with open(os.path.join(SITE, 'contact', 'index.html'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write(page)
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     all_photos = {}
@@ -733,4 +834,5 @@ if __name__ == '__main__':
         project_page(i, p, all_photos[p['slug']])
     overview(all_photos)
     about()
-    print('built', len(PROJECTS), 'project pages, the overview and the About page')
+    contact()
+    print('built', len(PROJECTS), 'project pages, the overview, About and Contact')
