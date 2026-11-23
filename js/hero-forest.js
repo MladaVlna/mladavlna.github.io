@@ -4,8 +4,8 @@ import * as THREE from '../vendor/three/three.module.min.js';
 import { RoomEnvironment } from '../vendor/three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from '../vendor/three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries, mergeVertices } from '../vendor/three/addons/utils/BufferGeometryUtils.js';
-import { createPeople } from './forest-people.js';
-import { createVolunteers } from './forest-volunteers.js';
+import { createPeople } from './forest-people.js?v=3';   // ?v: browsers kept the old version for 4 hours (iPhone fix, 23 Nov 2026)
+import { createVolunteers } from './forest-volunteers.js?v=3';
 
 const hero = document.querySelector('.hero');
 const stage = document.querySelector('.hero__stage');
