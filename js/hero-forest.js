@@ -1,9 +1,9 @@
 // Hero scene: a misty Slovak spruce forest with litter on the ground. Scrolling walks you down
 // the trail, and the litter ahead of you lifts off the forest floor and is cleared away.
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import * as THREE from '../vendor/three/three.module.min.js';
+import { RoomEnvironment } from '../vendor/three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from '../vendor/three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries, mergeVertices } from '../vendor/three/addons/utils/BufferGeometryUtils.js';
 import { createPeople } from './forest-people.js';
 import { createVolunteers } from './forest-volunteers.js';
 

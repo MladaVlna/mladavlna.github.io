@@ -1,7 +1,7 @@
 // Young volunteers cleaning the forest. Each one looks for a real piece of litter near the trail,
 // walks over to it, bends, picks it up with a grabber stick, drops it into the bag they carry,
 // and goes looking for the next. The litter they take disappears from the forest floor.
-import * as THREE from 'three';
+import * as THREE from '../vendor/three/three.module.min.js';
 
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (list) => list[Math.floor(Math.random() * list.length)];

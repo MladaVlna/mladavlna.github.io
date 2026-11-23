@@ -2,11 +2,11 @@
 // Microsoft Rocketbox library (MIT licence, see models/LICENSE-Rocketbox.md).
 // Each one looks for a real piece of litter near the trail, walks to it, crouches, picks it up
 // with a grabber stick and drops it into the bag they carry. The litter they take disappears.
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import * as THREE from '../vendor/three/three.module.min.js';
+import { GLTFLoader } from '../vendor/three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from '../vendor/three/addons/libs/meshopt_decoder.module.js';
+import * as SkeletonUtils from '../vendor/three/addons/utils/SkeletonUtils.js';
+import { mergeVertices } from '../vendor/three/addons/utils/BufferGeometryUtils.js';
 
 const rand = (a, b) => a + Math.random() * (b - a);
 const MODELS = 'models/';

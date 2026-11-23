@@ -3,9 +3,9 @@
 // The print head traces each layer's outline while the bed steps down; when the print is done the head parks,
 // the logo lifts off the bed, stands up to face you and turns once, then the printer starts again in the
 // next filament colour. Built only when the section comes near, drawn only while it is on screen.
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import * as THREE from '../vendor/three/three.module.min.js';
+import { RoomEnvironment } from '../vendor/three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from '../vendor/three/addons/geometries/RoundedBoxGeometry.js';
 
 const figure = document.querySelector('.printer');
 const canvas = figure && figure.querySelector('.printer__canvas');
